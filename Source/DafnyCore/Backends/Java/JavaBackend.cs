@@ -142,11 +142,7 @@ for backwards compatibility with Java code generated with Dafny versions earlier
       return (true, null);
     }
     finally {
-      try {
-        File.Delete(tempFilePath);
-      } catch (Exception) {
-        // ignore
-      }
+      Util.TryDeleteFile(tempFilePath);
     }
   }
 

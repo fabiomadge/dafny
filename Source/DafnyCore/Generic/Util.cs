@@ -25,6 +25,21 @@ namespace Microsoft.Dafny {
 
   public static class Util {
 
+    /// <summary>
+    /// Deletes a temporary file, best-effort. Callers use this from a finally block, where throwing
+    /// would mask the exception that sent them there, and where a file left in the temp directory is
+    /// not worth failing a build over.
+    /// </summary>
+    public static void TryDeleteFile(string path) {
+      if (path == null) {
+        return;
+      }
+      try {
+        File.Delete(path);
+      } catch (Exception e) when (e is IOException or UnauthorizedAccessException) {
+      }
+    }
+
     public static IEnumerable<T> IgnoreNulls<T>(params T[] values) {
       var result = new List<T>();
       foreach (var value in values) {

@@ -113,19 +113,8 @@ public class CoverageInstrumenter {
         PopulateFromTallies(coverageReport);
       }
       finally {
-        TryDeleteTalliesFile();
+        Util.TryDeleteFile(talliesFilePath);
       }
-    }
-  }
-
-  // Best-effort: runs from a finally block, so it must not mask the exception that sent us here.
-  private void TryDeleteTalliesFile() {
-    if (talliesFilePath == null) {
-      return;
-    }
-    try {
-      File.Delete(talliesFilePath);
-    } catch (Exception e) when (e is IOException or UnauthorizedAccessException) {
     }
   }
 
