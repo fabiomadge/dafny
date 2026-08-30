@@ -3,24 +3,36 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Dafny;
+using Microsoft.Dafny.Compilers;
 using Xunit;
 
 namespace DafnyDriver.Test;
 
-// Same collection as LanguageServerProcessTest: these tests redirect the temp directory
-// process-wide, and that test spawns processes which drop their own temp files there, so they must
-// not run concurrently.
-[Collection("Sequential Collection")]
 public class CoverageTalliesFileTest {
 
+  [Fact]
+  public Task ExecutionCoverageLeavesNoTalliesFile() =>
+    AssertNoTalliesFileRemains("--target:cs", output => Assert.Contains("a", output));
+
   /// <summary>
-  /// The instrumented program writes its branch tallies to a file in the temp directory. That file
-  /// used to be left behind on every invocation. Asserting on the shared temp directory would race
-  /// with other processes, so this points the temp directory at one of its own and requires that
-  /// nothing remains.
+  /// A target that does not support execution coverage rejects it, but the instrumenter is
+  /// constructed before that check, so creating the tallies file eagerly left one behind on every
+  /// such invocation with no report to show for it.
   /// </summary>
   [Fact]
-  public async Task ExecutionCoverageLeavesNoTemporaryFile() {
+  public Task UnsupportedTargetLeavesNoTalliesFile() =>
+    AssertNoTalliesFileRemains("--target:py", output => Assert.Contains("not supported", output));
+
+  /// <summary>
+  /// Runs `dafny run --coverage-report` for "target" with the temp directory pointed at one of its
+  /// own, and requires that no tallies file survives.
+  ///
+  /// Matched by <see cref="CoverageInstrumenter.TalliesFilePrefix"/> rather than by a name spelled
+  /// out here, so that the assertion cannot go quiet if the file is ever named differently. The
+  /// directory is not required to be empty: System.CommandLine, MSBuild and Roslyn all leave state
+  /// of their own behind in it, and none of that is Dafny's to clean up.
+  /// </summary>
+  private static async Task AssertNoTalliesFileRemains(string target, Action<string> checkOutput) {
     var sandbox = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
     var temp = Path.Combine(sandbox, "temp");
     Directory.CreateDirectory(temp);
@@ -30,82 +42,22 @@ public class CoverageTalliesFileTest {
 
     var restoreTemp = RedirectTempTo(temp);
     try {
-
       var output = new StringWriter();
-      var exitCode = await DafnyBackwardsCompatibleCli.MainWithWriters(output, output, TextReader.Null,
-        ["run", "--target:cs", "--coverage-report", Path.Combine(sandbox, "report"), source]);
-      Assert.Equal(0, exitCode);
-      Assert.Contains("a", output.ToString());
-
-      AssertNoTalliesFileRemains(temp);
-    }
-    finally {
-      restoreTemp();
-      try {
-        Directory.Delete(sandbox, true);
-      } catch (IOException) {
-      }
-    }
-  }
-
-  /// <summary>
-  /// A target that does not support execution coverage rejects it, but the instrumenter is
-  /// constructed before that check (SinglePassCodeGenerator's constructor), so creating the tallies
-  /// file eagerly left one behind on every such invocation with no report to show for it.
-  /// </summary>
-  [Fact]
-  public async Task UnsupportedTargetLeavesNoTemporaryFile() {
-    var sandbox = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-    var temp = Path.Combine(sandbox, "temp");
-    Directory.CreateDirectory(temp);
-    var source = Path.Combine(sandbox, "cov.dfy");
-    await File.WriteAllTextAsync(source, "method Main() { print \"a\\n\"; }\n");
-
-    var restoreTemp = RedirectTempTo(temp);
-    try {
-      var output = new StringWriter();
+      // --no-verify: this is about cleaning up a temp file, so there is no reason to depend on a
+      // solver being present.
       await DafnyBackwardsCompatibleCli.MainWithWriters(output, output, TextReader.Null,
-        ["run", "--target:py", "--coverage-report", Path.Combine(sandbox, "report"), source]);
-      // The run is expected to fail; what matters is that it cleans up after itself.
-      Assert.Contains("not supported", output.ToString());
+        ["run", target, "--no-verify", "--coverage-report", Path.Combine(sandbox, "report"), source]);
+      checkOutput(output.ToString());
 
-      AssertNoTalliesFileRemains(temp);
-    }
-    finally {
+      var leaked = Directory.GetFiles(temp, CoverageInstrumenter.TalliesFilePrefix + "*");
+      Assert.True(leaked.Length == 0,
+        "tallies file left behind: " + string.Join(", ", leaked.Select(Path.GetFileName)));
+    } finally {
       restoreTemp();
       try {
         Directory.Delete(sandbox, true);
       } catch (IOException) {
       }
-    }
-  }
-
-  /// <summary>
-  /// Asserts that no tallies file remains. The temp directory is process-wide, so sibling tests running
-  /// concurrently drop unrelated files (CLR debug pipes, assemblies they build) into the same
-  /// directory; asserting the directory is empty would flake. A tallies file is identified by its
-  /// content instead: one unsigned integer per line, one line per instrumented branch.
-  /// </summary>
-  private static void AssertNoTalliesFileRemains(string temp) {
-    foreach (var file in Directory.GetFiles(temp, "tmp*.tmp")) {
-      var info = new FileInfo(file);
-      // Only ever a few bytes per branch. Guards against reading something that is not a regular
-      // file: sibling tests drop FIFOs (CLR debug pipes) here, and reading one blocks forever.
-      if (!info.Exists || info.Length > 4096 || info.LinkTarget != null) {
-        continue;
-      }
-      string[] lines;
-      try {
-        lines = File.ReadAllLines(file);
-      } catch (IOException) {
-        continue; // still held open by whoever created it, so not ours
-      }
-      // An empty file counts too: on a target that rejects execution coverage the tallies are
-      // never written, so all that is left is the zero-byte file eager creation produced.
-      var looksLikeTallies = lines.All(line => uint.TryParse(line, out _));
-      Assert.False(looksLikeTallies,
-        $"tallies file left behind: {Path.GetFileName(file)}, " +
-        (lines.Length == 0 ? "empty" : $"containing {string.Join(",", lines)}"));
     }
   }
 
@@ -113,7 +65,7 @@ public class CoverageTalliesFileTest {
   /// Points Path.GetTempPath() at "directory" and returns an action restoring the previous value.
   /// The variable consulted differs by platform -- TMPDIR on Unix, TMP/TEMP on Windows -- so all
   /// three are set. GetTempPath reads them on each call rather than caching, so this takes effect
-  /// immediately.
+  /// immediately. It is process-wide, which is why this assembly disables test parallelization.
   /// </summary>
   private static Action RedirectTempTo(string directory) {
     string[] variables = ["TMPDIR", "TMP", "TEMP"];

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,6 +9,13 @@ using System.Threading.Tasks;
 namespace Microsoft.Dafny.Compilers;
 
 public class CoverageInstrumenter {
+  /// <summary>
+  /// Prefix of the temporary file the instrumented program writes its tallies to. Self-describing
+  /// so that a leaked one can be traced back here, and shared with the test that checks none is
+  /// left behind.
+  /// </summary>
+  public const string TalliesFilePrefix = "dafny-coverage-";
+
   private readonly SinglePassCodeGenerator codeGenerator;
   private List<(IOrigin, string)>/*?*/ legend;  // non-null implies options.CoverageLegendFile is non-null
   private string talliesFilePath;
@@ -20,12 +28,10 @@ public class CoverageInstrumenter {
     }
 
     if (codeGenerator.Options?.Get(CommonOptionBag.ExecutionCoverageReport) != null) {
-      // Only a name is needed: the instrumented program opens this path with FileMode.Create
-      // (see the CodeCoverage runtime emitted by CsharpCodeGenerator). Path.GetTempFileName()
-      // would additionally create the file here, which then outlives the build whenever the
-      // tallies are never read back -- on a target that rejects execution coverage, on a program
-      // with no Main, and when the program fails before writing them.
-      talliesFilePath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+      // A name, not a file: the instrumented program opens this path with FileMode.Create, so
+      // creating it here would leave one behind whenever the tallies are never read back.
+      talliesFilePath = Path.Combine(Path.GetTempPath(),
+        $"{TalliesFilePrefix}{Guid.NewGuid():N}.tallies");
     }
   }
 
@@ -111,17 +117,14 @@ public class CoverageInstrumenter {
         PopulateFromTallies(coverageReport);
       }
       finally {
-        // Delete even if the tallies could not be read: the program may have failed before writing
-        // them, and on a target that rejects execution coverage they are never written at all.
         TryDeleteTalliesFile();
       }
     }
   }
 
   /// <summary>
-  /// Best-effort removal of the tallies file. Never throws: this runs from a finally block, and
-  /// leaving a file behind in the temp directory is not worth failing a build over, let alone
-  /// masking the exception that sent us here.
+  /// Best-effort removal of the tallies file: this runs from a finally block, so it must not mask
+  /// the exception that sent us here.
   /// </summary>
   private void TryDeleteTalliesFile() {
     if (talliesFilePath == null) {
@@ -129,16 +132,15 @@ public class CoverageInstrumenter {
     }
     try {
       File.Delete(talliesFilePath);
-    } catch (Exception) {
-      // Includes IOException (file in use) and UnauthorizedAccessException (read-only or a
-      // directory); nothing here is actionable.
+    } catch (Exception e) when (e is IOException or UnauthorizedAccessException) {
     }
   }
 
   private void PopulateFromTallies(CoverageReport coverageReport) {
     // uint, matching the counters the instrumented program writes: a branch taken more than
     // int.MaxValue times would make int.Parse throw OverflowException.
-    var tallies = File.ReadLines(talliesFilePath).Select(uint.Parse).ToArray();
+    var tallies = File.ReadLines(talliesFilePath)
+      .Select(line => uint.Parse(line, CultureInfo.InvariantCulture)).ToArray();
     foreach (var ((token, _), tally) in legend.Zip(tallies)) {
       var label = tally == 0 ? CoverageLabel.NotCovered : CoverageLabel.FullyCovered;
       // For now we only identify branches at the line granularity,
