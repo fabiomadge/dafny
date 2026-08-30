@@ -77,8 +77,10 @@ public class CoresOptionCultureTest {
   [InlineData("-50%")]
   [InlineData("-0.5%")]
   public void NonPositivePercentageIsRejectedLikeAnExplicitZero(string value) {
-    Assert.Equal(ParseCores("0", "en-US").Error, ParseCores(value, "en-US").Error);
-    Assert.Contains("must be greater than 0", ParseCores(value, "en-US").Error);
+    var error = ParseCores(value, "en-US").Error;
+
+    Assert.Contains("must be greater than 0", error);
+    Assert.Equal(ParseCores("0", "en-US").Error, error);
   }
 
   [Fact]
