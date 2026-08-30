@@ -26,12 +26,13 @@
    is already set for the next release. However, if you wish to change the
    minor or major version, see [VERSIONBUMP.md](VERSIONBUMP.md)
 
-1. Pushing the release branch automatically starts the "Release branch deep
-   tests" workflow, which runs the same integration tests that gate the release
-   itself. Wait for it to pass before tagging; the `prepare` step prints a link
-   to the run. A pass here means the tag will not be rejected for test failures,
-   which saves having to delete a pushed tag. Do this last, after any version
-   number change above, so that what was tested is what gets tagged.
+1. Pushing the `Release Dafny $VER` commit automatically starts the "Release
+   branch deep tests" workflow, which runs the same integration tests that gate
+   the release itself. Wait for it to pass before tagging; the `prepare` step
+   prints a link to the run. A pass here means the tag will not be rejected for
+   test failures, which saves having to delete a pushed tag. If you changed the
+   version number in the previous step, re-run `prepare` and wait for the run
+   triggered by that push, so that what was tested is what gets tagged.
    (If you are releasing from a mainline branch that predates this workflow,
    there will be no run; trigger the tests by hand from
    <https://github.com/dafny-lang/dafny/actions/workflows/nightly-build-manual.yml>

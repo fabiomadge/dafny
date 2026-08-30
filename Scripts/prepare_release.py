@@ -57,6 +57,17 @@ def unwrap(opt: Optional[A]) -> A:
     assert opt
     return opt
 
+MUTATING_METHODS: List[str] = []
+def mutating(fn: Callable) -> Callable:
+    """Mark a method that writes a file, changes this repo, or contacts the remote.
+
+    `DryRunRelease` has to override every one of these; `test_prepare_release`
+    checks that it does, because the one that was missed rewrote the build props
+    during a dry run.
+    """
+    MUTATING_METHODS.append(fn.__name__)
+    return fn
+
 class NewsFragment(NamedTuple):
     pr: Optional[int]
     contents: str
@@ -268,7 +279,13 @@ class Release:
         if git("fetch").returncode != 0:
             progress("`git fetch` failed... ", end="")
             return False
-        return "behind" not in git("status", "--short", "--branch").stdout
+        # Only the `## branch...upstream [ahead N, behind M]` line: a branch with no
+        # upstream prints no ahead/behind information at all, which read as up to date.
+        branch = git("status", "--short", "--branch").stdout.partition("\n")[0]
+        if "..." not in branch:
+            progress("no upstream branch to compare against... ", end="")
+            return False
+        return "behind" not in branch
 
     @staticmethod
     def _no_release_blocking_issues() -> bool:
@@ -295,6 +312,7 @@ class Release:
         return git("rev-parse", "--quiet", "--verify",
                    f"refs/tags/{self.tag}").returncode == 1
 
+    @mutating
     def _update_build_props_file(self) -> None:
         vernum = Version.from_string(self.version)
         assert vernum
@@ -306,9 +324,11 @@ class Release:
             version_element.text = vernum.string
         xml.write(self.build_props_path, encoding="utf-8")
 
+    @mutating
     def _create_release_branch(self):
         git("checkout", "-b", self.release_branch_name, check=True)
 
+    @mutating
     def _consolidate_news_fragments(self):
         news = self.newsfragments.render()
         new_section = f"\n\n# {self.version}\n\n{news.rstrip()}"
@@ -318,15 +338,18 @@ class Release:
         contents = contents.replace(self.RELEASE_NOTES_MARKER, replacement)
         self.release_notes_md_path.write_text(contents, encoding="utf-8")
 
+    @mutating
     def _delete_news_fragments(self):
         self.newsfragments.delete()
 
+    @mutating
     def _commit_changes(self):
         git("commit", "--quiet", "--all",
             "--no-verify", "--no-post-rewrite",
             f"--message=Release Dafny {self.version}",
             check=True)
 
+    @mutating
     def _push_release_branch(self):
         git("push", "--force-with-lease", "--set-upstream",
             self.REMOTE, f"{self.release_branch_path}:{self.release_branch_path}",
@@ -408,10 +431,12 @@ class Release:
                  f"Once it is green, just re-run this script as `./Scripts/prepare_release.py {self.version} release` to tag the branch and push it to trigger the release.")
         progress()
 
+    @mutating
     def _tag_release(self):
         git("tag", "--annotate", f"--message=Dafny {self.tag}",
             self.tag, self.release_branch_path, capture_output=False).check_returncode()
 
+    @mutating
     def _push_release_tag(self):
         git("push", self.REMOTE, f"{self.tag}",
             capture_output=False).check_returncode()
@@ -430,10 +455,12 @@ class Release:
                  f"<{PR_URL}>.")
 
 class DryRunRelease(Release):
-    # Every method that writes a file, changes this repo, or contacts the remote
-    # must be overridden here. _update_build_props_file was missing, so a dry run
-    # rewrote Source/Directory.Build.props -- and the duplicated definitions below
-    # were the sign that keeping this list correct by hand does not work.
+    """A `Release` with every `@mutating` method disabled.
+
+    `test_dry_run_overrides_every_mutating_method` fails if one is missing, which is
+    how `_update_build_props_file` used to slip through and let a dry run rewrite
+    `Source/Directory.Build.props`.
+    """
     def _update_build_props_file(self):
         pass
     def _create_release_branch(self):

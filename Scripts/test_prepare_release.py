@@ -11,8 +11,8 @@ half-prepared release branch.
 Every test that would touch the network is stubbed (see `ReleaseFixture.offline`).
 Nothing contacts a real remote: the tests that push use a bare repository on disk
 (`ReleaseFixture.add_bare_origin`). Pushing for real rather than mocking the push
-is what gives the dry-run assertions teeth -- a missing `@mutating` shows up as a
-ref appearing in that bare repository.
+is what gives the release assertions teeth -- tagging the wrong ref shows up as the
+wrong commit arriving in that bare repository.
 """
 
 # Tests reach into the checks they are testing.
@@ -179,6 +179,36 @@ class TestChecks(ReleaseFixture):
 
         self.assertFalse(Release("4.12.0", "master")._head_up_to_date())
 
+    def test_head_up_to_date_requires_an_upstream_branch(self) -> None:
+        # `git status --short --branch` prints no ahead/behind information for a
+        # branch with no upstream, so a substring test for "behind" read as current.
+        self.add_bare_origin()
+
+        self.assertFalse(Release("4.12.0", "master")._head_up_to_date())
+
+    def test_head_up_to_date_accepts_a_branch_at_its_upstream(self) -> None:
+        self.add_bare_origin()
+        git("push", "--quiet", "--set-upstream", "origin", "master", cwd=self.repo)
+
+        self.assertTrue(Release("4.12.0", "master")._head_up_to_date())
+
+    def test_head_up_to_date_rejects_a_branch_behind_its_upstream(self) -> None:
+        origin = self.add_bare_origin()
+        git("push", "--quiet", "--set-upstream", "origin", "master", cwd=self.repo)
+        # Advance the remote without advancing this repository.
+        other = Path(self._tmpdir.name) / "other"
+        git("clone", "--quiet", str(origin), str(other), cwd=self.repo)
+        for key, value in (("user.name", "Dafny Test"),
+                           ("user.email", "test@example.com"),
+                           ("commit.gpgsign", "false")):
+            git("config", key, value, cwd=other)
+        (other / "later.txt").write_text("later\n", encoding="utf-8")
+        git("add", "--all", ".", cwd=other)
+        git("commit", "--quiet", "--message=Later (#5000)", cwd=other)
+        git("push", "--quiet", "origin", "master", cwd=other)
+
+        self.assertFalse(Release("4.12.0", "master")._head_up_to_date())
+
 class TestSetNextVersion(ReleaseFixture):
     def test_set_next_version_rewrites_the_build_props(self) -> None:
         # Step 9 of the release checklist, run on the release branch every cycle,
@@ -198,6 +228,14 @@ class TestDryRun(ReleaseFixture):
         self.assertIn("4.11.0", self.build_props.read_text(encoding="utf-8"))
         self.assertEqual(git("status", "--porcelain", cwd=self.repo).stdout, "")
 
+    def test_dry_run_overrides_every_mutating_method(self) -> None:
+        """Keeping the override list correct by hand is what failed the first time."""
+        self.assertNotEqual(prepare_release.MUTATING_METHODS, [])
+        missing = sorted(name for name in prepare_release.MUTATING_METHODS
+                         if name not in vars(prepare_release.DryRunRelease))
+
+        self.assertEqual(missing, [])
+
 class TestPrepare(ReleaseFixture):
     def test_prepare_writes_notes_deletes_fragments_and_commits(self) -> None:
         self.offline()
@@ -216,6 +254,7 @@ class TestPrepare(ReleaseFixture):
         self.assertFalse(self.fragment_path("1234.fix").exists())
         self.assertEqual(git("branch", "--show-current", cwd=self.repo).stdout.strip(),
                          "release-4.12.0")
+        # release-branch-deep-tests.yml keys off this subject, so it is load-bearing.
         self.assertEqual(git("log", "-1", "--format=%s", cwd=self.repo).stdout.strip(),
                          "Release Dafny 4.12.0")
         self.assertIn("4.12.0", self.build_props.read_text(encoding="utf-8"))

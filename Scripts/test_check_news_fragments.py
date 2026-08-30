@@ -81,12 +81,41 @@ class TestNewsCheck(GuardFixture):
         self.assertFlags("docs/news/3809.fix")
 
     def test_gitignored_note_one_directory_too_high_is_reported(self) -> None:
-        # Covers the disk glob: `.gitignore` hides this from git entirely.
+        # Covers `--ignored`: `.gitignore` hides this from git's other listings.
         self.write("docs/dev/9999.fix", "Fix something")
         self.assertFlags("docs/dev/9999.fix")
 
+    def test_gitignored_kind_first_note_is_reported(self) -> None:
+        # Both halves have to match either name order, not just the tracked half.
+        self.write("docs/dev/fix.9999", "Fix something")
+        self.assertFlags("docs/dev/fix.9999")
+
+    def test_note_beside_the_news_directory_is_reported(self) -> None:
+        # `docs/` is one level above the `docs/news/` the real strays landed in.
+        self.write("docs/6600.fix", "Fix something")
+        git("add", "--all", ".", cwd=self.repo)
+        self.assertFlags("docs/6600.fix")
+
+    def test_note_in_an_unrelated_directory_is_reported(self) -> None:
+        self.write("Source/6602.fix", "Fix something")
+        git("add", "--all", ".", cwd=self.repo)
+        self.assertFlags("Source/6602.fix")
+
+    def test_note_at_the_repository_root_is_reported(self) -> None:
+        self.write("6603.fix", "Fix something")
+        git("add", "--all", ".", cwd=self.repo)
+        self.assertFlags("6603.fix")
+
     def test_readme_in_an_unrelated_news_directory_is_ignored(self) -> None:
         self.write("tools/news/README.md", "Not a release note")
+        git("add", "--all", ".", cwd=self.repo)
+        self.assertClean()
+
+    def test_ordinary_files_are_not_mistaken_for_notes(self) -> None:
+        # Scanning the whole tree only works if the name test is narrow enough.
+        for name in ("Source/Fixture.cs", "docs/prefix.md", "Scripts/fix_things.py",
+                     "Scripts/fix.py", "docs/dev/README.md"):
+            self.write(name, "Not a release note")
         git("add", "--all", ".", cwd=self.repo)
         self.assertClean()
 

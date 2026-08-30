@@ -23,6 +23,22 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from prepare_release import NewsFragments, Release
 
 CANONICAL = Path(Release.NEWSFRAGMENTS_PATH)
+KINDS = {ext.lstrip(".") for ext in NewsFragments.KNOWN_EXTENSIONS}
+
+def looks_like_a_fragment(name: str) -> bool:
+    """Whether `name` is a release note under either name order.
+
+    `1234.fix` is what the release script reads, but three of the seven real strays
+    were `fix.NNNN`, whose `Path.suffix` is `.NNNN`. Matching on the extension alone
+    would wave through exactly what this exists to catch.
+
+    The reversed form has to end in digits, so that an ordinary `fix.py` is not a
+    release note.
+    """
+    parts = name.split(".")
+    if len(parts) < 2:
+        return False
+    return parts[-1] in KINDS or (parts[0] in KINDS and parts[-1].isdigit())
 
 def repo_root() -> Path:
     try:
@@ -41,27 +57,22 @@ def unclassifiable_fragments() -> List[str]:
                   and p.name not in NewsFragments.IGNORED)
 
 def stray_fragments() -> List[str]:
-    """Notes outside `CANONICAL`, from two sources because neither finds everything.
+    """Release notes anywhere in the tree other than `CANONICAL`.
 
-    `git ls-files` with `--others` covers any `news/` directory including files not
-    yet added; the disk glob covers `docs/dev/` itself, which `.gitignore` hides.
+    The whole tree, not just `news/` directories: `docs/6600.fix`, one level above
+    the `docs/news/` the strays landed in, is at least as easy to write.
 
-    Filtered by ignored *name*, deliberately not by known extension: three of the
-    seven real strays were `fix.NNNN`, whose suffix is `.NNNN`, so an extension
-    filter would wave through exactly what this exists to catch.
+    Two passes, because `--ignored` is the only way to see a note `.gitignore` hides
+    and it reports nothing else (`.gitignore:72-74` hides `docs/dev/*.fix`).
     """
     strays = set()
-    proc = subprocess.run(["git", "ls-files", "-z", "--full-name",
-                           "--cached", "--others", "--exclude-standard",
-                           "--", "news/*", "*/news/*"],
-                          capture_output=True, check=True, encoding="utf-8")
-    for path in proc.stdout.split("\0"):
-        candidate = Path(path) if path else None
-        if (candidate and candidate.parent != CANONICAL
-                and candidate.name not in NewsFragments.IGNORED):
-            strays.add(path)
-    for ext in NewsFragments.KNOWN_EXTENSIONS:
-        strays.update(str(p) for p in CANONICAL.parent.glob(f"*{ext}"))
+    for selection in (["--cached", "--others"], ["--others", "--ignored"]):
+        proc = subprocess.run(["git", "ls-files", "-z", "--full-name",
+                               "--exclude-standard", *selection],
+                              capture_output=True, check=True, encoding="utf-8")
+        strays.update(path for path in proc.stdout.split("\0")
+                      if path and Path(path).parent != CANONICAL
+                      and looks_like_a_fragment(Path(path).name))
     return sorted(strays)
 
 def main() -> None:

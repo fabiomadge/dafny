@@ -16,14 +16,18 @@ on:
       - 'release-[0-9]*'
 
 concurrency:
-  # `prepare` force-pushes on re-run, and checklist step 9 pushes the
-  # set-next-version commit here too. Supersede rather than stack.
+  # `prepare` force-pushes on re-run. Supersede rather than stack.
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   deep-integration-tests:
-    if: github.repository_owner == 'dafny-lang'
+    # Only the commit `prepare` creates, so that the set-next-version commit
+    # checklist step 9 pushes to this branch after the release has already shipped
+    # does not spend the whole matrix a second time.
+    if: >-
+      github.repository_owner == 'dafny-lang'
+      && startsWith(github.event.head_commit.message, 'Release Dafny ')
     permissions:
       contents: read
     uses: ./.github/workflows/release-deep-tests-reusable.yml
