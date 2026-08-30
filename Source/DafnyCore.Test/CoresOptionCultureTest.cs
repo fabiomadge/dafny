@@ -9,11 +9,7 @@ namespace DafnyCore.Test;
 
 public class CoresOptionCultureTest {
 
-  /// <summary>
-  /// Parses "--cores=&lt;value&gt;" with "culture" as the ambient culture, returning the resulting
-  /// core count and any parse error. The culture is set on a thread this test owns, because xunit
-  /// runs test classes in parallel on pool threads it reuses.
-  /// </summary>
+  // On a thread of its own, because xunit reuses pool threads across concurrent tests.
   private static (uint Cores, string? Error) ParseCores(string value, string culture) {
     uint cores = 0;
     string? error = null;
@@ -37,11 +33,7 @@ public class CoresOptionCultureTest {
     return (cores, error);
   }
 
-  /// <summary>
-  /// A command-line value is not written in the ambient locale's number format. "de-DE" groups
-  /// digits with "." rather than separating the fraction with it, so on master "50.5%" parsed as
-  /// 505%, asking for five times the machine's cores.
-  /// </summary>
+  // "." groups digits in de-DE, so "50.5%" used to parse as 505%.
   [Theory]
   [InlineData("50.5%")]
   [InlineData("12.5%")]
@@ -58,7 +50,6 @@ public class CoresOptionCultureTest {
   [InlineData("en-US")]
   [InlineData("de-DE")]
   public void WholePercentageOfEveryCoreIsEveryCore(string culture) {
-    // Pins what a percentage means, without restating the rounding for a fractional one.
     Assert.Equal((uint)Environment.ProcessorCount, ParseCores("100%", culture).Cores);
   }
 
@@ -70,11 +61,7 @@ public class CoresOptionCultureTest {
     Assert.Contains("Could not parse percentage", ParseCores("1,000%", culture).Error);
   }
 
-  /// <summary>
-  /// NumberStyles.Float accepts "NaN" and "Infinity", and casting either to uint is unchecked, so
-  /// they would silently become 1 core and uint.MaxValue cores. A finite product that does not fit
-  /// in a uint is rejected for the same reason: the cast would wrap rather than report.
-  /// </summary>
+  // Float accepts NaN and Infinity, and the cast to uint is unchecked.
   [Theory]
   [InlineData("NaN%")]
   [InlineData("Infinity%")]
@@ -84,10 +71,7 @@ public class CoresOptionCultureTest {
     Assert.Contains("does not denote a usable number of cores", ParseCores(value, "en-US").Error);
   }
 
-  /// <summary>
-  /// `--cores:0` has always been an error, but `--cores:0%` silently meant one core, as did any
-  /// negative percentage.
-  /// </summary>
+  // These silently meant one core, while `--cores:0` has always been an error.
   [Theory]
   [InlineData("0%")]
   [InlineData("-50%")]
