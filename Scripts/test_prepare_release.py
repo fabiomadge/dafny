@@ -3,16 +3,10 @@
 
 Run with `make prepare-release-test`.
 
-The release script is otherwise executed for the first time each cycle by hand,
-on the live repository, on release day. These tests exercise it against a
-throwaway repository instead, so that a mistake costs a red CI run rather than a
-half-prepared release branch.
-
-Every test that would touch the network is stubbed (see `ReleaseFixture.offline`).
-Nothing contacts a real remote: the tests that push use a bare repository on disk
-(`ReleaseFixture.add_bare_origin`). Pushing for real rather than mocking the push
-is what gives the release assertions teeth -- tagging the wrong ref shows up as the
-wrong commit arriving in that bare repository.
+Nothing contacts a real remote: network checks are stubbed (`ReleaseFixture.offline`)
+and the tests that push use a bare repository on disk (`add_bare_origin`). Pushing
+for real rather than mocking it is what gives the assertions teeth -- tagging the
+wrong ref shows up as the wrong commit arriving in that bare repository.
 """
 
 # Tests reach into the checks they are testing.
@@ -137,10 +131,8 @@ class ReleaseFixture(unittest.TestCase):
 
 class TestRendering(ReleaseFixture):
     def test_render_survives_an_unresolvable_pr_number(self) -> None:
-        # A description-named fragment whose add-commit subject has no "(#N)"
-        # resolves to `pr = None`. Sorting that against an `int` used to raise
-        # TypeError from render(), which prepare() calls only after it has created
-        # the release branch and rewritten the build props.
+        # Sorting `pr = None` against an `int` used to raise TypeError from render(),
+        # which prepare() calls only after rewriting the build props.
         self.write_fragment("mystery.fix", "Something unattributed")
         self.commit("A commit with no PR number in its subject")
 
@@ -211,8 +203,6 @@ class TestChecks(ReleaseFixture):
 
 class TestSetNextVersion(ReleaseFixture):
     def test_set_next_version_rewrites_the_build_props(self) -> None:
-        # Step 9 of the release checklist, run on the release branch every cycle,
-        # and until now exercised only through DryRunRelease -- which does nothing.
         Release("4.12.1", "master").set_next_version()
 
         self.assertIn("<VersionPrefix>4.12.1</VersionPrefix>",
@@ -220,9 +210,6 @@ class TestSetNextVersion(ReleaseFixture):
 
 class TestDryRun(ReleaseFixture):
     def test_dry_run_does_not_rewrite_the_build_props(self) -> None:
-        # DryRunRelease overrode eight methods but not _update_build_props_file,
-        # so a dry run left a bogus version in the tree, contradicting its own
-        # help text.
         prepare_release.DryRunRelease("9.9.9", "master").set_next_version()
 
         self.assertIn("4.11.0", self.build_props.read_text(encoding="utf-8"))
@@ -298,10 +285,8 @@ class TestRelease(ReleaseFixture):
                       "the tag must reach origin, which is what triggers the release")
 
     def test_release_fails_loudly_when_the_tag_push_fails(self) -> None:
-        # Pushing the tag is what triggers the publish workflow. A silently
-        # ignored failure leaves a local tag and nothing on origin: the release
-        # looks done, never publishes, and the local tag now blocks re-running
-        # `prepare` via `_no_release_tag`.
+        # A silently ignored failure leaves a local tag and nothing on origin: the
+        # release looks done but never publishes.
         git("remote", "add", "origin", str(self.repo / "no-such-repo"), cwd=self.repo)
         git("branch", "release-4.12.0", cwd=self.repo)
 

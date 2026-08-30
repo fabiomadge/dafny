@@ -1,13 +1,9 @@
 #!/usr/bin/env python3
 """Check that release notes are where the release script will find them.
 
-`prepare_release.py` reads only its `NEWSFRAGMENTS_PATH`. A note written anywhere
-else is silently dropped: seven accumulated in `docs/news/` and shipped past two
-releases. A note that is in the right directory but misnamed is worse -- it aborts
-the release on release day.
-
-Names only, no `git log`, so the answer is the same on a shallow clone.
-Run with `make news-check`.
+A note outside `NEWSFRAGMENTS_PATH` is silently dropped; one inside it but misnamed
+aborts the release. Names only, no `git log`, so a shallow clone gives the same
+answer. Run with `make news-check`.
 """
 
 import os
@@ -26,14 +22,10 @@ CANONICAL = Path(Release.NEWSFRAGMENTS_PATH)
 KINDS = {ext.lstrip(".") for ext in NewsFragments.KNOWN_EXTENSIONS}
 
 def looks_like_a_fragment(name: str) -> bool:
-    """Whether `name` is a release note under either name order.
+    """Whether `name` is a release note, under either name order.
 
-    `1234.fix` is what the release script reads, but three of the seven real strays
-    were `fix.NNNN`, whose `Path.suffix` is `.NNNN`. Matching on the extension alone
-    would wave through exactly what this exists to catch.
-
-    The reversed form has to end in digits, so that an ordinary `fix.py` is not a
-    release note.
+    `Path("fix.3809").suffix` is `".3809"`, so an extension test alone would miss the
+    reversed form. It has to end in digits, so that `fix.py` is not a release note.
     """
     parts = name.split(".")
     if len(parts) < 2:
@@ -59,11 +51,8 @@ def unclassifiable_fragments() -> List[str]:
 def stray_fragments() -> List[str]:
     """Release notes anywhere in the tree other than `CANONICAL`.
 
-    The whole tree, not just `news/` directories: `docs/6600.fix`, one level above
-    the `docs/news/` the strays landed in, is at least as easy to write.
-
-    Two passes, because `--ignored` is the only way to see a note `.gitignore` hides
-    and it reports nothing else (`.gitignore:72-74` hides `docs/dev/*.fix`).
+    Two passes: `--ignored` is the only way to see a note `.gitignore` hides
+    (`.gitignore:72-74` hides `docs/dev/*.fix`), and it reports nothing else.
     """
     strays = set()
     for selection in (["--cached", "--others"], ["--others", "--ignored"]):

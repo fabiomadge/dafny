@@ -1,11 +1,8 @@
 #!/usr/bin/env python3
 """Tests for `check_news_fragments.py`. Run with `make news-check-test`.
 
-The cases are the real ones: the seven notes that accumulated in `docs/news/` were
-a mix of `NNNN.fix` and `fix.NNNN`, and `.gitignore` hides `docs/dev/*.fix`, so no
-single detection strategy finds all of them.
-
-Exercised as a subprocess, because the exit code is the whole contract.
+Exercised as a subprocess, because the exit code is the whole contract. The cases
+are the real ones: a mix of `NNNN.fix` and `fix.NNNN`, in and out of `.gitignore`.
 """
 
 import subprocess
@@ -68,9 +65,6 @@ class TestNewsCheck(GuardFixture):
         self.assertFlags("docs/news/3809.fix")
 
     def test_kind_first_note_in_docs_news_is_reported(self) -> None:
-        # `Path("fix.3809").suffix` is ".3809", so filtering strays by known
-        # extension would wave this through -- and three of the seven real strays
-        # were named exactly like this.
         self.write("docs/news/fix.3809", "Fix something")
         git("add", "--all", ".", cwd=self.repo)
         self.assertFlags("docs/news/fix.3809")
