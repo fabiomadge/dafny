@@ -19,41 +19,43 @@ public static class BoogieOptionBag {
   };
 
   public static readonly Option<uint> Cores = new("--cores", result => {
+    const string mustBePositive = "Number of cores to use must be greater than 0";
 
     var value = result.Tokens[^1].Value;
     if (value.EndsWith('%')) {
-      // Invariant culture: a command-line value is not written in the ambient locale's number
-      // format. Without this, "50.5%" is read with the ambient separators, which can be silently
-      // WRONG rather than merely rejected: under a culture where "." groups digits (e.g. en-DE)
-      // it parses as 505%, so --cores:50.5% asks for five times the machine's cores. Float rather
-      // than Number, so a thousands separator is rejected instead of guessed at -- "1,000" means
-      // 1 under some cultures and 1000 under others.
-      if (double.TryParse(value.Substring(0, value.Length - 1), NumberStyles.Float,
-            CultureInfo.InvariantCulture, out var percentage)) {
-        // NumberStyles.Float also accepts "NaN" and "Infinity", and casting either to uint is
-        // unchecked: NaN would silently become 0 (then 1 core) and infinity uint.MaxValue. Reject
-        // them rather than act on a number the user cannot have meant. A merely large percentage is
-        // left alone, since the non-percentage branch already accepts any positive count.
-        var cores = percentage / 100.0 * Environment.ProcessorCount;
-        if (double.IsFinite(cores) && cores <= uint.MaxValue) {
-          return Math.Max(1U, (uint)cores);
-        }
-
-        result.ErrorMessage =
-          $"Percentage {value} does not denote a usable number of cores on this machine";
+      // Invariant, because a command-line value is not written in the ambient locale's number
+      // format: where "." groups digits, "50.5%" would otherwise mean 505%. Float rather than
+      // Number leaves AllowThousands off, so "1,000" is rejected instead of resolved arbitrarily.
+      if (!double.TryParse(value[..^1], NumberStyles.Float, CultureInfo.InvariantCulture,
+            out var percentage)) {
+        result.ErrorMessage = $"Could not parse percentage {value}";
         return 1;
       }
 
-      result.ErrorMessage = $"Could not parse percentage {value}";
+      if (double.IsFinite(percentage) && percentage <= 0) {
+        result.ErrorMessage = mustBePositive;
+        return 1;
+      }
+
+      // Excludes NaN and infinity, which Float accepts and the unchecked cast below would turn into
+      // 1 and uint.MaxValue cores, as well as a finite product too large to represent. A percentage
+      // that merely rounds down to zero still means one core.
+      var cores = percentage / 100.0 * Environment.ProcessorCount;
+      if (cores > 0 && cores <= uint.MaxValue) {
+        return Math.Max(1U, (uint)cores);
+      }
+
+      result.ErrorMessage =
+        $"Percentage {value} does not denote a usable number of cores on this machine";
       return 1;
     }
 
-    if (uint.TryParse(value, out var number)) {
+    if (uint.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var number)) {
       if (number > 0) {
         return number;
       }
 
-      result.ErrorMessage = $"Number of cores to use must be greater than 0";
+      result.ErrorMessage = mustBePositive;
       return 1;
     }
     result.ErrorMessage = $"Could not parse number {value}";
