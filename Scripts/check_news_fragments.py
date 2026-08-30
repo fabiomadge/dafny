@@ -27,10 +27,9 @@ def looks_like_a_fragment(name: str) -> bool:
     `Path("fix.3809").suffix` is `".3809"`, so an extension test alone would miss the
     reversed form. It has to end in digits, so that `fix.py` is not a release note.
     """
-    parts = name.split(".")
-    if len(parts) < 2:
-        return False
-    return parts[-1] in KINDS or (parts[0] in KINDS and parts[-1].isdigit())
+    path = Path(name)
+    return NewsFragments.is_note(path) or (
+        name.split(".")[0] in KINDS and path.suffix[1:].isdigit())
 
 def repo_root() -> Path:
     try:
@@ -41,12 +40,11 @@ def repo_root() -> Path:
     return Path(proc.stdout.strip())
 
 def unclassifiable_fragments() -> List[str]:
-    """Names in `CANONICAL` that `NewsFragments._read_directory` would reject."""
+    """Names in `CANONICAL` that the release script would refuse to classify."""
     if not CANONICAL.is_dir():
         return []
     return sorted(p.name for p in CANONICAL.iterdir()
-                  if p.suffix not in NewsFragments.KNOWN_EXTENSIONS
-                  and p.name not in NewsFragments.IGNORED)
+                  if NewsFragments.is_unclassifiable(p))
 
 def stray_fragments() -> List[str]:
     """Release notes anywhere in the tree other than `CANONICAL`.

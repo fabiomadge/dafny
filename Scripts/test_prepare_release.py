@@ -27,6 +27,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 # pylint: disable=wrong-import-position
 import prepare_release
 from prepare_release import NewsFragments, Release
+from release_test_support import configure, git, init_repo
 
 BUILD_PROPS = """<Project>
   <PropertyGroup>
@@ -46,10 +47,6 @@ RELEASE_NOTES = f"""# Upcoming
 - An older fix. (https://github.com/dafny-lang/dafny/pull/1)
 """
 
-def git(*args: str, cwd: Path) -> subprocess.CompletedProcess:
-    return subprocess.run(["git", *args], cwd=cwd,
-                          capture_output=True, check=True, encoding="utf-8")
-
 class ReleaseFixture(unittest.TestCase):
     """A throwaway repository shaped like dafny-lang/dafny, with the CWD inside it.
 
@@ -66,16 +63,7 @@ class ReleaseFixture(unittest.TestCase):
         (self.repo / "Source").mkdir(parents=True)
         (self.repo / Release.NEWSFRAGMENTS_PATH).mkdir(parents=True)
 
-        git("init", "--quiet", "--initial-branch=master", ".", cwd=self.repo)
-        # Do not inherit the developer's global git configuration: commit.gpgsign
-        # or a global core.hooksPath would make these tests fail on their machine
-        # and nowhere else.
-        for key, value in (("user.name", "Dafny Test"),
-                           ("user.email", "test@example.com"),
-                           ("commit.gpgsign", "false"),
-                           ("tag.gpgsign", "false"),
-                           ("core.hooksPath", str(self.repo / ".no-such-hooks"))):
-            git("config", key, value, cwd=self.repo)
+        init_repo(self.repo)
 
         self.build_props = self.repo / "Source/Directory.Build.props"
         self.release_notes = self.repo / "RELEASE_NOTES.md"
@@ -190,10 +178,7 @@ class TestChecks(ReleaseFixture):
         # Advance the remote without advancing this repository.
         other = Path(self._tmpdir.name) / "other"
         git("clone", "--quiet", str(origin), str(other), cwd=self.repo)
-        for key, value in (("user.name", "Dafny Test"),
-                           ("user.email", "test@example.com"),
-                           ("commit.gpgsign", "false")):
-            git("config", key, value, cwd=other)
+        configure(other)
         (other / "later.txt").write_text("later\n", encoding="utf-8")
         git("add", "--all", ".", cwd=other)
         git("commit", "--quiet", "--message=Later (#5000)", cwd=other)

@@ -146,13 +146,26 @@ class NewsFragments:
         ns._read_directory(Path(dirpath))
         return ns
 
+    @classmethod
+    def is_note(cls, path: Path) -> bool:
+        return path.suffix in cls.KNOWN_EXTENSIONS
+
+    @classmethod
+    def is_unclassifiable(cls, path: Path) -> bool:
+        """Neither a note nor one of the files that are meant to sit alongside them.
+
+        `check_news_fragments` reports these, so that a name this would refuse is
+        caught in the PR rather than on release day.
+        """
+        return not cls.is_note(path) and path.name not in cls.IGNORED
+
     def _read_directory(self, dirpath: Path) -> None:
         if dirpath.exists():
             for fpath in dirpath.iterdir():
-                if fpath.suffix in self.KNOWN_EXTENSIONS:
+                if self.is_note(fpath):
                     fragment = NewsFragment.from_file(fpath)
                     self.fragments.setdefault(fpath.suffix, []).append(fragment)
-                elif fpath.name not in self.IGNORED:
+                elif self.is_unclassifiable(fpath):
                     self.unrecognized.append(fpath)
 
     def check(self):

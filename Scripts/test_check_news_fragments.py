@@ -12,13 +12,14 @@ import unittest
 
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+# pylint: disable=wrong-import-position
+from release_test_support import git, init_repo
+
 SCRIPT = Path(__file__).resolve().parent / "check_news_fragments.py"
 CANONICAL = "docs/dev/news"
 GITIGNORE = "docs/dev/*.fix\ndocs/dev/*.feat\ndocs/dev/*.break\n"
-
-def git(*args: str, cwd: Path) -> subprocess.CompletedProcess:
-    return subprocess.run(["git", *args], cwd=cwd,
-                          capture_output=True, check=True, encoding="utf-8")
 
 class GuardFixture(unittest.TestCase):
     def setUp(self) -> None:
@@ -27,12 +28,7 @@ class GuardFixture(unittest.TestCase):
         self.repo = Path(self._tmpdir.name) / "dafny"
         (self.repo / CANONICAL).mkdir(parents=True)
 
-        git("init", "--quiet", "--initial-branch=master", ".", cwd=self.repo)
-        for key, value in (("user.name", "Dafny Test"),
-                           ("user.email", "test@example.com"),
-                           ("commit.gpgsign", "false"),
-                           ("core.hooksPath", str(self.repo / ".no-such-hooks"))):
-            git("config", key, value, cwd=self.repo)
+        init_repo(self.repo)
 
         (self.repo / ".gitignore").write_text(GITIGNORE, encoding="utf-8")
         self.write("docs/dev/news/1234.fix", "Fix the thing")
