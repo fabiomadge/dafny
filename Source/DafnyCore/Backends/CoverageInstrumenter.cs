@@ -9,11 +9,7 @@ using System.Threading.Tasks;
 namespace Microsoft.Dafny.Compilers;
 
 public class CoverageInstrumenter {
-  /// <summary>
-  /// Prefix of the temporary file the instrumented program writes its tallies to. Self-describing
-  /// so that a leaked one can be traced back here, and shared with the test that checks none is
-  /// left behind.
-  /// </summary>
+  // Shared with the test that checks none is left behind.
   public const string TalliesFilePrefix = "dafny-coverage-";
 
   private readonly SinglePassCodeGenerator codeGenerator;
@@ -122,10 +118,7 @@ public class CoverageInstrumenter {
     }
   }
 
-  /// <summary>
-  /// Best-effort removal of the tallies file: this runs from a finally block, so it must not mask
-  /// the exception that sent us here.
-  /// </summary>
+  // Best-effort: runs from a finally block, so it must not mask the exception that sent us here.
   private void TryDeleteTalliesFile() {
     if (talliesFilePath == null) {
       return;

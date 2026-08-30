@@ -14,24 +14,14 @@ public class CoverageTalliesFileTest {
   public Task ExecutionCoverageLeavesNoTalliesFile() =>
     AssertNoTalliesFileRemains("--target:cs", output => Assert.Contains("a", output));
 
-  /// <summary>
-  /// A target that does not support execution coverage rejects it, but the instrumenter is
-  /// constructed before that check, so creating the tallies file eagerly left one behind on every
-  /// such invocation with no report to show for it.
-  /// </summary>
+  // The instrumenter is constructed before the unsupported-target check rejects the run.
   [Fact]
   public Task UnsupportedTargetLeavesNoTalliesFile() =>
     AssertNoTalliesFileRemains("--target:py", output => Assert.Contains("not supported", output));
 
-  /// <summary>
-  /// Runs `dafny run --coverage-report` for "target" with the temp directory pointed at one of its
-  /// own, and requires that no tallies file survives.
-  ///
-  /// Matched by <see cref="CoverageInstrumenter.TalliesFilePrefix"/> rather than by a name spelled
-  /// out here, so that the assertion cannot go quiet if the file is ever named differently. The
-  /// directory is not required to be empty: System.CommandLine, MSBuild and Roslyn all leave state
-  /// of their own behind in it, and none of that is Dafny's to clean up.
-  /// </summary>
+  // Matched by CoverageInstrumenter.TalliesFilePrefix rather than by a name spelled out here, so
+  // that the assertion cannot go quiet if the file is ever named differently. The directory is not
+  // required to be empty: System.CommandLine, MSBuild and Roslyn leave state of their own in it.
   private static async Task AssertNoTalliesFileRemains(string target, Action<string> checkOutput) {
     var sandbox = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
     var temp = Path.Combine(sandbox, "temp");
@@ -43,8 +33,7 @@ public class CoverageTalliesFileTest {
     var restoreTemp = RedirectTempTo(temp);
     try {
       var output = new StringWriter();
-      // --no-verify: this is about cleaning up a temp file, so there is no reason to depend on a
-      // solver being present.
+      // --no-verify so this does not depend on a solver being present.
       await DafnyBackwardsCompatibleCli.MainWithWriters(output, output, TextReader.Null,
         ["run", target, "--no-verify", "--coverage-report", Path.Combine(sandbox, "report"), source]);
       checkOutput(output.ToString());
@@ -61,12 +50,8 @@ public class CoverageTalliesFileTest {
     }
   }
 
-  /// <summary>
-  /// Points Path.GetTempPath() at "directory" and returns an action restoring the previous value.
-  /// The variable consulted differs by platform -- TMPDIR on Unix, TMP/TEMP on Windows -- so all
-  /// three are set. GetTempPath reads them on each call rather than caching, so this takes effect
-  /// immediately. It is process-wide, which is why this assembly disables test parallelization.
-  /// </summary>
+  // Which variable GetTempPath consults differs by platform, so all three are set. It is
+  // process-wide, which is why this assembly disables test parallelization.
   private static Action RedirectTempTo(string directory) {
     string[] variables = ["TMPDIR", "TMP", "TEMP"];
     var previous = variables.Select(Environment.GetEnvironmentVariable).ToArray();
