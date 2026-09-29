@@ -907,8 +907,7 @@ function Map#Glue(Set, [Box]Box, Ty): Map;
 axiom (forall a: Set, b: [Box]Box, t: Ty ::
   { Map#Domain(Map#Glue(a, b, t)) }
   Map#Domain(Map#Glue(a, b, t)) == a);
-// Only within the domain: map equality ignores the elements outside it, so Map#Elements(Map#Glue(a, b, t)) == b
-// would make b and b' equal whenever they agree on a.
+// Inside the domain only: Map#Equal ignores elements outside it, so taking them from b there would be unsound.
 axiom (forall a: Set, b: [Box]Box, t: Ty, bx: Box ::
   { Map#Elements(Map#Glue(a, b, t))[bx] }
   Set#IsMember(a, bx) ==> Map#Elements(Map#Glue(a, b, t))[bx] == b[bx]);
@@ -1042,7 +1041,7 @@ function IMap#Glue([Box] bool, [Box]Box, Ty): IMap;
 axiom (forall a: [Box]bool, b: [Box]Box, t: Ty ::
   { IMap#Domain(IMap#Glue(a, b, t)) }
   IMap#Domain(IMap#Glue(a, b, t)) == a);
-// Only within the domain, as for Map#Glue.
+// Inside the domain only, as for Map#Glue.
 axiom (forall a: [Box]bool, b: [Box]Box, t: Ty, bx: Box ::
   { IMap#Elements(IMap#Glue(a, b, t))[bx] }
   a[bx] ==> IMap#Elements(IMap#Glue(a, b, t))[bx] == b[bx]);
