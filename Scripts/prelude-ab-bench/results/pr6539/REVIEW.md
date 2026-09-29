@@ -237,7 +237,8 @@ interval +0.8% to +3.4%)" in the test sentence.
    geomean gain holds on Z3 5.1.0 (-0.9% vs this PR, 95% interval -2.0% to -0.1%). In
    `GeneralMaps4`, guarding with `a` (the comprehension's `Set#FromBoogieMap(lambda)`) takes Z3
    from 3,126 to 56,688 quantifier instantiations, nearly all in the key-projection axioms.
-   (Benchmark and data: `Scripts/prelude-ab-bench` on the review branch; link it once pushed.)
+   Benchmark and data:
+   https://github.com/fabiomadge/dafny/tree/review-pr6539-bench/Scripts/prelude-ab-bench
 2. Same place, the comment: `b'` is not bound anywhere. Suggest one line:
    `// Inside the domain only: Map#Equal ignores elements outside it, so taking them from b there would be unsound.`
 3. `git-issue-6535.dfy`: the lemma needs neither the precondition nor `Contradiction`
