@@ -908,9 +908,10 @@ axiom (forall a: Set, b: [Box]Box, t: Ty ::
   { Map#Domain(Map#Glue(a, b, t)) }
   Map#Domain(Map#Glue(a, b, t)) == a);
 // Inside the domain only: Map#Equal ignores elements outside it, so taking them from b there would be unsound.
+// The guard uses Map#Domain(Map#Glue(a, b, t)) rather than the equal a: guarding with a measurably slows proofs.
 axiom (forall a: Set, b: [Box]Box, t: Ty, bx: Box ::
   { Map#Elements(Map#Glue(a, b, t))[bx] }
-  Set#IsMember(a, bx) ==> Map#Elements(Map#Glue(a, b, t))[bx] == b[bx]);
+  Set#IsMember(Map#Domain(Map#Glue(a, b, t)), bx) ==> Map#Elements(Map#Glue(a, b, t))[bx] == b[bx]);
 axiom (forall a: Set, b: [Box]Box, t0, t1: Ty ::
   { Map#Glue(a, b, TMap(t0, t1)) }
   // In the following line, no trigger needed, since the quantifier only gets used in negative contexts
@@ -1044,7 +1045,7 @@ axiom (forall a: [Box]bool, b: [Box]Box, t: Ty ::
 // Inside the domain only, as for Map#Glue.
 axiom (forall a: [Box]bool, b: [Box]Box, t: Ty, bx: Box ::
   { IMap#Elements(IMap#Glue(a, b, t))[bx] }
-  a[bx] ==> IMap#Elements(IMap#Glue(a, b, t))[bx] == b[bx]);
+  IMap#Domain(IMap#Glue(a, b, t))[bx] ==> IMap#Elements(IMap#Glue(a, b, t))[bx] == b[bx]);
 axiom (forall a: [Box]bool, b: [Box]Box, t0, t1: Ty ::
   { IMap#Glue(a, b, TIMap(t0, t1)) }
   // In the following line, no trigger needed, since the quantifier only gets used in negative contexts
