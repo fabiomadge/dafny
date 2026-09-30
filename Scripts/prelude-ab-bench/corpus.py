@@ -52,35 +52,36 @@ def run_flags(line):
     return flags
 
 
-def resolver_jobs(jid, path, flags, kind="lit", limit=50e6):
+def resolver_jobs(jid, path, flags, kind="lit", limit=50e6, both=True):
     pinned = any(t.startswith("--type-system-refresh") for t in flags)
-    configs = [("pinned", [])] if pinned else [("refresh", []), ("legacy", LEGACY)]
+    configs = [("pinned", [])] if pinned else [("refresh", []), ("legacy", LEGACY)][:2 if both else 1]
     return [{"id": f"{jid}:{res}", "kind": kind, "cwd": os.path.dirname(path),
              "args": LIT_DEFAULTS + extra + flags + [path], "limit": limit} for res, extra in configs]
 
 
-def lit_jobs():
+def lit_jobs(every=False):
+    """Programs with a comprehension under both resolvers; with every, all programs under lit's default resolver."""
     jobs = []
     for d, _, fs in os.walk(LIT):
         for f in sorted(fs):
             p = os.path.join(d, f)
-            if not f.endswith(".dfy") or not has_comprehension(p):
+            if not f.endswith(".dfy") or not (every or has_comprehension(p)):
                 continue
             runs = RUN.findall(open(p, encoding="utf-8-sig", errors="replace").read())
             first = runs[0] if runs else ""
             m = re.search(r"%([\w-]+)", first)
             if (m.group(1) if m else "NORUN") in SKIP_STYLES:
                 continue
-            jobs += resolver_jobs(f"lit/{os.path.relpath(p, LIT)}", p, run_flags(first))
+            jobs += resolver_jobs(f"lit/{os.path.relpath(p, LIT)}", p, run_flags(first), both=not every)
     return jobs
 
 
-def std_jobs():
+def std_jobs(every=False):
     jobs = []
     for d, _, fs in os.walk(STD):
         for f in sorted(fs):
             p = os.path.join(d, f)
-            if f.endswith(".dfy") and "TargetSpecific" not in p and has_comprehension(p):
+            if f.endswith(".dfy") and "TargetSpecific" not in p and (every or has_comprehension(p)):
                 rel = os.path.relpath(p, STD)
                 jobs.append({"id": f"std/{rel}", "kind": "std", "cwd": STD,
                              "args": [f"{STD}/dfyconfig.toml", f"--filter-position={rel}"], "limit": 5e6})
@@ -107,6 +108,8 @@ if __name__ == "__main__":
     jobs = []
     if "lit" in kinds: jobs += lit_jobs()
     if "std" in kinds: jobs += std_jobs()
+    if "litall" in kinds: jobs += lit_jobs(every=True)  # for a seed-0 screen of what a change reaches
+    if "stdall" in kinds: jobs += std_jobs(every=True)
     if "synth" in kinds: jobs += synth_jobs()
     if "unionfind" in kinds: jobs += unionfind_jobs()
     json.dump(jobs, open(sys.argv[1], "w"), indent=1)

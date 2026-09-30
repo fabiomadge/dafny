@@ -22,6 +22,7 @@ ap.add_argument("--seeds", default="0,1,2,3,4")
 ap.add_argument("--workers", type=int, default=28)
 ap.add_argument("--resource-limit", default="500e6")
 ap.add_argument("--solver", default=None, help="SMT solver binary (default: the z3 next to Dafny)")
+ap.add_argument("--run-timeout", type=float, default=3600, help="seconds before a whole dafny run is killed")
 a = ap.parse_args()
 a.outdir = os.path.abspath(a.outdir)  # dafny runs in each job's directory
 os.makedirs(a.outdir, exist_ok=True)
@@ -49,7 +50,12 @@ def run(item):
         cmd += ["--solver-path", a.solver]
     cmd += j["args"]
     t0 = time.time()
-    r = subprocess.run(cmd, cwd=j["cwd"], capture_output=True, text=True)
+    try:
+        r = subprocess.run(cmd, cwd=j["cwd"], capture_output=True, text=True, timeout=a.run_timeout)
+    except subprocess.TimeoutExpired as e:  # Dafny can hang; a stuck run must not hold its worker
+        r = subprocess.CompletedProcess(cmd, "timeout", e.stdout or "", e.stderr or "")
+        r.stdout = r.stdout if isinstance(r.stdout, str) else r.stdout.decode(errors="replace")
+        r.stderr = r.stderr if isinstance(r.stderr, str) else r.stderr.decode(errors="replace")
     dt = time.time() - t0
     with open(stem + ".log", "w") as fh:
         fh.write(" ".join(cmd) + f"\nexit={r.returncode} wall={dt:.1f}s\n--- stdout\n{r.stdout[-20000:]}\n--- stderr\n{r.stderr[-20000:]}")

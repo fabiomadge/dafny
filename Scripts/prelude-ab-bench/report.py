@@ -1,16 +1,20 @@
 #!/usr/bin/env python3
-"""report.py <jobs.json> <outdir> <report.md> [vcs.csv]
+"""report.py <jobs.json> <outdir> <report.md> [vcs.csv] [--classes=classes.csv,...]
 
 Summarises run.py's CSVs. A VC is *affected* when its resource counts under master and under
-the PR differ for some seed; every other VC saw identical SMT input, so identical counts are
-also the determinism check. Costs are means over seeds. Verdicts are read at each job's own
+the PR differ for some seed. That includes VCs the change merely perturbs (their SMT is
+reordered, not changed) and VCs that are nondeterministic across processes; the master2 (A/A)
+and placebo rows measure those floors, and classify.py's classes.csv separates VCs whose SMT
+contains the changed axiom. Costs are means over seeds. Verdicts are read at each job's own
 limit (50M per VC for lit tests and synthetic programs, 5M for the standard library), though
 the runs themselves used a much higher limit so that costs beyond it are measured.
 """
 import collections, csv, glob, json, math, os, re, statistics as st, sys
 
-jobs_path, outdir, report_path = sys.argv[1:4]
-vcs_path = sys.argv[4] if len(sys.argv) > 4 else None
+CLASSES = [p for a in sys.argv[1:] if a.startswith("--classes=") for p in a.split("=", 1)[1].split(",") if p]
+argv = [a for a in sys.argv if not a.startswith("--classes=")]
+jobs_path, outdir, report_path = argv[1:4]
+vcs_path = argv[4] if len(argv) > 4 else None
 jobs = {j["id"]: j for j in json.load(open(jobs_path))}
 esc = {j.replace("/", "__").replace(":", "--"): j for j in jobs}
 PRE = ["master", "pr", "placebo"]
@@ -24,6 +28,8 @@ def dur(s):
 data = collections.defaultdict(lambda: collections.defaultdict(dict))  # job -> prelude -> seed -> {vc: (outcome, ru, t)}
 for path in glob.glob(os.path.join(outdir, "*.csv")):
     stem, p, s = os.path.basename(path)[:-4].rsplit("@", 2)
+    if stem not in esc:  # a run of a job this report does not cover
+        continue
     job = esc[stem]
     rows = {}
     for r in csv.DictReader(open(path)):
@@ -87,18 +93,28 @@ import random
 random.seed(6539)
 
 
+def program(r):  # a program: a job without its resolver configuration
+    return r["job"].split(":")[0]
+
+
 def boot(rs, alt, n=2000, ref="master"):
-    """95% bootstrap intervals (resampling VCs) of the total-cost ratio and the geomean ratio."""
-    ms = [max(mean_ru(r[ref]), 1) for r in rs]; ps = [max(mean_ru(r[alt]), 1) for r in rs]
-    lr = [math.log(p / m) for m, p in zip(ms, ps)]
-    tot, geo = [], []
-    for _ in range(n):
-        idx = [random.randrange(len(rs)) for _ in rs]
-        tot.append(sum(ps[i] for i in idx) / sum(ms[i] for i in idx))
-        geo.append(math.exp(st.mean(lr[i] for i in idx)))
-    tot.sort(); geo.sort()
-    q = lambda xs: f"[{pct(xs[int(0.025 * n)])}, {pct(xs[int(0.975 * n)])}]"
-    return q(tot), q(geo)
+    """Point estimates and 95% bootstrap intervals of the total-cost ratio, the geomean of per-VC
+    ratios, and the geomean of per-program geomeans (each program weighs the same). Programs are
+    resampled as units: the VCs of one program are not independent of each other."""
+    by = collections.defaultdict(list)
+    for r in rs:
+        by[program(r)].append((max(mean_ru(r[ref]), 1), max(mean_ru(r[alt]), 1)))
+    progs = list(by)
+    stats = lambda sample: (sum(p for vs in sample for _, p in vs) / sum(m for vs in sample for m, _ in vs),
+                            math.exp(st.mean(math.log(p / m) for vs in sample for m, p in vs)),
+                            math.exp(st.mean(st.mean(math.log(p / m) for m, p in vs) for vs in sample)))
+    point = stats([by[p] for p in progs])
+    draws = [stats([by[random.choice(progs)] for _ in progs]) for _ in range(n)]
+    cis = []
+    for k in range(3):
+        xs = sorted(d[k] for d in draws)
+        cis.append(f"{pct(point[k])} [{pct(xs[int(0.025 * n)])}, {pct(xs[int(0.975 * n)])}]")
+    return cis
 
 
 def passing(r):  # a proof: passes under every prelude and seed
@@ -106,22 +122,23 @@ def passing(r):  # a proof: passes under every prelude and seed
 
 
 w("## Proof cost over affected VCs that pass everywhere\n")
-w("Totals are sums of per-VC means over seeds; brackets are 95% bootstrap intervals over VCs.\n")
-w("| group | VCs | master RU | PR RU | PR vs master | geomean PR/master | placebo vs master | placebo geomean |")
-w("|---|---:|---:|---:|---|---|---|---|")
+w("Totals are sums of per-VC means over seeds. \"Per program\" averages each program's own VC geomean, so a\n"
+  "program with hundreds of VCs weighs no more than one with two. Brackets are 95% bootstrap intervals that\n"
+  "resample programs, not VCs.\n")
+w("| group | programs | VCs | largest program | total PR/master | geomean over VCs | per program | placebo per program |")
+w("|---|---:|---:|---|---|---|---|---|")
 proofs = [r for r in aff if passing(r)]
-groups = [("lit + std", [r for r in proofs if jobs[r["job"]]["kind"] in ("lit", "std")])] + \
-         [(k, [r for r in proofs if jobs[r["job"]]["kind"] == k]) for k in ("lit", "std", "synth")]
+kinds = sorted({jobs[r["job"]]["kind"] for r in proofs})
+groups = [("all but synth", [r for r in proofs if jobs[r["job"]]["kind"] != "synth"])] + \
+         [(k, [r for r in proofs if jobs[r["job"]]["kind"] == k]) for k in kinds]
 for g, rs in groups:
     if not rs:
         continue
-    m = sum(mean_ru(r["master"]) for r in rs); p = sum(mean_ru(r["pr"]) for r in rs)
-    pl = sum(mean_ru(r["placebo"]) for r in rs)
-    gpr = gm([max(mean_ru(r["pr"]), 1) / max(mean_ru(r["master"]), 1) for r in rs])
-    gpl = gm([max(mean_ru(r["placebo"]), 1) / max(mean_ru(r["master"]), 1) for r in rs])
-    (tpr, gprci), (tpl, gplci) = boot(rs, "pr"), boot(rs, "placebo")
-    w(f"| {g} | {len(rs)} | {m/1e6:.1f}M | {p/1e6:.1f}M | {pct(p/m)} {tpr} | {pct(gpr)} {gprci} | "
-      f"{pct(pl/m)} {tpl} | {pct(gpl)} {gplci} |")
+    count = collections.Counter(program(r) for r in rs)
+    big, n_big = count.most_common(1)[0]
+    tot, geo, per = boot(rs, "pr")
+    w(f"| {g} | {len(count)} | {len(rs)} | {big} ({100 * n_big / len(rs):.0f}% of VCs) | {tot} | {geo} | {per} | "
+      f"{boot(rs, 'placebo')[2]} |")
 
 fails = [r for r in aff if not passing(r)]
 w(f"\n{len(fails)} affected VCs fail (a verification error) in some run; their cost is the solver's search for a "
@@ -231,29 +248,70 @@ if mains:
                 w(f"| {r['job'].split(':')[-1]} | {p} | " + " | ".join(f"{x[1]/1e6:.1f}M" for x in r[p]) +
                   f" | {sum(x[1] > 50e6 for x in r[p])} |")
 
+# Named comparisons: the noise floors first, then the change and its parts
+COMPARISONS = [
+    ("A/A: master2 vs master (same input, another process)", "master2", "master"),
+    ("placebo vs master (the old axiom, rewritten)", "placebo", "master"),
+    ("shape: pointwise vs master (the PR's quantifier without its guard)", "pointwise", "master"),
+    ("guard: pr vs pointwise", "pr", "pointwise"),
+    ("pr vs master", "pr", "master"),
+    ("domguard vs master", "domguard", "master"),
+    ("domguard vs pr", "domguard", "pr"),
+]
+present = {p for j in data for p in data[j]}
+okn = lambda r, q: sum(verdict(o, ru, r["limit"]) == "ok" for o, ru, _ in r[q])
+marker = {}
+for path in CLASSES:
+    for c in csv.DictReader(open(path)):
+        if c["marker"] in ("True", "False"):
+            marker[(c["job"], c["vc"])] = c["marker"] == "True"
+
+
+def comparison_table(title, rs_all):
+    cmps = [c for c in COMPARISONS if c[1] in present and c[2] in present]
+    if not cmps or not rs_all:
+        return
+    w(f"\n## {title}\n")
+    w("| comparison | programs | VCs | total | geomean over VCs | per program | verdict flips at limit |")
+    w("|---|---:|---:|---|---|---|---:|")
+    for lab, alt, ref in cmps:
+        rs = [r for r in rs_all if r[alt] and r[ref]]
+        if not rs:
+            continue
+        tot, geo, per = boot(rs, alt, ref=ref)
+        flips = sum(1 for r in rs if len(r[alt]) == len(r[ref]) and okn(r, alt) != okn(r, ref))
+        w(f"| {lab} | {len({program(r) for r in rs})} | {len(rs)} | {tot} | {geo} | {per} | {flips} |")
+
+
+real = [r for r in proofs if jobs[r["job"]]["kind"] != "synth"]
+comparison_table("Comparisons over the affected proofs (all but synth)", real)
+if marker:
+    known = [r for r in real if (r["job"], r["vc"]) in marker]
+    comparison_table("... whose SMT contains the changed axiom (classify.py)", [r for r in known if marker[(r["job"], r["vc"])]])
+    comparison_table("... whose SMT does not: a pure perturbation", [r for r in known if not marker[(r["job"], r["vc"])]])
+    w(f"\n{len(real) - len(known)} of the {len(real)} affected proofs have no classification (unmapped or mixed log names).")
+external = [r for r in real if jobs[r["job"]]["kind"] not in ("lit", "std")]
+comparison_table("Comparisons over the external programs' affected proofs", external)
+
 # Alternative encodings
 if ALTS:
     w("\n## Alternative sound encodings, over the same proofs\n")
     w("restrict: elements defined everywhere, `$ArbitraryBoxValue` outside the domain. "
       "domguard: the PR's axiom guarded by `Map#Domain(Map#Glue(a, b, t))`. "
       "eager: the PR's axiom plus the trigger `{ Map#Glue(a, b, t), Set#IsMember(a, bx) }`.\n")
-    w("| encoding | VCs | total vs master | geomean vs master | total vs PR | geomean vs PR | verdict flips vs master at limit |")
-    w("|---|---:|---|---|---|---|---:|")
-    base = [r for r in proofs if jobs[r["job"]]["kind"] in ("lit", "std")]
+    w("| encoding | programs | VCs | total vs master | geomean over VCs vs master | per program vs master | per program vs PR | verdict flips vs master at limit |")
+    w("|---|---:|---:|---|---|---|---|---:|")
+    base = [r for r in proofs if jobs[r["job"]]["kind"] != "synth"]
     for alt in ["pr"] + ALTS:
         rs = [r for r in base if r[alt]]
         if not rs:
             continue
-        m = sum(mean_ru(r["master"]) for r in rs); p = sum(mean_ru(r["pr"]) for r in rs)
-        x = sum(mean_ru(r[alt]) for r in rs)
-        t1, g1 = boot(rs, alt)
-        t2, g2 = boot(rs, alt, ref="pr")
-        gvm = gm([max(mean_ru(r[alt]), 1) / max(mean_ru(r["master"]), 1) for r in rs])
-        gvp = gm([max(mean_ru(r[alt]), 1) / max(mean_ru(r["pr"]), 1) for r in rs])
+        tot, geo, per = boot(rs, alt)
+        vs_pr = boot(rs, alt, ref="pr")[2] if alt != "pr" else ""
         okm = lambda r, q: sum(verdict(o, ru, r["limit"]) == "ok" for o, ru, _ in r[q])
         flips = sum(1 for r in allrows if len(r[alt]) == len(r["master"]) and "-noiso" not in r["job"]
                     and okm(r, alt) != okm(r, "master"))
-        w(f"| {alt} | {len(rs)} | {pct(x/m)} {t1} | {pct(gvm)} {g1} | {pct(x/p)} {t2 if alt != 'pr' else ''} | {pct(gvp)} {g2 if alt != 'pr' else ''} | {flips} |")
+        w(f"| {alt} | {len({program(r) for r in rs})} | {len(rs)} | {tot} | {geo} | {per} | {vs_pr} | {flips} |")
     for alt in ALTS:
         rs = [r for r in base if r[alt]]
         w(f"\n{alt}: largest differences from the PR\n")

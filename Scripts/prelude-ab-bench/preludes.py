@@ -2,9 +2,12 @@
 """preludes.py [--master REF] [--pr REF]: write the prelude variants to preludes/.
 
 master   - DafnyPrelude.bpl at REF (default origin/master)
+master2  - master again: runs under it measure nondeterminism across processes (an A/A control)
 pr       - DafnyPrelude.bpl at REF (default 074e49a64, the head of dafny-lang/dafny#6539)
 placebo  - master with the Glue element axioms' equations flipped: the same (unsound) meaning in
            different SMT text, which measures how much a mere rewrite of the axiom moves costs
+pointwise - pr without its guard: the PR's quantifier shape with master's (unsound) meaning, so
+           master -> pointwise is what the shape costs and pointwise -> pr what the guard costs
 restrict - elements defined everywhere: b inside the domain, $ArbitraryBoxValue outside it
 domguard - pr, guarded by membership in Map#Domain(Map#Glue(a, b, t)) instead of a
 eager    - pr, with a second trigger that fires on known membership in a
@@ -39,10 +42,16 @@ IMAP_PR = """axiom (forall a: [Box]bool, b: [Box]Box, t: Ty, bx: Box ::
   a[bx] ==> IMap#Elements(IMap#Glue(a, b, t))[bx] == b[bx]);"""
 variants = {
     "master": master,
+    "master2": master,  # an A/A control: identical input in another process measures nondeterminism
     "pr": pr,
     "placebo": sub(master, [
         ("  Map#Elements(Map#Glue(a, b, t)) == b);", "  b == Map#Elements(Map#Glue(a, b, t)));"),
         ("  IMap#Elements(IMap#Glue(a, b, t)) == b);", "  b == IMap#Elements(IMap#Glue(a, b, t)));")]),
+    "pointwise": sub(pr, [
+        ("  Set#IsMember(a, bx) ==> Map#Elements(Map#Glue(a, b, t))[bx] == b[bx]);",
+         "  Map#Elements(Map#Glue(a, b, t))[bx] == b[bx]);"),
+        ("  a[bx] ==> IMap#Elements(IMap#Glue(a, b, t))[bx] == b[bx]);",
+         "  IMap#Elements(IMap#Glue(a, b, t))[bx] == b[bx]);")]),
     "restrict": sub(pr, [(MAP_PR, """function Map#Restrict(Set, [Box]Box): [Box]Box;
 axiom (forall a: Set, b: [Box]Box, bx: Box ::
   { Map#Restrict(a, b)[bx] }

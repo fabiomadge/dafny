@@ -42,34 +42,41 @@ axiom (`0 <= i < len ==> Seq#Index(Seq#Create(...), i) == ...`). It is consisten
 a checked proof): the map theory then has the model in which every map's elements are one fixed
 value outside its domain. `Map#Build`'s frame, the one axiom that reads elements outside the
 domain, holds there too, as do `Merge`, `Subtract`, `Equal`, `Values`, `Items`, `$Is` and
-`$IsAlloc`. Every translator use of
-`Map#Elements` is a lookup, so nothing relied on the whole-array equation.
+`$IsAlloc`. Every translator use of `Map#Elements` is a lookup, so nothing relied on the
+whole-array equation.
 
-Alternatives, all sound, measured with the benchmark below:
+The cost splits into two parts, measured separately with `pointwise`: the PR's quantifier without
+its guard, which keeps master's meaning. Per program, over the 63 programs whose proofs the change
+affects (Z3 4.16.0, 8 seeds; see the benchmark below):
 
-| encoding | geomean vs master (4.16.0) | vs PR (4.16.0) | vs PR (5.1.0) |
-|---|---|---|---|
-| PR: guard `Set#IsMember(a, bx)` | +2.0% [+0.8, +3.4] | | |
-| domguard: guard `Set#IsMember(Map#Domain(Map#Glue(a, b, t)), bx)` | +0.8% [-0.1, +1.8] | -1.1% [-2.3, -0.2] | -0.9% [-2.0, -0.1] |
-| restrict: elements everywhere, `$ArbitraryBoxValue` outside the domain | +0.7% [-0.2, +1.6] | -1.3% [-2.5, -0.1] | not run |
-| eager: PR plus trigger `{ Map#Glue(a, b, t), Set#IsMember(a, bx) }` | +2.0% [+0.8, +3.4] | +0.1% [-0.3, +0.4] | not run |
+| comparison | per program [95% interval] |
+|---|---|
+| shape: `pointwise` vs master | -0.8% [-2.2, +0.2] |
+| guard: PR vs `pointwise` | **+1.4% [+0.5, +2.6]** |
+| PR vs master | +0.6% [-0.6, +1.9] |
+| `domguard` vs master | +0.1% [-0.9, +1.0] |
+| `domguard` vs PR | -0.6% [-1.4, -0.0] |
 
-`domguard` is equal to the PR's axiom by the `Map#Domain(Map#Glue(a, b, t)) == a` axiom just
-above it. It removes the regressions the PR's guard causes, on both Z3 versions:
+`domguard` guards with `Set#IsMember(Map#Domain(Map#Glue(a, b, t)), bx)`, equal to the PR's
+guard by the `Map#Domain(Map#Glue(a, b, t)) == a` axiom just above it. The PR's largest
+regressions come from its guard, and `domguard` removes them:
 
-| VC (mean over 5 seeds) | master | PR | domguard |
-|---|---:|---:|---:|
-| `dafny0/Maps.dfy` `GeneralMaps4` | 0.17M | 2.96M | 0.18M |
-| `dafny4/UnionFind.dfy` `Join` batch 124 (its comprehension postcondition), legacy resolver | 5.8M | 31.0M (max 40.3M) | 8.9M |
-| 16 nested comprehensions (`synth/chain-16`) | 0.32M | 2.30M | 0.33M |
-| the same with `imap` (`synth/ichain-16`) | 0.59M | 1.55M | 0.60M |
+| VC (mean over 8 seeds) | master | `pointwise` | PR | `domguard` |
+|---|---:|---:|---:|---:|
+| `dafny0/Maps.dfy` `GeneralMaps4` | 0.17M | 0.17M | 2.96M | 0.18M |
+| `dafny4/UnionFind.dfy` `Join` batch 124 (its comprehension postcondition), legacy resolver | 6.2M | 4.2M | 22.1M (max 40.3M) | 7.7M |
+| 16 nested comprehensions (`synth/chain-16`) | 0.32M | 0.29M | 2.30M | 0.33M |
+| the same with `imap` (`synth/ichain-16`) | 0.59M | 0.60M | 1.69M | 0.60M |
 
 In `GeneralMaps4` the PR's guard, whose `a` is the comprehension's `Set#FromBoogieMap(lambda)`,
 takes Z3 from 3,126 quantifier instantiations to 56,688. Nearly all of them are in the key
 comprehension's projection axioms. With `domguard` there are 3,413. Where `domguard` is worse
-than the PR: `Join` batch 128 (refreshed resolver), 3.1M → 6.2M; and one seed of `FindAux` on
-Z3 5.1.0, 58M, where that VC's other seeds are 7–12M. `restrict` doubles `FindAux` (14M → 31M),
-and `eager` changes nothing.
+than the PR: `Join` batch 128 (refreshed resolver), 2.8M → 6.4M; and one seed of `FindAux` on
+Z3 5.1.0, 58M, where that VC's other seeds are 7–12M. The one regression the guard does not
+explain is 16 lookups into a key-expression comprehension (`synth/keyed-16`): one seed in eight
+costs 240M under every pointwise variant, `pointwise` included. Two further encodings, measured
+in the first run only, brought nothing: elements defined everywhere with `$ArbitraryBoxValue`
+outside the domain, and the PR's axiom with an extra membership trigger.
 
 ## Scope
 
@@ -79,7 +86,8 @@ Self-contained. Nothing obvious is missing, but:
   tried). The same derivation is `unsat` at the SMT level once a lookup term is present, so the
   change is right by analogy. The description should say so in a sentence.
 - The benchmark finds a thin margin in `UnionFind.dfy`'s `Join` postcondition under the legacy
-  resolver: 5.8M → 31.0M mean, 40.3M max, against the 50M limit. `domguard` keeps it at 8.9M.
+  resolver: 6.2M → 22.1M mean, 40.3M max over 8 seeds, against the 50M limit. `domguard` keeps it
+  at 7.7M.
 
 ## Up to date with master
 
@@ -126,7 +134,7 @@ encoding read from stdin), and nothing changes verdict except `git-issue-6535`. 
 | `DafnyPrelude.bpl` regenerates byte for byte | ✓ |
 | `Main`: about 21M → 53M (refreshed), 21M → 31M (legacy); lit limit 50M per VC; #6478 did the same for `Join` | ✓ at the default seed |
 | "its largest VC is then about 17M (6M under the legacy resolver)" | ✗: those are `M3.UnionFind.JoinMaintainsReaches1` (16.95M / 6.27M), which `--filter-symbol Main` also selects. `Main`'s own isolated VCs peak at 0.18M |
-| `Main` needs isolation *because of* the weaker axiom | ✗ misleading: `Main` is brittle on master. Over 5 seeds: 13.8–30.9M (refreshed) and 11.8–67.6M (legacy, one seed over 50M); on Z3 5.1.0, 12.6–68.3M. The placebo (master's axiom with its equation flipped) costs 77.1M at the default seed |
+| `Main` needs isolation *because of* the weaker axiom | ✗ misleading: `Main` is brittle on master. Over 8 seeds: 10.1–37.1M (refreshed) and 11.8–67.6M (legacy, one seed over 50M); on Z3 5.1.0, 12.6–68.3M. The placebo (master's axiom with its equation flipped) costs 77.1M at the default seed |
 | The cited fork CI runs exist, ran on `074e49a`, and passed (Build and Test on attempt 2) | ✓ |
 | The listed local lit tests and `ProverLogStabilityTest` pass | ✓ |
 | Z3 5.1.0 fixed-limit sweep of 1,092 programs | not reproduced (the run exists; Z3 5.1.0 exists, 2026-08-16) |
@@ -134,25 +142,40 @@ encoding read from stdin), and nothing changes verdict except `git-issue-6535`. 
 
 ## Benchmark (`Scripts/prelude-ab-bench`)
 
-The benchmark uses one Dafny binary with the prelude swapped via `--prelude`, 5 random seeds,
-and raised caps. The corpus: 48 lit tests with map/imap comprehensions under both resolvers,
-the three standard-library files with comprehensions, 40 synthetic programs, and master's
-`UnionFind.dfy`. Of 1,875 VCs, 930 are affected. The other 945 gave bit-identical costs under
-master and the PR for every seed: the change did not reach them.
+One Dafny binary, the prelude swapped with `--prelude`, 8 random seeds, raised caps. Corpus:
+every lit and standard-library program the change reaches, found by a one-seed screen of all
+1,946 of them; 26 external programs (Kondo's protocol proofs, DafnyBench) found the same way; 40
+synthetic programs; and master's `UnionFind.dfy`. Controls: `master2` (the same input in another
+process), the flip placebo, and `pointwise`. `classify.py` separates the VCs whose SMT contains
+the changed axiom from those the change only reorders.
 
-| affected proofs (lit + std) | Z3 4.16.0 (844 VCs) | Z3 5.1.0 (841 VCs) |
-|---|---|---|
-| PR, geomean of per-VC ratios | +2.0% [+0.8, +3.4] | +1.9% [+0.7, +3.3] |
-| PR, total | +17.8% [-2.1, +49.4] | +13.0% [-4.0, +35.7] |
-| placebo, geomean / total | +0.0% / +0.5% | +0.1% / -1.6% |
-| domguard, geomean / total | +0.8% / +2.4% | +0.9% / +7.3% |
-| verdict changes at the tests' limits | only `git-issue-6535` | only `git-issue-6535` |
+Affected proofs, Z3 4.16.0, per program (each program weighs the same; intervals resample
+programs):
 
-The typical VC changes by 2%. The total is carried by a few heavy VCs (UnionFind). The standard
-library moves by under 1%. Solver time over the proofs: 137 s → 158 s (placebo 135 s). Among
-the synthetic programs at N=16, lookups, updates and UnionFind-style postconditions cost at most
-13% more, and equalities 34% more. Nesting costs 7× at 16 levels (2.6× with `imap`). 16 lookups
-into a key-expression comprehension exceed 50M on 2 of 5 seeds on Z3 4.16.0 (not on 5.1.0).
+| comparison | all 63 programs (934 VCs) | VCs whose SMT contains the axiom (900) | 26 external programs (84 VCs) |
+|---|---|---|---|
+| A/A: `master2` vs master | +0.0% [-0.0, +0.0] | +0.0% | +0.0% |
+| placebo vs master | +0.1% [-0.0, +0.2] | +0.1% | +0.2% |
+| shape: `pointwise` vs master | -0.8% [-2.2, +0.2] | -0.9% | -1.2% |
+| guard: PR vs `pointwise` | +1.4% [+0.5, +2.6] | +1.5% | +1.8% |
+| **PR vs master** | **+0.6% [-0.6, +1.9]** | +0.5% | +0.5% |
+| `domguard` vs master | +0.1% [-0.9, +1.0] | -0.1% | -0.1% |
+
+On Z3 5.1.0 (the first run's data, master/PR/placebo/`domguard` only): PR vs master +0.9%
+[-1.0, +2.8], `domguard` vs PR -0.6% [-2.0, +0.4]. Verdicts at the tests' limits change only for
+`git-issue-6535` and the synthetic `keyed-16` (6 of 8 seeds under 50M, from 8); three other flips
+also happen under the placebo, so they are brittleness. Totals are carried by a few heavy VCs
+(mostly UnionFind's): +11% [-5, +21] for the PR. On the synthetic programs, nesting costs 7× at
+16 levels and the PR's guard is the cause (see above).
+
+The first version of this benchmark reported "+2.0% [+0.8, +3.4]" for the PR. That was a geomean
+over VCs with an interval that resampled VCs, but 69% of those VCs came from `UnionFind.dfy`.
+Resampling programs widens it to [+0.6, +7.4], and weighting programs equally gives the +0.6%
+above. It also selected programs by grepping for comprehensions. The screen found the change
+reaching programs with none, such as `dafny0/CanCall.dfy` and the standard library's JSON
+deserializer (617 VCs). None of their VCs whose solver logs could be attributed (32 of 37 and 967
+of 1,070) contains the axiom; where logs map one to one, the SMT is identical or only reordered.
+Their cost changes are perturbation.
 
 ## Suggested title, commit message and description
 
@@ -213,30 +236,32 @@ seeds; with this change the default seed needs 53M, over the tests' 50M limit, s
 
 ### How has this been tested?
 
-`git-issues/git-issue-6535.dfy` is the lemma above. Over the 844 proofs in the lit tests and
-standard library whose verification conditions this changes, cost changes by +0.8% (geometric
-mean of per-proof ratios, 5 random seeds, Z3 4.16.0; 95% interval -0.1% to +1.8%).
+`git-issues/git-issue-6535.dfy` is the lemma above. Over the 63 programs whose proofs this changes
+(lit tests, the standard library, Kondo's protocol proofs, DafnyBench), verification cost changes
+by +0.1% per program (95% interval -0.9% to +1.0%; 8 random seeds, Z3 4.16.0).
 
 This change was prepared with an AI assistant (Claude Code).
 
 <small>By submitting this pull request, I confirm that my contribution is made under the terms of the [MIT license](https://github.com/dafny-lang/dafny/blob/master/LICENSE.txt).</small>
 ````
 
-If the guard stays `Set#IsMember(a, bx)`, use that axiom in the description and "+2.0% (95%
-interval +0.8% to +3.4%)" in the test sentence.
+If the guard stays `Set#IsMember(a, bx)`, use that axiom in the description and "+0.6% per
+program (95% interval -0.6% to +1.9%)" in the test sentence.
 
 ## Review comments, ready to post
 
 1. `Source/DafnyCore/Prelude/PreludeCore.bpl`, the new `Map#Glue` axiom: Consider guarding with
    `Set#IsMember(Map#Domain(Map#Glue(a, b, t)), bx)`, which equals `Set#IsMember(a, bx)` by the
-   axiom above. With `IMap#Glue`, use `IMap#Domain(IMap#Glue(a, b, t))[bx]`. It is measurably
-   cheaper. Over the 844 affected lit/stdlib proofs (5 seeds, Z3 4.16.0) it is +0.8% geomean over
-   master instead of +2.0%. It also removes this PR's largest regressions: `dafny0/Maps.dfy`
-   `GeneralMaps4` 2.96M → 0.18M (master 0.17M), `UnionFind`'s `Join` postcondition under the
-   legacy resolver 31M → 8.9M (master 5.8M), and 16 nested comprehensions 2.30M → 0.33M. The
-   geomean gain holds on Z3 5.1.0 (-0.9% vs this PR, 95% interval -2.0% to -0.1%). In
-   `GeneralMaps4`, guarding with `a` (the comprehension's `Set#FromBoogieMap(lambda)`) takes Z3
-   from 3,126 to 56,688 quantifier instantiations, nearly all in the key-projection axioms.
+   axiom above. With `IMap#Glue`, use `IMap#Domain(IMap#Glue(a, b, t))[bx]`. The guard is what
+   this PR's cost comes from: measured against the same quantifier without the guard, it adds
+   +1.4% per program (95% interval +0.5% to +2.6%, 63 programs, 8 seeds, Z3 4.16.0). And it
+   causes the largest regressions, which the `Map#Domain` guard removes: `dafny0/Maps.dfy`
+   `GeneralMaps4` 0.17M → 2.96M → 0.18M, `UnionFind`'s `Join` postcondition under the legacy
+   resolver 6.2M → 22.1M → 7.7M, 16 nested comprehensions 0.32M → 2.30M → 0.33M (master → this
+   PR → the suggestion). Per program the suggestion is -0.6% [-1.4%, -0.0%] against this PR, and
+   +0.1% [-0.9%, +1.0%] against master. In `GeneralMaps4`, guarding with `a` (the comprehension's
+   `Set#FromBoogieMap(lambda)`) takes Z3 from 3,126 to 56,688 quantifier instantiations, nearly
+   all in the key-projection axioms.
    Benchmark and data:
    https://github.com/fabiomadge/dafny/tree/review-pr6539-bench/Scripts/prelude-ab-bench
 2. Same place, the comment: `b'` is not bound anywhere. Suggest one line:
@@ -262,11 +287,17 @@ interval +0.8% to +3.4%)" in the test sentence.
 
 ## Side findings, not for this PR
 
-- `dafny measure-complexity --mutations 2` crashes on
-  `method M() { var c := map i: int | 0 <= i < 3 :: [i] := i; }` with "Boogie program had 3 type
-  errors: invalid type for argument 0 in application of map$project$0#0#i#0: Seq (expected:
-  Seq)". Apparently because `CreateMapComprehensionProjectionFunctions` caches the Boogie
-  projection functions on the AST (`MapComprehension.ProjectionFunctions`), so the second
-  translation reuses functions typed against the first translation's `Seq` declaration.
-  `--mutations 1` is fine.
+- **Plain `dafny verify` aborts** (SIGABRT, exit 134) on a key-expression map comprehension whose
+  key type the Boogie prelude declares (`seq`, `set`, `char`, a datatype, …), when the
+  comprehension sits in a method's `requires`/`ensures` or a `const` initializer that another
+  module uses. It reports "Boogie program had 2 type errors: … map$project$0#0#i#0: Seq
+  (expected: Seq)" first. `dafny measure-complexity --mutations 2` hits the same bug on any such
+  comprehension, in one module. Cause: `CreateMapComprehensionProjectionFunctions` caches the
+  Boogie projection functions on the AST (`MapComprehension.ProjectionFunctions`). Dafny builds
+  one Boogie program per module, and one per mutation, each from its own parse of the prelude,
+  so a second program reuses functions it never declared, typed against the first program's
+  `Seq`. Fix, test and evidence: branch `fix/map-comprehension-projection-functions` (the cache
+  moves into `BoogieGenerator`; 20 site × key-type variants now behave exactly like their
+  single-module forms). Separately, any internal verification error aborts the CLI, because
+  `VerifyCommand`'s observers have no `OnError` (#6282 and #6364 show the same abort).
 - `Source/DafnyCore/Prelude/expand.sh` is committed non-executable.
