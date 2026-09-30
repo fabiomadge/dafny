@@ -1,0 +1,1 @@
+A tail-recursive function or method now compiles to Java when `this` occurs in an expression that is compiled into a Java lambda, such as a quantifier, comprehension, or let expression, and when a lambda in it captures a parameter. For every backend, it also compiles when a lambda in it contains a let expression that mentions `this`
