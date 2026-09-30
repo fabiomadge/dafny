@@ -530,11 +530,11 @@ namespace Microsoft.Dafny {
           var ebody = BplAnd(typeAntecedent, new Boogie.ExistsExpr(GetToken(e), bvs, exst_body));
           keys = new Boogie.LambdaExpr(GetToken(e), [], [wVar], kv, ebody);
 
-          BoogieGenerator.CreateMapComprehensionProjectionFunctions(e);
-          Contract.Assert(e.ProjectionFunctions != null && e.ProjectionFunctions.Count == e.BoundVars.Count);
+          var projectionFunctions = BoogieGenerator.MapComprehensionProjectionFunctions(e);
+          Contract.Assert(projectionFunctions.Count == e.BoundVars.Count);
           subst = new Dictionary<IVariable, Expression>();
           for (var i = 0; i < e.BoundVars.Count; i++) {
-            var p = new Boogie.NAryExpr(GetToken(e), new Boogie.FunctionCall(e.ProjectionFunctions[i]), new List<Boogie.Expr> { unboxw });
+            var p = new Boogie.NAryExpr(GetToken(e), new Boogie.FunctionCall(projectionFunctions[i]), new List<Boogie.Expr> { unboxw });
             var prj = new BoogieWrapper(p, e.BoundVars[i].Type);
             subst.Add(e.BoundVars[i], prj);
           }
@@ -1958,9 +1958,8 @@ BplBoundVar(varNameGen.FreshId(string.Format("#{0}#", bv.Name)), Predef.BoxType,
             List<Boogie.Expr> args;
             BoogieGenerator.CreateBoundVariables(mc.BoundVars, out bvs, out args);
             Contract.Assert(mc.BoundVars.Count == bvs.Count);
-            BoogieGenerator.CreateMapComprehensionProjectionFunctions(mc);
-            Contract.Assert(mc.ProjectionFunctions != null);
-            Contract.Assert(mc.ProjectionFunctions.Count == mc.BoundVars.Count);
+            var projectionFunctions = BoogieGenerator.MapComprehensionProjectionFunctions(mc);
+            Contract.Assert(projectionFunctions.Count == mc.BoundVars.Count);
             var substMap = new Dictionary<IVariable, Expression>();
             for (var i = 0; i < mc.BoundVars.Count; i++) {
               substMap.Add(mc.BoundVars[i], new BoogieWrapper(args[i], mc.BoundVars[i].Type));
@@ -1970,7 +1969,7 @@ BplBoundVar(varNameGen.FreshId(string.Format("#{0}#", bv.Name)), Predef.BoxType,
             var trig = BoogieGenerator.TrTrigger(this, e.Attributes, expr.Origin, substMap);
             substMap = new Dictionary<IVariable, Expression>();
             for (var i = 0; i < mc.BoundVars.Count; i++) {
-              var p = new Boogie.NAryExpr(BoogieGenerator.GetToken(mc), new Boogie.FunctionCall(mc.ProjectionFunctions[i]), new List<Boogie.Expr> { F });
+              var p = new Boogie.NAryExpr(BoogieGenerator.GetToken(mc), new Boogie.FunctionCall(projectionFunctions[i]), new List<Boogie.Expr> { F });
               substMap.Add(e.BoundVars[i], new BoogieWrapper(p, e.BoundVars[i].Type));
             }
             var Rprime = TrExpr(Substitute(mc.Range, null, substMap));

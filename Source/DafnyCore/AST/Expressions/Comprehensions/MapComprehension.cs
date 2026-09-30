@@ -11,9 +11,6 @@ public class MapComprehension : ComprehensionExpr, ICloneable<MapComprehension> 
   public bool Finite;
   public Expression? TermLeft;
 
-  [FilledInDuringTranslation]
-  public List<Boogie.Function>? ProjectionFunctions;  // filled in during translation (and only for general map comprehensions where "TermLeft != null")
-
   public MapComprehension Clone(Cloner cloner) {
     return new MapComprehension(cloner, this);
   }

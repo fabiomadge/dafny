@@ -4453,24 +4453,30 @@ namespace Microsoft.Dafny {
     }
 
     /// <summary>
-    /// Idempotently fills in "mc.ProjectionFunctions"
+    /// Idempotently declares, in this generator's Boogie program, the projection functions of the
+    /// general map comprehension "mc", one per bound variable.
     /// </summary>
-    void CreateMapComprehensionProjectionFunctions(MapComprehension mc) {
+    List<Bpl.Function> MapComprehensionProjectionFunctions(MapComprehension mc) {
       Contract.Requires(mc != null && mc.TermLeft != null);
-      if (mc.ProjectionFunctions == null) {
+      if (!projectionFunctions.TryGetValue(mc, out var functions)) {
         var varNameGen = CurrentIdGenerator.NestedFreshIdGenerator(string.Format("map$project${0}#", projectionFunctionCount));
         projectionFunctionCount++;
-        mc.ProjectionFunctions = [];
+        functions = [];
         foreach (var bv in mc.BoundVars) {
           var arg = BplFormalVar(null, TrType(mc.TermLeft.Type), false);
           var res = BplFormalVar(null, TrType(bv.Type), true);
           var projectFn = new Bpl.Function(mc.Origin, varNameGen.FreshId(string.Format("#{0}#", bv.Name)), [arg], res);
-          mc.ProjectionFunctions.Add(projectFn);
+          functions.Add(projectFn);
           sink.AddTopLevelDeclaration(projectFn);
         }
+        projectionFunctions.Add(mc, functions);
       }
+      return functions;
     }
 
+    // Per generator, not on the AST: a comprehension can be translated into several Boogie programs
+    // (one per module, and one per measure-complexity iteration), each with its own prelude types.
+    private readonly Dictionary<MapComprehension, List<Bpl.Function>> projectionFunctions = new(ReferenceEqualityComparer.Instance);
     int projectionFunctionCount = 0;
     public Declaration CurrentDeclaration { get; set; }
 
