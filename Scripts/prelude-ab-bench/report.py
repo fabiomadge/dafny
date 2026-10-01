@@ -105,15 +105,17 @@ def boot(rs, alt, n=2000, ref="master"):
     """Point estimates and 95% bootstrap intervals of the total-cost ratio, the geomean of per-VC
     ratios, and the geomean of per-program geomeans (each program weighs the same). Programs are
     resampled as units: the VCs of one program are not independent of each other."""
-    by = collections.defaultdict(list)
+    by = collections.defaultdict(lambda: [0.0, 0.0, 0.0, 0])  # per program: ref cost, alt cost, sum of log ratios, VCs
     for r in rs:
-        by[program(r)].append((max(mean_ru(r[ref]), 1), max(mean_ru(r[alt]), 1)))
-    progs = list(by)
-    stats = lambda sample: (sum(p for vs in sample for _, p in vs) / sum(m for vs in sample for m, _ in vs),
-                            math.exp(st.mean(math.log(p / m) for vs in sample for m, p in vs)),
-                            math.exp(st.mean(st.mean(math.log(p / m) for m, p in vs) for vs in sample)))
-    point = stats([by[p] for p in progs])
-    draws = [stats([by[random.choice(progs)] for _ in progs]) for _ in range(n)]
+        m, p = max(mean_ru(r[ref]), 1), max(mean_ru(r[alt]), 1)
+        agg = by[program(r)]
+        agg[0] += m; agg[1] += p; agg[2] += math.log(p / m); agg[3] += 1
+    progs = list(by.values())
+    stats = lambda sample: (sum(x[1] for x in sample) / sum(x[0] for x in sample),
+                            math.exp(sum(x[2] for x in sample) / sum(x[3] for x in sample)),
+                            math.exp(st.mean(x[2] / x[3] for x in sample)))
+    point = stats(progs)
+    draws = [stats([random.choice(progs) for _ in progs]) for _ in range(n)]
     cis = []
     for k in range(3):
         xs = sorted(d[k] for d in draws)
