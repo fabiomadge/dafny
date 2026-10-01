@@ -17,6 +17,7 @@ ap.add_argument("jobs"); ap.add_argument("outdir")
 ap.add_argument("--preludes", default="master,pr")
 ap.add_argument("--workers", type=int, default=16)
 ap.add_argument("--marker", default="Map#Glue")
+ap.add_argument("--solver", default=None, help="SMT solver binary (default: the z3 next to Dafny)")
 # Boogie shortens a log name once the whole log path reaches 180 characters
 # (Helpers.SubstituteAtPROC), and a shortened name no longer says which VC it is.
 ap.add_argument("--log-root", default=os.path.join(tempfile.gettempdir(), "pab"),
@@ -60,7 +61,8 @@ def run(job, p, index):
         os.makedirs(logs_dir, exist_ok=True)
         cmd = ["bash", f"{HERE}/dafny.sh", "verify", "--prelude", f"{HERE}/preludes/{p}.bpl", "--cores:2",
                f"--resource-limit:{run_limit(job, 500e6)}", "--verification-time-limit:300", "--boogie", "/normalizeNames:0",
-               "--solver-log", logs_dir + "/@PROC@.smt2", "--log-format", f"csv;LogFileName={d}/rows.csv"] + job["args"]
+               "--solver-log", logs_dir + "/@PROC@.smt2", "--log-format", f"csv;LogFileName={d}/rows.csv"] + \
+              (["--solver-path", a.solver] if a.solver else []) + job["args"]
         subprocess.run(cmd, cwd=job["cwd"], capture_output=True, timeout=7200)
     rows = [r["TestResult.DisplayName"] for r in csv.DictReader(open(d + "/rows.csv"))] if os.path.exists(d + "/rows.csv") else []
     logs, short = {}, collections.defaultdict(list)
