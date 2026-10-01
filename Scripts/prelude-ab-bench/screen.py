@@ -1,24 +1,29 @@
 #!/usr/bin/env python3
-"""screen.py <jobs.json> <outdir> [a b [aa]]: which programs does a prelude change reach?
+"""screen.py <jobs.json> <outdir> [a b [aa]] [--seed 1]: which programs does a prelude change reach?
 
-Reads run.py output at seed 0 for two preludes (default master and pr). A VC is reached when
+Reads run.py output at one seed for two preludes (default master and pr). A VC is reached when
 its resource counts differ; every other VC got identical SMT. Lists the reached programs, whether
 they contain a map/imap comprehension themselves, and verdict changes at each job's limit. With
 aa, a second run of a's prelude (such as master2), it also marks the jobs whose VCs differ between
-two runs of the same input: their reach is no evidence."""
-import collections, csv, glob, json, os, re, sys
+two runs of the same input: their reach is no evidence. At seed 0, Dafny's default, a program's
+Boogie output can change between identical runs; a nonzero seed makes runs nearly reproducible."""
+import argparse, collections, csv, glob, json, os, re
 
-jobs_path, outdir = sys.argv[1:3]
-a, b = (sys.argv[3:5] if len(sys.argv) > 4 else ("master", "pr"))
-aa = sys.argv[5] if len(sys.argv) > 5 else None
-jobs = {j["id"]: j for j in json.load(open(jobs_path))}
+ap = argparse.ArgumentParser()
+ap.add_argument("jobs"); ap.add_argument("outdir")
+ap.add_argument("a", nargs="?", default="master"); ap.add_argument("b", nargs="?", default="pr")
+ap.add_argument("aa", nargs="?")
+ap.add_argument("--seed", default="0")
+args = ap.parse_args()
+outdir, a, b, aa = args.outdir, args.a, args.b, args.aa
+jobs = {j["id"]: j for j in json.load(open(args.jobs))}
 esc = {j.replace("/", "__").replace(":", "--"): j for j in jobs}
 COMP = re.compile(r"\bi?map\s+[A-Za-z_][\w'?]*\s*(?::|<-|\||,)")
 
 res = collections.defaultdict(dict)
 for path in glob.glob(os.path.join(outdir, "*.csv")):
     stem, p, s = os.path.basename(path)[:-4].rsplit("@", 2)
-    if p in (a, b, aa) and s == "0" and stem in esc:
+    if p in (a, b, aa) and s == args.seed and stem in esc:
         res[esc[stem]][p] = {r["TestResult.DisplayName"]: (r["TestResult.Outcome"], int(r["TestResult.ResourceCount"]))
                              for r in csv.DictReader(open(path))}
 

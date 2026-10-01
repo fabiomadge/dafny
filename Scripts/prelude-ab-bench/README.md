@@ -13,11 +13,11 @@ cd Scripts/prelude-ab-bench
 python3 preludes.py --master origin/master --pr 074e49a64   # writes preludes/*.bpl
 python3 synth.py                                       # writes synth/*.dfy
 
-# 1. Screen: what does the change reach? One seed, every lit test and standard-library file, and
-#    an A/A run (master2) that marks the programs whose costs differ between identical runs.
+# 1. Screen: what does the change reach? Every lit test and standard-library file at one nonzero
+#    seed, with an A/A run (master2) that marks the programs whose costs differ between identical runs.
 python3 corpus.py work/screen.json litall stdall
-python3 run.py work/screen.json work/screen --preludes master,master2,pr --seeds 0
-python3 screen.py work/screen.json work/screen master pr master2
+python3 run.py work/screen.json work/screen --preludes master,master2,pr --seeds 1
+python3 screen.py work/screen.json work/screen master pr master2 --seed 1
 
 # 2. Classify the reached VCs: does their SMT contain the changed axiom, or is it only reordered?
 python3 classify.py <reached-jobs.json> work/classes
@@ -46,9 +46,10 @@ the whole path reaches 180 characters, and a shortened name no longer says which
   standard-library jobs, many without a map comprehension; `classify.py` (one solver log per
   procedure, `--solver-log <dir>/@PROC@.smt2`) showed that most of those VCs never contain the
   axiom. Select by screen and classification, not by grepping sources. Some programs' Boogie
-  output changes between identical runs (the order of declarations), so their costs do too; of
-  #6539's 192 measured jobs, 27 differ between two runs of master at seed 0. For such programs
-  only the A/A run tells reach from noise.
+  output changes between identical runs (the order of declarations), so their costs do too. That
+  happens mostly at seed 0, Dafny's default: of #6539's 192 measured jobs, 27 differ between two
+  runs of master at seed 0, and at most 7 at each of seeds 1 to 7. So screen at a nonzero seed, and
+  let the A/A run tell reach from noise.
 - **A screen only covers what runs.** `corpus.py` turns each lit test's first RUN line into
   `verify` flags. 25 of the 1,946 jobs still cannot run that way (tests of `build`, `run`, the
   auditor, formatting, or of CLI errors); none contains a comprehension.
