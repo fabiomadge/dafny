@@ -382,14 +382,15 @@ namespace Microsoft.Dafny.Compilers {
                     bv.Name);
                 }
               } else {
+                wr = CaptureFreeVariables(e, true, out var su, inLetExprBody, wr, ref wStmts);
                 var w = CreateIIFE1(0, e.Body.Type, e.Body.Origin, "_let_dummy_" + GetUniqueAstNumber(e), wr, wStmts);
                 foreach (var bv in e.BoundVars) {
                   DeclareLocalVar(IdName(bv), bv.Type, bv.Origin, false, ForcePlaceboValue(bv.Type, wr, bv.Origin, true), w);
                 }
 
-                TrAssignSuchThat(new List<IVariable>(e.BoundVars).ConvertAll(bv => (IVariable)bv), e.RHSs[0],
-                  e.Constraint_Bounds, w, inLetExprBody);
-                EmitReturnExpr(e.Body, e.Body.Type, true, w);
+                TrAssignSuchThat(new List<IVariable>(e.BoundVars).ConvertAll(bv => (IVariable)bv), su.Substitute(e.RHSs[0]),
+                  su.SubstituteBoundedPoolList(e.Constraint_Bounds), w, inLetExprBody);
+                EmitReturnExpr(su.Substitute(e.Body), e.Body.Type, true, w);
               }
             }
 
