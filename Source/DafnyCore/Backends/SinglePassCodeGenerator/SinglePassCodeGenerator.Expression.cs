@@ -557,12 +557,11 @@ namespace Microsoft.Dafny.Compilers {
             var e = lambdaExpr;
 
             IVariable receiver = null;
-            if (thisContext != null && (enclosingMethod is { IsTailRecursive: true } || enclosingFunction is { IsTailRecursive: true })) {
+            if (thisContext != null && (enclosingMethod is { IsTailRecursive: true } || enclosingFunction is { IsTailRecursive: true } ||
+                                        (TargetLambdaBindsReceiver && FreeVariablesUtil.ContainsFreeVariable(e.Body, lookForReceiver: true, null)))) {
               var name = ProtectedFreshId("_this");
               var ty = ModuleResolver.GetThisType(e.Origin, thisContext);
-              receiver = new LocalVariable(SourceOrigin.NoToken, name, ty, false) {
-                type = ty
-              };
+              receiver = new BoundVar(SourceOrigin.NoToken, name, ty);
               var _this = new ThisExpr(thisContext);
               wr = EmitBetaRedex([IdName(receiver)], [_this],
                 [_this.Type], lambdaExpr.Type, lambdaExpr.Origin, inLetExprBody, wr, ref wStmts);
@@ -711,7 +710,7 @@ namespace Microsoft.Dafny.Compilers {
 
       string source = ProtectedFreshId("_source");
       ConcreteSyntaxTree w;
-      w = CreateLambda([e.Source.Type], e.Origin, [source], e.Type, wLambda,
+      w = CreateAppliedLambda([e.Source.Type], e.Origin, [source], e.Type, wLambda,
         wStmts);
 
       if (e.Cases.Count == 0) {
@@ -752,7 +751,7 @@ namespace Microsoft.Dafny.Compilers {
     private ConcreteSyntaxTree EmitAppliedLambda(ConcreteSyntaxTree output, ConcreteSyntaxTree wStmts,
       IOrigin token, Type resultType) {
       EmitLambdaApply(output, out var lambdaApplyTarget, out _);
-      return CreateLambda([], token, [], resultType, lambdaApplyTarget, wStmts);
+      return CreateAppliedLambda([], token, [], resultType, lambdaApplyTarget, wStmts);
     }
   }
 }

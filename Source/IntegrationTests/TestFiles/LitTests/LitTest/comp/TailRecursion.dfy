@@ -29,6 +29,10 @@ method Main() {
   // In the following, 2_000_000 is too large an argument without tail-calls
   x := FunctionByMethodTailRecursion(2_000_000);
   print x, "\n";  // 2_000_000
+
+  // A lambda whose let expression uses `this`, in a tail-recursive method.
+  x := l0.WithLambda(3);
+  print x, "\n";
 }
 
 method {:tailrecursion} M(n: nat, a: nat) returns (r: nat) {
@@ -127,6 +131,14 @@ class Link {
   constructor (y: nat) {
     x := y;
     next := this;
+  }
+
+  method WithLambda(n: nat) returns (r: nat) {
+    if n == 0 {
+      var f := (y: nat) reads this => var z := y; z + x;
+      return f(1);
+    }
+    r := next.WithLambda(n - 1);
   }
 
   method G(n: nat, a: nat) returns (r: nat)  {

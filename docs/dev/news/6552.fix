@@ -1,0 +1,1 @@
+In the C++ backend, a `match` expression inside another expression compiles, a new array holds its element type's default value instead of uninitialized memory, and an instance const's initializer sees the consts that the constructor assigns. In C#, Java, JavaScript, Go and Python, a lambda in a tail-recursive method compiles when a let expression in it uses `this`.
