@@ -8,7 +8,8 @@ and labels the VC:
   class    - unchanged (identical SMT), reordered (the same lines in another order: a pure
              perturbation) or content (different SMT)
 Writes <outdir>/classes.csv. A cost change in a VC without the marker is a perturbation."""
-import argparse, collections, concurrent.futures as cf, csv, glob, json, os, re, subprocess
+import argparse, collections, concurrent.futures as cf, csv, glob, json, os, re, subprocess, tempfile
+from corpus import run_limit
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ap = argparse.ArgumentParser()
@@ -16,6 +17,10 @@ ap.add_argument("jobs"); ap.add_argument("outdir")
 ap.add_argument("--preludes", default="master,pr")
 ap.add_argument("--workers", type=int, default=16)
 ap.add_argument("--marker", default="Map#Glue")
+# Boogie shortens a log name once the whole log path reaches 180 characters
+# (Helpers.SubstituteAtPROC), and a shortened name no longer says which VC it is.
+ap.add_argument("--log-root", default=os.path.join(tempfile.gettempdir(), "pab"),
+                help="short directory for the solver logs")
 a = ap.parse_args()
 a.outdir = os.path.abspath(a.outdir)
 pa, pb = a.preludes.split(",")
@@ -47,17 +52,19 @@ def log_key(fname):
     return ("correctness" if prefix == "Impl" else "well-formedness", norm(name), int(split))
 
 
-def run(job, p):
+def run(job, p, index):
     d = os.path.join(a.outdir, job["id"].replace("/", "__").replace(":", "--"), p)
-    if not os.path.exists(d + "/rows.csv"):
+    logs_dir = os.path.join(a.log_root, f"{index}{'ab'[p == pb]}")
+    if not os.path.exists(d + "/rows.csv") or not os.path.isdir(logs_dir):
         os.makedirs(d, exist_ok=True)
+        os.makedirs(logs_dir, exist_ok=True)
         cmd = ["bash", f"{HERE}/dafny.sh", "verify", "--prelude", f"{HERE}/preludes/{p}.bpl", "--cores:2",
-               "--resource-limit:500e6", "--verification-time-limit:300", "--boogie", "/normalizeNames:0",
-               "--solver-log", d + "/@PROC@.smt2", "--log-format", f"csv;LogFileName={d}/rows.csv"] + job["args"]
+               f"--resource-limit:{run_limit(job, 500e6)}", "--verification-time-limit:300", "--boogie", "/normalizeNames:0",
+               "--solver-log", logs_dir + "/@PROC@.smt2", "--log-format", f"csv;LogFileName={d}/rows.csv"] + job["args"]
         subprocess.run(cmd, cwd=job["cwd"], capture_output=True, timeout=7200)
     rows = [r["TestResult.DisplayName"] for r in csv.DictReader(open(d + "/rows.csv"))] if os.path.exists(d + "/rows.csv") else []
     logs, short = {}, collections.defaultdict(list)
-    for f in glob.glob(d + "/*.smt2"):
+    for f in glob.glob(logs_dir + "/*.smt2"):
         content = [l for l in open(f, errors="replace") if not l.startswith(";")]
         k, m = log_key(os.path.basename(f)), SHORT.match(os.path.basename(f))
         if k:
@@ -75,8 +82,9 @@ def label(xs, ys):
     return "reordered" if sorted(tuple(sorted(x)) for x in xs) == sorted(tuple(sorted(y)) for y in ys) else "content"
 
 
-def classify(job):
-    (ra, la, sa), (rb, lb, sb) = run(job, pa), run(job, pb)
+def classify(item):
+    index, job = item
+    (ra, la, sa), (rb, lb, sb) = run(job, pa, index), run(job, pb, index)
     out = []
     for name in ra:
         k = row_key(name)
@@ -98,7 +106,7 @@ def classify(job):
 
 jobs = json.load(open(a.jobs))
 with cf.ThreadPoolExecutor(a.workers) as ex:
-    results = [r for rs in ex.map(classify, jobs) for r in rs]
+    results = [r for rs in ex.map(classify, enumerate(jobs)) for r in rs]
 with open(os.path.join(a.outdir, "classes.csv"), "w", newline="") as fh:
     w = csv.writer(fh, lineterminator="\n")
     w.writerow(["job", "vc", "class", "marker", "key"])

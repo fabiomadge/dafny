@@ -46,16 +46,16 @@ domain, holds there too, as do `Merge`, `Subtract`, `Equal`, `Values`, `Items`, 
 whole-array equation.
 
 The cost splits into two parts, measured separately with `pointwise`: the PR's quantifier without
-its guard, which keeps master's meaning. Per program, over the 63 programs whose proofs the change
-affects (Z3 4.16.0, 8 seeds; see the benchmark below):
+its guard, which keeps master's meaning. Per program [95% interval], over the 63 programs whose
+proofs the change affects (8 seeds; see the benchmark below):
 
-| comparison | per program [95% interval] |
-|---|---|
-| shape: `pointwise` vs master | -0.8% [-2.2, +0.2] |
-| guard: PR vs `pointwise` | **+1.4% [+0.5, +2.6]** |
-| PR vs master | +0.6% [-0.6, +1.9] |
-| `domguard` vs master | +0.1% [-0.9, +1.0] |
-| `domguard` vs PR | -0.6% [-1.4, -0.0] |
+| comparison | Z3 4.16.0 | Z3 5.1.0 |
+|---|---|---|
+| shape: `pointwise` vs master | -0.8% [-2.2, +0.2] | -0.1% [-0.7, +0.3] |
+| guard: PR vs `pointwise` | **+1.4% [+0.5, +2.6]** | **+1.7% [+0.8, +2.8]** |
+| PR vs master | +0.6% [-0.6, +1.9] | +1.6% [+0.4, +2.9] |
+| `domguard` vs master | +0.1% [-0.9, +1.0] | +0.6% [-0.1, +1.5] |
+| `domguard` vs PR | -0.6% [-1.4, -0.0] | -0.9% [-1.9, -0.1] |
 
 `domguard` guards with `Set#IsMember(Map#Domain(Map#Glue(a, b, t)), bx)`, equal to the PR's
 guard by the `Map#Domain(Map#Glue(a, b, t)) == a` axiom just above it. The PR's largest
@@ -72,9 +72,10 @@ In `GeneralMaps4` the PR's guard, whose `a` is the comprehension's `Set#FromBoog
 takes Z3 from 3,126 quantifier instantiations to 56,688. Nearly all of them are in the key
 comprehension's projection axioms. With `domguard` there are 3,413. Where `domguard` is worse
 than the PR: `Join` batch 128 (refreshed resolver), 2.8M → 6.4M; and one seed of `FindAux` on
-Z3 5.1.0, 58M, where that VC's other seeds are 7–12M. The one regression the guard does not
-explain is 16 lookups into a key-expression comprehension (`synth/keyed-16`): one seed in eight
-costs 240M under every pointwise variant, `pointwise` included. Two further encodings, measured
+Z3 5.1.0, 58M, where its other seeds cost 7–32M (`pointwise` reaches 59M there too). The one
+regression the guard does not explain is 16 lookups into a key-expression comprehension
+(`synth/keyed-16`): one seed in eight costs 240M (254M on Z3 5.1.0) under every pointwise variant,
+`pointwise` included. Two further encodings, measured
 in the first run only, brought nothing: elements defined everywhere with `$ArbitraryBoxValue`
 outside the domain, and the PR's axiom with an extra membership trigger.
 
@@ -144,40 +145,45 @@ encoding read from stdin), and nothing changes verdict except `git-issue-6535`. 
 
 One Dafny binary, the prelude swapped with `--prelude`, 8 random seeds, raised caps. Corpus:
 every lit and standard-library program the change reaches, found by a one-seed screen of all
-1,946 of them; 26 external programs (Kondo's protocol proofs, DafnyBench) found the same way; 40
-synthetic programs; and master's `UnionFind.dfy`. Controls: `master2` (the same input in another
-process), the flip placebo, and `pointwise`. `classify.py` separates the VCs whose SMT contains
-the changed axiom from those the change only reorders.
+1,946 of them (25 are tests of other commands that `verify` cannot run; none has a comprehension);
+26 external programs (Kondo's protocol proofs, DafnyBench) found the same way; 40 synthetic
+programs; and master's `UnionFind.dfy`. Controls: `master2` (the same input in another process),
+the flip placebo, and `pointwise`. `classify.py` separates the VCs whose SMT contains the changed
+axiom from those the change only reorders.
 
-Affected proofs of the 63 programs measured under all six preludes, Z3 4.16.0, per program (each
-program weighs the same; intervals resample programs; `results/pr6539/v2/`):
+Affected proofs of the 63 programs measured under all six preludes, per program (each program
+weighs the same; intervals resample programs; `results/pr6539/v2/`):
 
-| comparison | all 63 programs (934 VCs) | VCs whose SMT contains the axiom (900) | 26 external programs (84 VCs) |
-|---|---|---|---|
-| A/A: `master2` vs master | +0.0% [-0.0, +0.0] | +0.0% | +0.0% |
-| placebo vs master | +0.1% [-0.0, +0.2] | +0.1% | +0.2% |
-| shape: `pointwise` vs master | -0.8% [-2.2, +0.2] | -0.9% | -1.2% |
-| guard: PR vs `pointwise` | +1.4% [+0.5, +2.6] | +1.5% | +1.8% |
-| **PR vs master** | **+0.6% [-0.6, +1.9]** | +0.5% | +0.5% |
-| `domguard` vs master | +0.1% [-0.9, +1.0] | -0.1% | -0.1% |
+| comparison | Z3 4.16.0: all 63 programs (934 VCs) | VCs whose SMT contains the axiom (918) | 26 external programs (84 VCs) | Z3 5.1.0: all 63 (930 VCs) | 26 external (86 VCs) |
+|---|---|---|---|---|---|
+| A/A: `master2` vs master | +0.0% [-0.0, +0.0] | +0.0% | +0.0% | -0.0% [-0.0, +0.0] | +0.0% |
+| placebo vs master | +0.1% [-0.0, +0.2] | +0.1% | +0.2% | +0.2% [-0.3, +1.0] | +0.5% |
+| shape: `pointwise` vs master | -0.8% [-2.2, +0.2] | -0.9% | -1.2% | -0.1% [-0.7, +0.3] | +0.4% |
+| guard: PR vs `pointwise` | +1.4% [+0.5, +2.6] | +1.5% | +1.8% | +1.7% [+0.8, +2.8] | +2.3% |
+| **PR vs master** | **+0.6% [-0.6, +1.9]** | +0.6% | +0.5% | **+1.6% [+0.4, +2.9]** | +2.7% [+1.1, +4.6] |
+| `domguard` vs master | +0.1% [-0.9, +1.0] | -0.0% | -0.1% | +0.6% [-0.1, +1.5] | +1.2% |
 
-The 16 programs that the change only perturbs, measured under master, `master2`, the placebo and
-the PR (585 VCs): PR vs master +0.0% [-0.1, +0.1]. With them, over 80 programs, PR vs master is
-+0.5% [-0.5, +1.6]. On Z3 5.1.0 (the first run's data, master/PR/placebo/`domguard` only): PR vs
-master +0.9% [-1.0, +2.8], `domguard` vs PR -0.6% [-2.0, +0.4]. Verdicts at the tests' limits change only for
-`git-issue-6535` and the synthetic `keyed-16` (6 of 8 seeds under 50M, from 8); three other flips
-also happen under the placebo, so they are brittleness. Totals are carried by a few heavy VCs
-(mostly UnionFind's): +11% [-5, +21] for the PR. On the synthetic programs, nesting costs 7× at
-16 levels and the PR's guard is the cause (see above).
+The 686 affected proofs whose SMT does not contain the axiom (17 programs, 15 of them measured
+under master, `master2`, the placebo and the PR only): PR vs master +0.0% [-0.1, +0.1]. Over all
+80 programs, PR vs master is +0.5% [-0.5, +1.6]. On Z3 5.1.0 the external programs carry the
+cost: DafnyBench +7.4% [+2.7, +12.9] and Kondo +1.0% [+0.8, +1.1] per program. Verdicts at the
+tests' limits change only for `git-issue-6535` and the synthetic `keyed-16` (6 of 8 seeds under
+50M, from 8); three other flips also happen under the placebo, so they are brittleness. On Z3
+5.1.0, `keyed-08` and `keyed-16` pass at 7 of 8 seeds, and Kondo's `InvNextSafety`, which fails
+under master at 7 of 8, at 6. No proof becomes flaky beyond
+the controls: 6 VCs pass at some seeds and not at others under the PR, 5 under master and 7 under
+the placebo (4, 4 and 4 on Z3 5.1.0). Totals are carried by a few heavy VCs (mostly UnionFind's):
++11% [-5, +21] for the PR, +14% [+5, +26] on Z3 5.1.0. On the synthetic programs, nesting costs 7×
+at 16 levels and the PR's guard is the cause (see above).
 
 The first version of this benchmark reported "+2.0% [+0.8, +3.4]" for the PR. That was a geomean
 over VCs with an interval that resampled VCs, but 69% of those VCs came from `UnionFind.dfy`.
 Resampling programs widens it to [+0.6, +7.4], and weighting programs equally gives the +0.6%
 above. It also selected programs by grepping for comprehensions. The screen found the change
 reaching programs with none, such as `dafny0/CanCall.dfy` and the standard library's JSON
-deserializer (617 VCs). None of their VCs whose solver logs could be attributed (32 of 37 and 967
-of 1,070) contains the axiom; where logs map one to one, the SMT is identical or only reordered.
-Their cost changes are perturbation.
+deserializer (617 VCs). None of their VCs whose solver logs could be attributed (36 of 37 and all
+1,070) contains the axiom, and their SMT is identical or only reordered. Their cost changes are
+perturbation.
 
 ## Suggested title, commit message and description
 

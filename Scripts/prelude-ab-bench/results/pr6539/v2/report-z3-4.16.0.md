@@ -286,6 +286,24 @@ resample programs, not VCs.
 | refresh | master2 | 21.1M | 20.7M | 30.9M | 13.8M | 23.8M | 10.1M | 37.1M | 31.0M | 0 |
 | refresh | pointwise | 33.1M | 13.2M | 48.8M | 18.0M | 35.0M | 13.9M | 26.4M | 13.5M | 0 |
 
+## Stability over the affected VCs (all but synth)
+
+Flaky: some seeds pass at the job's limit and others do not. Spread: the coefficient of variation of a VC's cost across seeds, for VCs above 1M RU under master.
+
+| prelude | flaky VCs | flaky, not under master | no longer flaky | median spread | 90th-percentile spread |
+|---|---:|---:|---:|---:|---:|
+| master | 10 | 0 | 0 | 0.28 | 0.84 |
+| master2 | 10 | 0 | 0 | 0.27 | 0.84 |
+| placebo | 12 | 2 | 0 | 0.30 | 0.86 |
+| pr | 11 | 2 | 1 | 0.27 | 0.83 |
+
+Flaky under the PR but not under master (seeds passing out of the run):
+
+| job | VC | master | PR | placebo | PR mean RU |
+|---|---|---:|---:|---:|---:|
+| dafnybench/dafny_experiments_tmp_tmpz29_3_3i_circuit.dfy | BackwardConnections.CombineBackconnsHelper (correctness) | 8 | 7 | 7 | 44.20M |
+| kondo/shardedKv/sync | ShardedKVProof.InvNextSafety (correctness) | 0 | 1 | 1 | 3.49M |
+
 ## Comparisons over the affected proofs (all but synth)
 
 | comparison | programs | VCs | total | geomean over VCs | per program | verdict flips at limit |
@@ -302,27 +320,27 @@ resample programs, not VCs.
 
 | comparison | programs | VCs | total | geomean over VCs | per program | verdict flips at limit |
 |---|---:|---:|---|---|---|---:|
-| A/A: master2 vs master (same input, another process) | 63 | 905 | +0.0% [+0.0%, +0.0%] | +0.0% [+0.0%, +0.0%] | +0.0% [+0.0%, +0.0%] | 0 |
-| placebo vs master (the old axiom, rewritten) | 63 | 905 | +1.8% [-1.5%, +2.9%] | +0.1% [+0.0%, +0.2%] | +0.1% [+0.0%, +0.3%] | 0 |
-| shape: pointwise vs master (the PR's quantifier without its guard) | 60 | 900 | +1.1% [-13.7%, +4.7%] | +0.0% [-0.8%, +0.2%] | -0.9% [-2.6%, +0.1%] | 1 |
-| guard: pr vs pointwise | 60 | 900 | +10.2% [+2.9%, +27.7%] | +1.6% [+0.6%, +6.2%] | +1.5% [+0.4%, +2.7%] | 0 |
-| pr vs master | 63 | 905 | +11.4% [-3.5%, +22.5%] | +1.6% [+0.3%, +5.7%] | +0.6% [-0.8%, +1.9%] | 1 |
-| domguard vs master | 60 | 900 | +1.2% [-7.3%, +3.8%] | +0.8% [-0.1%, +1.5%] | -0.1% [-1.2%, +0.9%] | 1 |
-| domguard vs pr | 60 | 900 | -9.2% [-19.2%, -0.2%] | -0.8% [-4.7%, -0.1%] | -0.6% [-1.5%, -0.0%] | 0 |
+| A/A: master2 vs master (same input, another process) | 65 | 924 | +0.0% [+0.0%, +0.0%] | +0.0% [+0.0%, +0.0%] | +0.0% [+0.0%, +0.0%] | 0 |
+| placebo vs master (the old axiom, rewritten) | 65 | 924 | +1.8% [-1.5%, +2.9%] | +0.1% [+0.0%, +0.2%] | +0.1% [+0.0%, +0.3%] | 0 |
+| shape: pointwise vs master (the PR's quantifier without its guard) | 62 | 918 | +1.1% [-12.6%, +4.6%] | +0.0% [-0.8%, +0.2%] | -0.9% [-2.3%, +0.1%] | 1 |
+| guard: pr vs pointwise | 62 | 918 | +10.1% [+2.8%, +27.4%] | +1.6% [+0.6%, +6.2%] | +1.5% [+0.5%, +2.7%] | 0 |
+| pr vs master | 65 | 924 | +11.4% [-4.3%, +20.5%] | +1.6% [+0.2%, +5.6%] | +0.6% [-0.8%, +1.8%] | 1 |
+| domguard vs master | 62 | 918 | +1.2% [-7.2%, +3.8%] | +0.8% [+0.0%, +1.6%] | -0.0% [-1.1%, +1.0%] | 1 |
+| domguard vs pr | 62 | 918 | -9.2% [-20.4%, -0.2%] | -0.8% [-4.8%, -0.1%] | -0.6% [-1.4%, -0.0%] | 0 |
 
 ## ... whose SMT does not: a pure perturbation
 
 | comparison | programs | VCs | total | geomean over VCs | per program | verdict flips at limit |
 |---|---:|---:|---|---|---|---:|
-| A/A: master2 vs master (same input, another process) | 16 | 585 | +0.0% [-0.0%, +0.2%] | +0.0% [-0.0%, +0.1%] | +0.0% [-0.1%, +0.1%] | 0 |
-| placebo vs master (the old axiom, rewritten) | 16 | 585 | +0.0% [-0.0%, +0.8%] | +0.0% [-0.0%, +0.2%] | +0.1% [-0.0%, +0.2%] | 0 |
+| A/A: master2 vs master (same input, another process) | 17 | 686 | +0.0% [-0.0%, +0.2%] | +0.0% [-0.0%, +0.1%] | +0.0% [-0.1%, +0.1%] | 0 |
+| placebo vs master (the old axiom, rewritten) | 17 | 686 | +0.0% [-0.0%, +0.8%] | +0.0% [-0.0%, +0.2%] | +0.1% [-0.0%, +0.2%] | 0 |
 | shape: pointwise vs master (the PR's quantifier without its guard) | 2 | 15 | +0.0% [-0.0%, +0.1%] | +0.0% [-0.0%, +0.1%] | +0.0% [-0.0%, +0.1%] | 0 |
 | guard: pr vs pointwise | 2 | 15 | -0.0% [-0.1%, +0.0%] | -0.0% [-0.1%, +0.0%] | -0.0% [-0.1%, +0.0%] | 0 |
-| pr vs master | 16 | 585 | +0.0% [-0.0%, +0.0%] | +0.0% [-0.0%, +0.1%] | +0.0% [-0.1%, +0.1%] | 0 |
+| pr vs master | 17 | 686 | +0.0% [-0.0%, +0.0%] | +0.0% [-0.0%, +0.1%] | +0.0% [-0.1%, +0.1%] | 0 |
 | domguard vs master | 2 | 15 | +0.0% [-0.0%, +0.1%] | +0.0% [-0.0%, +0.1%] | +0.0% [-0.0%, +0.1%] | 0 |
 | domguard vs pr | 2 | 15 | +0.0% [-0.0%, +0.1%] | +0.0% [-0.0%, +0.1%] | +0.0% [-0.0%, +0.1%] | 0 |
 
-121 of the 1611 affected proofs have no classification (unmapped or mixed log names).
+1 of the 1611 affected proofs have no classification (unmapped or mixed log names).
 
 ## Comparisons over the external programs' affected proofs
 
@@ -330,10 +348,10 @@ resample programs, not VCs.
 |---|---:|---:|---|---|---|---:|
 | A/A: master2 vs master (same input, another process) | 26 | 84 | +0.0% [+0.0%, +0.0%] | +0.0% [+0.0%, +0.0%] | +0.0% [+0.0%, +0.0%] | 0 |
 | placebo vs master (the old axiom, rewritten) | 26 | 84 | +1.2% [-0.3%, +1.9%] | +0.0% [-0.0%, +0.2%] | +0.2% [+0.1%, +0.3%] | 0 |
-| shape: pointwise vs master (the PR's quantifier without its guard) | 26 | 84 | -18.3% [-27.8%, +0.4%] | -0.5% [-2.0%, +0.2%] | -1.2% [-4.2%, +0.6%] | 0 |
-| guard: pr vs pointwise | 26 | 84 | +11.0% [-0.4%, +19.2%] | +0.8% [+0.3%, +1.9%] | +1.8% [+0.3%, +3.8%] | 0 |
-| pr vs master | 26 | 84 | -9.3% [-14.1%, +0.4%] | +0.3% [-0.4%, +1.1%] | +0.5% [-1.3%, +2.4%] | 0 |
-| domguard vs master | 26 | 84 | -9.1% [-13.9%, +0.5%] | +0.1% [-0.7%, +0.8%] | -0.1% [-1.9%, +2.1%] | 0 |
+| shape: pointwise vs master (the PR's quantifier without its guard) | 26 | 84 | -18.3% [-27.5%, +0.4%] | -0.5% [-1.9%, +0.2%] | -1.2% [-4.2%, +0.6%] | 0 |
+| guard: pr vs pointwise | 26 | 84 | +11.0% [-0.4%, +19.0%] | +0.8% [+0.3%, +1.9%] | +1.8% [+0.3%, +3.7%] | 0 |
+| pr vs master | 26 | 84 | -9.3% [-14.3%, +0.5%] | +0.3% [-0.4%, +1.1%] | +0.5% [-1.3%, +2.5%] | 0 |
+| domguard vs master | 26 | 84 | -9.1% [-14.0%, +0.5%] | +0.1% [-0.7%, +0.7%] | -0.1% [-2.0%, +1.7%] | 0 |
 | domguard vs pr | 26 | 84 | +0.2% [-0.2%, +0.3%] | -0.2% [-0.5%, -0.1%] | -0.6% [-0.8%, -0.4%] | 0 |
 
 ## Alternative sound encodings, over the same proofs
@@ -342,10 +360,10 @@ restrict: elements defined everywhere, `$ArbitraryBoxValue` outside the domain. 
 
 | encoding | programs | VCs | total vs master | geomean over VCs vs master | per program vs master | per program vs PR | verdict flips vs master at limit |
 |---|---:|---:|---|---|---|---|---:|
-| pr | 80 | 1611 | +6.9% [-1.7%, +16.8%] | +0.9% [+0.1%, +3.9%] | +0.5% [-0.4%, +1.5%] |  | 6 |
-| domguard | 63 | 934 | +1.2% [-7.4%, +3.9%] | +0.8% [+0.0%, +1.5%] | +0.1% [-0.9%, +1.0%] | -0.6% [-1.4%, -0.0%] | 5 |
+| pr | 80 | 1611 | +6.9% [-1.0%, +17.0%] | +0.9% [+0.1%, +3.7%] | +0.5% [-0.5%, +1.5%] |  | 6 |
+| domguard | 63 | 934 | +1.2% [-7.0%, +3.9%] | +0.8% [-0.0%, +1.5%] | +0.1% [-1.0%, +1.0%] | -0.6% [-1.4%, -0.0%] | 5 |
 | master2 | 80 | 1611 | +0.0% [-0.0%, +0.0%] | +0.0% [-0.0%, +0.0%] | +0.0% [-0.0%, +0.0%] | -0.5% [-1.5%, +0.5%] | 0 |
-| pointwise | 63 | 934 | +1.1% [-12.7%, +4.5%] | +0.0% [-0.7%, +0.2%] | -0.8% [-2.2%, +0.2%] | -1.4% [-2.5%, -0.5%] | 5 |
+| pointwise | 63 | 934 | +1.1% [-13.3%, +4.6%] | +0.0% [-0.7%, +0.2%] | -0.8% [-2.2%, +0.2%] | -1.4% [-2.5%, -0.5%] | 5 |
 
 domguard: largest differences from the PR
 

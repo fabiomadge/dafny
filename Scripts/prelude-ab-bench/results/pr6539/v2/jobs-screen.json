@@ -886,7 +886,6 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--type-system-refresh",
-   "--bprint=%t.bpl",
    "--allow-axioms",
    "--isolate-assertions",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/ast/reveal/revealConstants.dfy"
@@ -908,7 +907,6 @@
    "--allow-axioms",
    "--show-hints",
    "--isolate-assertions",
-   "--bprint=%t.bpl",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/ast/reveal/revealFunctions.dfy"
   ],
   "limit": 50000000.0
@@ -1013,7 +1011,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--print:-",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/ast/statement/AssertBy.dfy"
   ],
   "limit": 50000000.0
@@ -1263,6 +1260,7 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--default-function-opacity",
+   "autoRevealDependencies",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/autoRevealDependencies/ast.dfy"
   ],
   "limit": 50000000.0
@@ -1279,6 +1277,7 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--default-function-opacity",
+   "autoRevealDependencies",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/autoRevealDependencies/complicated.dfy"
   ],
   "limit": 50000000.0
@@ -1295,6 +1294,7 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--default-function-opacity",
+   "autoRevealDependencies",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/autoRevealDependencies/datatype-reveals.dfy"
   ],
   "limit": 50000000.0
@@ -1311,6 +1311,7 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--default-function-opacity",
+   "autoRevealDependencies",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/autoRevealDependencies/func-depth-fail.dfy"
   ],
   "limit": 50000000.0
@@ -1327,6 +1328,7 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--default-function-opacity",
+   "autoRevealDependencies",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/autoRevealDependencies/func-depth-succ.dfy"
   ],
   "limit": 50000000.0
@@ -1343,6 +1345,7 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--default-function-opacity",
+   "autoRevealDependencies",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/autoRevealDependencies/power.dfy"
   ],
   "limit": 50000000.0
@@ -1359,6 +1362,7 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--default-function-opacity",
+   "autoRevealDependencies",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/autoRevealDependencies/subset-types.dfy"
   ],
   "limit": 50000000.0
@@ -1375,6 +1379,7 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--default-function-opacity",
+   "autoRevealDependencies",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/autoRevealDependencies/tree-map-simple.dfy"
   ],
   "limit": 50000000.0
@@ -1391,6 +1396,7 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--default-function-opacity",
+   "autoRevealDependencies",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/autoRevealDependencies/typecasting.dfy"
   ],
   "limit": 50000000.0
@@ -1561,7 +1567,6 @@
    "--standard-libraries:false",
    "--allow-external-contracts",
    "--unicode-char",
-   "--input",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/c++/extern.dfy"
   ],
   "limit": 50000000.0
@@ -1578,7 +1583,6 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--unicode-char",
-   "--input",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/c++/functions.dfy"
   ],
   "limit": 50000000.0
@@ -1739,7 +1743,6 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--unicode-char",
-   "--input",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/c++/tuple.dfy"
   ],
   "limit": 50000000.0
@@ -1805,7 +1808,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--solver-path=doesNotExist",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/cli/badProverPath.dfy"
   ],
   "limit": 50000000.0
@@ -1885,6 +1887,7 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--boogie",
+   "noDashAtStart",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/cli/fileThroughBoogie.dfy"
   ],
   "limit": 50000000.0
@@ -1951,7 +1954,9 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--boogie",
+   "/randomSeedIterations:0",
    "--boogie",
+   "/vcsLoad:2",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/cli/multipleBoogieArguments.dfy"
   ],
   "limit": 50000000.0
@@ -1967,7 +1972,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--solver-path=%z3",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/cli/proverPath.dfy"
   ],
   "limit": 50000000.0
@@ -2013,8 +2017,8 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--solver-log=log.smt2",
    "--resource-limit",
+   "10e3",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/cli/solverLog.dfy"
   ],
   "limit": 50000000.0
@@ -2031,6 +2035,7 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--boogie",
+   "-trace",
    "--solver-option",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/cli/solverOpt.dfy"
   ],
@@ -2065,7 +2070,7 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--library=%S/Inputs/brokenProducer.dfy",
+   "--library=/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/cli/libraryOption/Inputs/brokenProducer.dfy",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/cli/libraryOption/libraryOption.dfy"
   ],
   "limit": 50000000.0
@@ -2130,9 +2135,12 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--library",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/cli/projectFile/libs/high/../mid/dfyconfig.toml",
    "--library",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/cli/projectFile/libs/high/../low/wrappersLib.dfy",
    "--allow-warnings",
    "--function-syntax",
+   "3",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/cli/projectFile/libs/high/projectAsLibrary.dfy"
   ],
   "limit": 50000000.0
@@ -2372,7 +2380,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--input",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/CSharpStyling.dfy"
   ],
   "limit": 50000000.0
@@ -2663,7 +2670,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--input",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/ExternCopyFromTrait.dfy"
   ],
   "limit": 50000000.0
@@ -2679,7 +2685,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--input",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/ExternCtors.dfy"
   ],
   "limit": 50000000.0
@@ -2711,8 +2716,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--input",
-   "--input",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/ExternDafnyString.dfy"
   ],
   "limit": 50000000.0
@@ -2728,8 +2731,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--input",
-   "--input",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/ExternJavaString.dfy"
   ],
   "limit": 50000000.0
@@ -2745,7 +2746,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--input",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/ExternNestedModule.dfy"
   ],
   "limit": 50000000.0
@@ -3243,7 +3243,9 @@
    "--standard-libraries:false",
    "--allow-warnings",
    "--library",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/Libraries/Inputs/directLibrary.dfy",
    "--library",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/Libraries/Inputs/secondLibrary.dfy",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/Libraries/consumer.dfy"
   ],
   "limit": 50000000.0
@@ -3497,7 +3499,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--outer-module=my.happy",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/outerModules/translateCsharp.dfy"
   ],
   "limit": 50000000.0
@@ -3513,7 +3514,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--outer-module=my.happy",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/outerModules/translateGo.dfy"
   ],
   "limit": 50000000.0
@@ -3529,7 +3529,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--outer-module=my.happy",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/outerModules/translateJava.dfy"
   ],
   "limit": 50000000.0
@@ -3545,7 +3544,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--outer-module=my.happy",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/outerModules/translateJs.dfy"
   ],
   "limit": 50000000.0
@@ -3561,7 +3559,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--outer-module=my.happy",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/outerModules/translatePy.dfy"
   ],
   "limit": 50000000.0
@@ -3975,7 +3972,6 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--enforce-determinism",
-   "--input",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/rust/externalclasses-errors.dfy"
   ],
   "limit": 50000000.0
@@ -3993,7 +3989,6 @@
    "--standard-libraries:false",
    "--general-traits=legacy",
    "--enforce-determinism",
-   "--input",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/rust/externalclasses.dfy"
   ],
   "limit": 50000000.0
@@ -4574,7 +4569,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--outer-module",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/separate-compilation/usesTimesTwo.dfy"
   ],
   "limit": 50000000.0
@@ -4835,7 +4829,6 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--allow-warnings",
-   "--test-assumptions=externs",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/contract-wrappers/AllExterns.dfy"
   ],
   "limit": 50000000.0
@@ -4851,9 +4844,7 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--input",
    "--allow-external-contracts",
-   "--test-assumptions",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/contract-wrappers/RefineContract.dfy"
   ],
   "limit": 50000000.0
@@ -5149,8 +5140,6 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--relax-definite-assignment",
-   "--boogie=/print:%t.bprint",
-   "--print=%t.print",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/AssumptionVariables1.dfy"
   ],
   "limit": 50000000.0
@@ -5166,7 +5155,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--print=-",
    "--reads-clauses-on-methods",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/AttributeChecks.dfy"
   ],
@@ -5183,7 +5171,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--rprint:-",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/AutoContracts.dfy"
   ],
   "limit": 50000000.0
@@ -5280,7 +5267,6 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--relax-definite-assignment",
-   "--print:-",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/BindingGuards.dfy"
   ],
   "limit": 50000000.0
@@ -5296,7 +5282,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--print=-",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/BindingGuardsResolution.dfy"
   ],
   "limit": 50000000.0
@@ -5347,7 +5332,6 @@
    "--standard-libraries:false",
    "--error-limit=0",
    "--relax-definite-assignment",
-   "--rprint:-",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/BitvectorsMore.dfy"
   ],
   "limit": 50000000.0
@@ -5444,7 +5428,6 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--allow-axioms",
-   "--print",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/Calculations.dfy"
   ],
   "limit": 50000000.0
@@ -6133,7 +6116,6 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--relax-definite-assignment",
-   "--print:%t.dprint.dfy",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/DirtyLoops.dfy"
   ],
   "limit": 50000000.0
@@ -6770,6 +6752,7 @@
    "--allow-deprecation",
    "--manual-triggers",
    "--error-limit",
+   "0",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/Fuel.dfy"
   ],
   "limit": 50000000.0
@@ -6943,6 +6926,7 @@
    "--standard-libraries:false",
    "--type-system-refresh",
    "--general-traits",
+   "datatype",
    "--general-newtypes",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/GeneralNewtypeResolution.dfy"
   ],
@@ -7107,7 +7091,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--print:%t.dprint.dfy",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/GhostPrint.dfy"
   ],
   "limit": 50000000.0
@@ -7169,7 +7152,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--rprint",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/ImplicitTypeParamPrint.dfy"
   ],
   "limit": 50000000.0
@@ -7427,7 +7409,6 @@
    "--allow-axioms",
    "--relax-definite-assignment",
    "--allow-warnings",
-   "--print",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/LetExpr.dfy"
   ],
   "limit": 50000000.0
@@ -7640,7 +7621,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--print:-",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/ModuleInsertion.dfy"
   ],
   "limit": 50000000.0
@@ -8243,7 +8223,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--rprint:-",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/PrefixTypeSubst.dfy"
   ],
   "limit": 50000000.0
@@ -8259,7 +8238,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--print:-",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/PrettyPrinting.dfy"
   ],
   "limit": 50000000.0
@@ -8506,7 +8484,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--print:-",
    "--reads-clauses-on-methods:false",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/ReadsOnMethods_Printing.dfy"
   ],
@@ -8867,6 +8844,7 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--resource-limit",
+   "10e6",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/RlimitMultiplier.dfy"
   ],
   "limit": 50000000.0
@@ -9069,7 +9047,6 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--allow-warnings",
-   "--print:-",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/Simple.dfy"
   ],
   "limit": 50000000.0
@@ -9105,7 +9082,6 @@
    "--relax-definite-assignment",
    "--allow-axioms",
    "--allow-deprecation",
-   "--print",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/SmallTests.dfy"
   ],
   "limit": 50000000.0
@@ -9348,7 +9324,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--print:-",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/Twostate-Resolution.dfy"
   ],
   "limit": 50000000.0
@@ -9413,7 +9388,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--rprint:-",
    "--type-system-refresh=false",
    "--general-traits=legacy",
    "--general-newtypes=false",
@@ -9465,7 +9439,6 @@
    "--standard-libraries:false",
    "--relax-definite-assignment",
    "--general-newtypes=false",
-   "--rprint:-",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/TypeConversions.dfy"
   ],
   "limit": 50000000.0
@@ -9694,7 +9667,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--print:-",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/Variance.dfy"
   ],
   "limit": 50000000.0
@@ -9742,7 +9714,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--print",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/formatting.dfy"
   ],
   "limit": 50000000.0
@@ -9759,7 +9730,6 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--use-basename-for-filename",
-   "--print",
    "--verbose=true",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/formatting1.dfy"
   ],
@@ -9777,7 +9747,6 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--use-basename-for-filename",
-   "--print",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/formatting2.dfy"
   ],
   "limit": 50000000.0
@@ -10337,7 +10306,6 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--performance-stats=1",
-   "--bprint=%t.bpl",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny1/SchorrWaite.dfy"
   ],
   "limit": 50000000.0
@@ -10557,7 +10525,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--rprint:-",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny2/CalcDefaultMainOperator.dfy"
   ],
   "limit": 50000000.0
@@ -13574,7 +13541,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--print:-",
    "--relax-definite-assignment",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4/git-issue228.dfy"
   ],
@@ -15195,7 +15161,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--print:%t1.dfy",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/exports/ExportRefinement.dfy"
   ],
   "limit": 50000000.0
@@ -15455,7 +15420,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--print:-",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/ghost/AllowedGhost.dfy"
   ],
   "limit": 50000000.0
@@ -15471,7 +15435,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--print:-",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/ghost/AllowedGhostBindings.dfy"
   ],
   "limit": 50000000.0
@@ -15487,7 +15450,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--print:-",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/ghost/AmbiguousGhost.dfy"
   ],
   "limit": 50000000.0
@@ -15519,7 +15481,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--print=-",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/ghost/DisallowedGhost1.dfy"
   ],
   "limit": 50000000.0
@@ -15535,7 +15496,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--print:-",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/ghost/DisallowedGhost2.dfy"
   ],
   "limit": 50000000.0
@@ -15566,7 +15526,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--print:-",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/ghost/Signature.dfy"
   ],
   "limit": 50000000.0
@@ -15989,7 +15948,6 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--relax-definite-assignment",
-   "--input",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-1151.dfy"
   ],
   "limit": 50000000.0
@@ -16203,6 +16161,7 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--error-limit",
+   "0",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-1207.dfy"
   ],
   "limit": 50000000.0
@@ -16263,7 +16222,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--print:-",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-1219.dfy"
   ],
   "limit": 50000000.0
@@ -16490,7 +16448,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--print:-",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-1384.dfy"
   ],
   "limit": 50000000.0
@@ -16697,7 +16654,6 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--function-syntax:3",
-   "--print:-",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-1564-3.dfy"
   ],
   "limit": 50000000.0
@@ -16714,7 +16670,6 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--function-syntax:migration3to4",
-   "--print:-",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-1564-3to4.dfy"
   ],
   "limit": 50000000.0
@@ -16731,7 +16686,6 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--function-syntax:4",
-   "--print:-",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-1564-4.dfy"
   ],
   "limit": 50000000.0
@@ -16748,7 +16702,6 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--function-syntax:experimentalPredicateAlwaysGhost",
-   "--print:-",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-1564-eag.dfy"
   ],
   "limit": 50000000.0
@@ -16828,6 +16781,7 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--error-limit",
+   "0",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-1604c.dfy"
   ],
   "limit": 50000000.0
@@ -16920,7 +16874,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--rprint",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-1665.dfy"
   ],
   "limit": 50000000.0
@@ -17028,7 +16981,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--input",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-1761.dfy"
   ],
   "limit": 50000000.0
@@ -17044,7 +16996,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--input",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-1762.dfy"
   ],
   "limit": 50000000.0
@@ -17834,7 +17785,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--bprint",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-2266.dfy"
   ],
   "limit": 50000000.0
@@ -18228,6 +18178,7 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--error-limit",
+   "0",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-2605.dfy"
   ],
   "limit": 50000000.0
@@ -19108,7 +19059,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--input",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-2956a.dfy"
   ],
   "limit": 50000000.0
@@ -20137,6 +20087,7 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--solver-plugin",
+   "x",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-3572.dfy"
   ],
   "limit": 50000000.0
@@ -20288,7 +20239,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--print:-",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-371.dfy"
   ],
   "limit": 50000000.0
@@ -22199,6 +22149,7 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--verification-time-limit",
+   "20",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-505.dfy"
   ],
   "limit": 50000000.0
@@ -22751,7 +22702,6 @@
    "--standard-libraries:false",
    "--type-system-refresh",
    "--general-traits=datatype",
-   "--bprint",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-5873.dfy"
   ],
   "limit": 50000000.0
@@ -24986,7 +24936,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--print:-",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/github-issue-1267.dfy"
   ],
   "limit": 50000000.0
@@ -25033,7 +24982,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--log-format:csv;log.csv",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/github-issue-2563.dfy"
   ],
   "limit": 50000000.0
@@ -25389,6 +25337,7 @@
    "--standard-libraries:false",
    "--allow-axioms",
    "--resource-limit",
+   "1200",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/github-issue-4804.dfy"
   ],
   "limit": 50000000.0
@@ -25701,7 +25650,7 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--go-module-name=GoModule2",
-   "--library=%S/test.doo",
+   "--library=/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/gomodule/multimodule/test.doo",
    "--translation-record",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/gomodule/multimodule/DerivedModule.dfy"
   ],
@@ -25768,6 +25717,7 @@
    "--standard-libraries:false",
    "--isolate-assertions",
    "--cores",
+   "1",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/hofs/ArrowTypeOptimizations.dfy"
   ],
   "limit": 50000000.0
@@ -26332,7 +26282,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--log-format:csv;LogFileName=%t.csv",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/logger/CSVLogger.dfy"
   ],
   "limit": 50000000.0
@@ -26385,7 +26334,6 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--show-snippets:false",
-   "--log-format:json",
    "--isolate-assertions",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/logger/JsonLogger.dfy"
   ],
@@ -26402,8 +26350,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--log-format:text",
-   "--log-format:csv;LogFileName=%t.csv",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/logger/MultipleLoggers.dfy"
   ],
   "limit": 50000000.0
@@ -26419,8 +26365,8 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--log-format:text",
    "--boogie",
+   "-trackVerificationCoverage",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/logger/NoProofDependenciesOnError.dfy"
   ],
   "limit": 50000000.0
@@ -26436,10 +26382,10 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--log-format:text",
    "--verify-included-files",
    "--allow-axioms",
    "--boogie",
+   "-trackVerificationCoverage",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/logger/ProofDependencyLogging.dfy"
   ],
   "limit": 50000000.0
@@ -26493,7 +26439,6 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--show-snippets:false",
-   "--log-format:text",
    "--isolate-assertions",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/logger/TextLogger.dfy"
   ],
@@ -26511,7 +26456,6 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--show-snippets:false",
-   "--log-format:text",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/logger/TextLoggerBatch.dfy"
   ],
   "limit": 50000000.0
@@ -26528,7 +26472,6 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--show-snippets:false",
-   "--log-format:text",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/logger/TripleDescription.dfy"
   ],
   "limit": 50000000.0
@@ -26545,7 +26488,9 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--progress",
+   "Symbol",
    "--cores",
+   "1",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/logger/VerboseName.dfy"
   ],
   "limit": 50000000.0
@@ -26563,7 +26508,6 @@
    "--standard-libraries:false",
    "--mutations=3",
    "--random-seed=1",
-   "--log-format:trx;LogFileName=%t.trx",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/logger/VerificationLogger.dfy"
   ],
   "limit": 50000000.0
@@ -26827,6 +26771,7 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--error-limit",
+   "0",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/patterns/PatternMatchingErrors.dfy"
   ],
   "limit": 50000000.0
@@ -26887,7 +26832,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--print",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/printing/ModulePrint.dfy"
   ],
   "limit": 50000000.0
@@ -27758,7 +27702,7 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--python-module-name=PythonModule2",
-   "--library=%S/PythonModule1.doo",
+   "--library=/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/pythonmodule/multimodule/PythonModule1.doo",
    "--translation-record",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/pythonmodule/multimodule/DerivedModule.dfy"
   ],
@@ -28022,6 +27966,7 @@
    "--standard-libraries:false",
    "--type-system-refresh",
    "--general-traits",
+   "full",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/traits/GeneralTraits.dfy"
   ],
   "limit": 50000000.0
@@ -28056,6 +28001,7 @@
    "--standard-libraries:false",
    "--type-system-refresh",
    "--general-traits",
+   "full",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/traits/GeneralTraitsVerify.dfy"
   ],
   "limit": 50000000.0
@@ -28072,6 +28018,7 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--general-traits",
+   "legacy",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/traits/NonReferenceTraits.dfy"
   ],
   "limit": 50000000.0
@@ -28104,6 +28051,7 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--general-traits",
+   "datatype",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/traits/NonReferenceTraitsVerify.dfy"
   ],
   "limit": 50000000.0
@@ -28275,7 +28223,6 @@
    "--use-basename-for-filename",
    "--show-snippets:false",
    "--standard-libraries:false",
-   "--rprint:-",
    "--relax-definite-assignment",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/traits/TraitResolution0.dfy"
   ],
@@ -28356,6 +28303,7 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--general-traits",
+   "full",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/traits/TraitVariance.dfy"
   ],
   "limit": 50000000.0
@@ -28992,7 +28940,6 @@
    "--standard-libraries:false",
    "--allow-deprecation",
    "--unicode-char",
-   "--input",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/unicodecharsFalse/comp/ExternDafnyString.dfy"
   ],
   "limit": 50000000.0
@@ -29010,8 +28957,6 @@
    "--standard-libraries:false",
    "--allow-deprecation",
    "--unicode-char",
-   "--input",
-   "--input",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/unicodecharsFalse/comp/ExternJavaString.dfy"
   ],
   "limit": 50000000.0
@@ -29301,6 +29246,7 @@
    "--disable-nonlinear-arithmetic",
    "--allow-axioms",
    "--resource-limit",
+   "1e6",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/verification/nonLinearArithmetic.dfy"
   ],
   "limit": 50000000.0
@@ -29319,6 +29265,7 @@
    "--isolate-assertions",
    "--cores=1",
    "--progress",
+   "Batch",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/verification/outOfResourceAndIsolateAssertions.dfy"
   ],
   "limit": 50000000.0
@@ -29336,6 +29283,7 @@
    "--standard-libraries:false",
    "--cores=1",
    "--progress",
+   "Symbol",
    "--isolate-assertions",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/verification/progress.dfy"
   ],
@@ -29370,6 +29318,7 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--progress",
+   "Batch",
    "--cores=1",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/verification/proofDivision/isolateAllAssertions.dfy"
   ],
@@ -29387,6 +29336,7 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--progress",
+   "Batch",
    "--cores=1",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/verification/proofDivision/isolateAssertionOrJump.dfy"
   ],
@@ -29404,6 +29354,7 @@
    "--show-snippets:false",
    "--standard-libraries:false",
    "--progress",
+   "Batch",
    "--cores=1",
    "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/verification/proofDivision/isolatePaths.dfy"
   ],

@@ -51,6 +51,10 @@ def verdict(outcome, ru, limit):
     return "error"
 
 
+def passes(r, p):  # the seeds at which a VC passes within its job's limit under prelude p
+    return sum(verdict(o, ru, r["limit"]) == "ok" for o, ru, _ in r[p])
+
+
 ALTS = sorted({p for j in data for p in data[j]} - set(PRE))
 allrows, vcrows = [], []
 for job in sorted(data):
@@ -185,7 +189,7 @@ w("| job | VC | limit | master ok | PR ok | placebo ok | master RU | PR RU |")
 w("|---|---|---:|---:|---:|---:|---:|---:|")
 flips = 0
 for r in vcrows:
-    oks = {p: sum(verdict(o, ru, r["limit"]) == "ok" for o, ru, _ in r[p]) for p in PRE}
+    oks = {p: passes(r, p) for p in PRE}
     if oks["master"] != oks["pr"] or oks["master"] != oks["placebo"]:
         flips += 1
         w(f"| {r['job']} | {r['vc']} | {r['limit']/1e6:.0f}M | {oks['master']} | {oks['pr']} | {oks['placebo']} | "
@@ -248,6 +252,40 @@ if mains:
                 w(f"| {r['job'].split(':')[-1]} | {p} | " + " | ".join(f"{x[1]/1e6:.1f}M" for x in r[p]) +
                   f" | {sum(x[1] > 50e6 for x in r[p])} |")
 
+# Stability: does a prelude make proofs flaky, not just slower? A VC is flaky when some seeds pass
+# at its job's limit and others do not; its spread is the coefficient of variation of its cost.
+def flaky(r, p):
+    return 0 < passes(r, p) < len(r[p])
+
+
+def cv(r, p):
+    xs = [x[1] for x in r[p]]
+    return st.pstdev(xs) / st.mean(xs) if len(xs) > 1 and st.mean(xs) > 0 else 0.0
+
+
+stab = [r for r in aff if jobs[r["job"]]["kind"] != "synth"]
+stab_p = [p for p in ["master", "master2", "placebo", "pointwise", "pr", "domguard"] if all(r[p] for r in stab) and stab]
+if stab_p:
+    w("\n## Stability over the affected VCs (all but synth)\n")
+    w("Flaky: some seeds pass at the job's limit and others do not. Spread: the coefficient of variation of a "
+      "VC's cost across seeds, for VCs above 1M RU under master.\n")
+    w("| prelude | flaky VCs | flaky, not under master | no longer flaky | median spread | 90th-percentile spread |")
+    w("|---|---:|---:|---:|---:|---:|")
+    heavy = [r for r in stab if mean_ru(r["master"]) > 1e6]
+    for p in stab_p:
+        fl = {(r["job"], r["vc"]) for r in stab if flaky(r, p)}
+        fm = {(r["job"], r["vc"]) for r in stab if flaky(r, "master")}
+        cvs = sorted(cv(r, p) for r in heavy)
+        q = lambda f: cvs[int(f * (len(cvs) - 1))] if cvs else float("nan")
+        w(f"| {p} | {len(fl)} | {len(fl - fm)} | {len(fm - fl)} | {q(0.5):.2f} | {q(0.9):.2f} |")
+    newly = [r for r in stab if flaky(r, "pr") and not flaky(r, "master")]
+    if newly:
+        w("\nFlaky under the PR but not under master (seeds passing out of the run):\n")
+        w("| job | VC | master | PR | placebo | PR mean RU |")
+        w("|---|---|---:|---:|---:|---:|")
+        for r in sorted(newly, key=lambda r: -mean_ru(r["pr"]))[:15]:
+            w(f"| {r['job']} | {r['vc']} | {passes(r, 'master')} | {passes(r, 'pr')} | {passes(r, 'placebo')} | {mean_ru(r['pr'])/1e6:.2f}M |")
+
 # Named comparisons: the noise floors first, then the change and its parts
 COMPARISONS = [
     ("A/A: master2 vs master (same input, another process)", "master2", "master"),
@@ -259,7 +297,6 @@ COMPARISONS = [
     ("domguard vs pr", "domguard", "pr"),
 ]
 present = {p for j in data for p in data[j]}
-okn = lambda r, q: sum(verdict(o, ru, r["limit"]) == "ok" for o, ru, _ in r[q])
 marker = {}
 for path in CLASSES:
     for c in csv.DictReader(open(path)):
@@ -279,7 +316,7 @@ def comparison_table(title, rs_all):
         if not rs:
             continue
         tot, geo, per = boot(rs, alt, ref=ref)
-        flips = sum(1 for r in rs if len(r[alt]) == len(r[ref]) and okn(r, alt) != okn(r, ref))
+        flips = sum(1 for r in rs if len(r[alt]) == len(r[ref]) and passes(r, alt) != passes(r, ref))
         w(f"| {lab} | {len({program(r) for r in rs})} | {len(rs)} | {tot} | {geo} | {per} | {flips} |")
 
 
@@ -308,9 +345,8 @@ if ALTS:
             continue
         tot, geo, per = boot(rs, alt)
         vs_pr = boot(rs, alt, ref="pr")[2] if alt != "pr" else ""
-        okm = lambda r, q: sum(verdict(o, ru, r["limit"]) == "ok" for o, ru, _ in r[q])
         flips = sum(1 for r in allrows if len(r[alt]) == len(r["master"]) and "-noiso" not in r["job"]
-                    and okm(r, alt) != okm(r, "master"))
+                    and passes(r, alt) != passes(r, "master"))
         w(f"| {alt} | {len({program(r) for r in rs})} | {len(rs)} | {tot} | {geo} | {per} | {vs_pr} | {flips} |")
     for alt in ALTS:
         rs = [r for r in base if r[alt]]

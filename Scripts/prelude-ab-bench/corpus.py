@@ -28,32 +28,64 @@ LEGACY = ["--type-system-refresh=false", "--general-newtypes=false"]
 # its own log; a lit placeholder such as %t would otherwise name a file in the test's directory)
 DROP = ("--refresh-exit-code", "--expect-exit-code", "--target", "-t:", "--spill-translation",
         "--output", "--include-runtime", "--no-verify", "--compile-verbose", "--build", "--log-format",
-        "--solver-log", "--solver-path", "--verification-coverage-report", "--coverage-report")
+        "--solver-log", "--solver-path", "--verification-coverage-report", "--coverage-report",
+        "--outer-module", "--test-assumptions")
 PRINT = re.compile(r"^--[bdrs]?print([:=].*)?$")
 LEGACY_MAP = {"/deprecation:0": "--allow-deprecation", "/autoTriggers:0": "--manual-triggers",
               "/typeSystemRefresh:0": "--type-system-refresh=false",
               "/generalNewtypes:0": "--general-newtypes=false"}
 SKIP_STYLES = {"tobinary", "diff", "NORUN"}  # not a Dafny verification run
+INCLUDE = re.compile(r'^\s*include\s+"([^"]+)"', re.M)
+MULTIPLIER = re.compile(r"\{:timeLimitMultiplier\s+(\d+)\s*\}|@TimeLimitMultiplier\(\s*(\d+)\s*\)")
 
 
 def has_comprehension(path):
     return COMP.search(re.sub(r"//[^\n]*", "", open(path, encoding="utf-8-sig", errors="replace").read()))
 
 
-def run_flags(line, src_dir):
+def valued_options():
+    """The options of `dafny verify` that take a value, which a RUN line may give as the next token."""
+    out = subprocess.run(["bash", f"{HERE}/dafny.sh", "verify", "--help"], capture_output=True, text=True).stdout
+    return frozenset(re.findall(r"^\s+(?:-\w, )?(--[\w-]+)\s+<", out, re.M)) | {"--general-traits"}  # hidden from the help
+
+
+def run_flags(line, src_dir, valued=frozenset()):
     toks = shlex.split(line.replace('"%s"', "").replace("%s", ""), posix=True)
     if any(t.startswith("%testDafnyForEach") for t in toks):
         toks = toks[toks.index("--") + 1:] if "--" in toks else []
-    flags = []
-    for t in toks:
-        t = t.replace("%S", src_dir)  # lit's source directory, e.g. in --library=%S/...
+    toks = [t.replace("%S", src_dir) for t in toks]  # lit's source directory, e.g. in --library=%S/...
+    flags, i = [], 0
+    while i < len(toks):
+        t = toks[i]
+        if t in (">", ">>", "|"):
+            break
+        takes_value = (t in valued or t == "--input") and i + 1 < len(toks) and toks[i + 1] not in (">", ">>", "|")
+        value = toks[i + 1:i + 2] if takes_value else []
+        i += 1 + len(value)
         if t in LEGACY_MAP:
             flags.append(LEGACY_MAP[t])
-        elif t.startswith("--") and not t.startswith(DROP) and not PRINT.match(t) and "%" not in t:
-            flags.append(t)
-        elif t in (">", ">>", "|"):
-            break
+        elif t == "--input":  # `dafny run`'s further inputs; the others are a compiler's extern code
+            flags += [v for v in value if v.endswith((".dfy", ".toml"))]
+        elif t.startswith("--") and not t.startswith(DROP) and not PRINT.match(t) and "%" not in t + "".join(value):
+            flags += [t] + value
     return flags
+
+
+def run_limit(job, cap):
+    """The resource limit a job can run under, at most cap: Dafny multiplies it by a declaration's
+    time-limit multiplier into a 32-bit {:rlimit}, and aborts once that overflows."""
+    todo = [t.split("=", 1)[1].rsplit(":", 1)[0] if t.startswith("--filter-position=") else t
+            for t in job["args"] if t.endswith(".dfy") or t.startswith("--filter-position=")]
+    seen, worst = set(), 1
+    while todo:
+        f = os.path.normpath(os.path.join(job["cwd"], todo.pop()))
+        if f in seen or not os.path.isfile(f):
+            continue
+        seen.add(f)
+        text = open(f, encoding="utf-8-sig", errors="replace").read()
+        worst = max([worst] + [int(x or y) for x, y in MULTIPLIER.findall(text)])
+        todo += [os.path.join(os.path.dirname(f), i) for i in INCLUDE.findall(text)]
+    return int(min(float(cap), (2 ** 31 - 1) // worst))
 
 
 def resolver_jobs(jid, path, flags, kind="lit", limit=50e6, both=True):
@@ -65,7 +97,7 @@ def resolver_jobs(jid, path, flags, kind="lit", limit=50e6, both=True):
 
 def lit_jobs(every=False):
     """Programs with a comprehension under both resolvers; with every, all programs under lit's default resolver."""
-    jobs = []
+    jobs, valued = [], valued_options()
     for d, _, fs in os.walk(LIT):
         for f in sorted(fs):
             p = os.path.join(d, f)
@@ -76,7 +108,7 @@ def lit_jobs(every=False):
             m = re.search(r"%([\w-]+)", first)
             if (m.group(1) if m else "NORUN") in SKIP_STYLES:
                 continue
-            jobs += resolver_jobs(f"lit/{os.path.relpath(p, LIT)}", p, run_flags(first, d), both=not every)
+            jobs += resolver_jobs(f"lit/{os.path.relpath(p, LIT)}", p, run_flags(first, d, valued), both=not every)
     return jobs
 
 

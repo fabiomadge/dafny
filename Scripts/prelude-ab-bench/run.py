@@ -10,6 +10,7 @@ interrupted run resumes.
 type errors on programs with key-expression map comprehensions, e.g. dafny0/Maps.dfy.)
 """
 import argparse, concurrent.futures as cf, json, os, subprocess, time
+from corpus import run_limit
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DFY = f"{HERE}/dafny.sh"
@@ -42,7 +43,7 @@ def run(item):
     if os.path.exists(stem + ".csv"):
         return stem, "cached", 0.0
     cmd = ["bash", DFY, "verify", "--prelude", f"{HERE}/preludes/{p}.bpl",
-           f"--resource-limit:{a.resource_limit}", "--verification-time-limit:300", "--cores:2",
+           f"--resource-limit:{run_limit(j, a.resource_limit)}", "--verification-time-limit:300", "--cores:2",
            "--log-format", f"csv;LogFileName={stem}.csv.tmp"]
     if s:
         cmd += ["--boogie", f"/randomSeed:{s}"]
