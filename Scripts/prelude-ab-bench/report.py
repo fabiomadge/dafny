@@ -264,7 +264,7 @@ def cv(r, p):
 
 
 stab = [r for r in aff if jobs[r["job"]]["kind"] != "synth"]
-stab_p = [p for p in ["master", "master2", "placebo", "pointwise", "pr", "domguard"] if all(r[p] for r in stab) and stab]
+stab_p = [p for p in ["master", "master2", "placebo", "pointwise", "pr", "domguard"] if stab and all(r.get(p) for r in stab)]
 if stab_p:
     w("\n## Stability over the affected VCs (all but synth)\n")
     w("Flaky: some seeds pass at the job's limit and others do not. Spread: the coefficient of variation of a "
