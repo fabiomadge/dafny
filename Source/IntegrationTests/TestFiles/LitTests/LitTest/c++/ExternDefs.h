@@ -40,6 +40,10 @@ namespace Extern {
     return inc(x);
   }
 
+  uint64 Twice(uint64 x) {
+    return 2 * x;
+  }
+
   template <typename A>
   A GenericCaller(A (*inc)(A), A x) {
     return inc(x);
