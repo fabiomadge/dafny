@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
-"""screen.py <jobs.json> <outdir> [a b]: which programs does a prelude change reach?
+"""screen.py <jobs.json> <outdir> [a b [aa]]: which programs does a prelude change reach?
 
-Reads run.py output for one seed and two preludes (default master and pr). A VC is reached when
+Reads run.py output at seed 0 for two preludes (default master and pr). A VC is reached when
 its resource counts differ; every other VC got identical SMT. Lists the reached programs, whether
-they contain a map/imap comprehension themselves, and verdict changes at each job's limit."""
+they contain a map/imap comprehension themselves, and verdict changes at each job's limit. With
+aa, a second run of a's prelude (such as master2), it also marks the jobs whose VCs differ between
+two runs of the same input: their reach is no evidence."""
 import collections, csv, glob, json, os, re, sys
 
 jobs_path, outdir = sys.argv[1:3]
 a, b = (sys.argv[3:5] if len(sys.argv) > 4 else ("master", "pr"))
+aa = sys.argv[5] if len(sys.argv) > 5 else None
 jobs = {j["id"]: j for j in json.load(open(jobs_path))}
 esc = {j.replace("/", "__").replace(":", "--"): j for j in jobs}
 COMP = re.compile(r"\bi?map\s+[A-Za-z_][\w'?]*\s*(?::|<-|\||,)")
@@ -15,7 +18,7 @@ COMP = re.compile(r"\bi?map\s+[A-Za-z_][\w'?]*\s*(?::|<-|\||,)")
 res = collections.defaultdict(dict)
 for path in glob.glob(os.path.join(outdir, "*.csv")):
     stem, p, s = os.path.basename(path)[:-4].rsplit("@", 2)
-    if p in (a, b) and stem in esc:
+    if p in (a, b, aa) and s == "0" and stem in esc:
         res[esc[stem]][p] = {r["TestResult.DisplayName"]: (r["TestResult.Outcome"], int(r["TestResult.ResourceCount"]))
                              for r in csv.DictReader(open(path))}
 
@@ -27,13 +30,15 @@ def has_comp(job):
     return any(COMP.search(re.sub(r"//[^\n]*", "", open(x, encoding="utf-8-sig", errors="replace").read())) for x in files)
 
 done = [j for j in res if a in res[j] and b in res[j]]
-reached, total_vcs, flips = {}, 0, []
+reached, noisy, total_vcs, flips = {}, {}, 0, []
+differ = lambda x, y: [n for n in set(x) | set(y) if x.get(n, (None, -1))[1] != y.get(n, (None, -1))[1]]
 for j in done:
     ra, rb = res[j][a], res[j][b]
     total_vcs += len(ra)
-    diff = [n for n in set(ra) | set(rb) if ra.get(n, (None, -1))[1] != rb.get(n, (None, -1))[1]]
-    if diff:
-        reached[j] = diff
+    if differ(ra, rb):
+        reached[j] = differ(ra, rb)
+    if aa in res[j] and differ(ra, res[j][aa]):
+        noisy[j] = differ(ra, res[j][aa])
     lim = jobs[j]["limit"]
     ok = lambda r, n: n in r and r[n][0] == "Passed" and r[n][1] <= lim
     flips += [(j, n) for n in set(ra) | set(rb) if ok(ra, n) != ok(rb, n)]
@@ -41,5 +46,10 @@ for j in done:
 print(f"{len(done)} jobs screened ({len(jobs) - len(done)} not run), {total_vcs} VCs; "
       f"{sum(map(len, reached.values()))} VCs in {len(reached)} jobs reached by {a} -> {b}")
 for j in sorted(reached):
-    print(f"  {j}: {len(reached[j])} VCs{'' if has_comp(j) else '   (no comprehension in its own source)'}")
+    notes = ("" if has_comp(j) else "   (no comprehension in its own source)") + \
+            (f"   (A/A: {len(noisy[j])} VCs differ too)" if j in noisy else "")
+    print(f"  {j}: {len(reached[j])} VCs{notes}")
+if aa:
+    print(f"{len(noisy)} jobs differ between two runs of {a} ({a} vs {aa}); "
+          f"{len(set(reached) - set(noisy))} of the reached jobs do not")
 print("verdict changes at each job's limit:", flips or "none")
