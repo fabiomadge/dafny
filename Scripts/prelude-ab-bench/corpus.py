@@ -24,9 +24,12 @@ RUN = re.compile(r"^//\s*RUN:\s*(.*)$", re.M)
 LIT_DEFAULTS = ["--type-system-refresh", "--general-traits=datatype", "--general-newtypes",
                 "--use-basename-for-filename", "--show-snippets:false", "--standard-libraries:false"]
 LEGACY = ["--type-system-refresh=false", "--general-newtypes=false"]
-# RUN-line flags that only the harness or a compiler understands
+# RUN-line flags that only the harness or a compiler understands, or that write files (run.py sets
+# its own log; a lit placeholder such as %t would otherwise name a file in the test's directory)
 DROP = ("--refresh-exit-code", "--expect-exit-code", "--target", "-t:", "--spill-translation",
-        "--output", "--include-runtime", "--no-verify", "--compile-verbose", "--build")
+        "--output", "--include-runtime", "--no-verify", "--compile-verbose", "--build", "--log-format",
+        "--solver-log", "--solver-path", "--verification-coverage-report", "--coverage-report")
+PRINT = re.compile(r"^--[bdrs]?print([:=].*)?$")
 LEGACY_MAP = {"/deprecation:0": "--allow-deprecation", "/autoTriggers:0": "--manual-triggers",
               "/typeSystemRefresh:0": "--type-system-refresh=false",
               "/generalNewtypes:0": "--general-newtypes=false"}
@@ -37,15 +40,16 @@ def has_comprehension(path):
     return COMP.search(re.sub(r"//[^\n]*", "", open(path, encoding="utf-8-sig", errors="replace").read()))
 
 
-def run_flags(line):
+def run_flags(line, src_dir):
     toks = shlex.split(line.replace('"%s"', "").replace("%s", ""), posix=True)
     if any(t.startswith("%testDafnyForEach") for t in toks):
         toks = toks[toks.index("--") + 1:] if "--" in toks else []
     flags = []
     for t in toks:
+        t = t.replace("%S", src_dir)  # lit's source directory, e.g. in --library=%S/...
         if t in LEGACY_MAP:
             flags.append(LEGACY_MAP[t])
-        elif t.startswith("--") and not t.startswith(DROP):
+        elif t.startswith("--") and not t.startswith(DROP) and not PRINT.match(t) and "%" not in t:
             flags.append(t)
         elif t in (">", ">>", "|"):
             break
@@ -72,7 +76,7 @@ def lit_jobs(every=False):
             m = re.search(r"%([\w-]+)", first)
             if (m.group(1) if m else "NORUN") in SKIP_STYLES:
                 continue
-            jobs += resolver_jobs(f"lit/{os.path.relpath(p, LIT)}", p, run_flags(first), both=not every)
+            jobs += resolver_jobs(f"lit/{os.path.relpath(p, LIT)}", p, run_flags(first, d), both=not every)
     return jobs
 
 

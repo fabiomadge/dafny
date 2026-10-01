@@ -1,0 +1,1264 @@
+job,vc,class,marker,key
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.RemoveNonFirst (correctness),content,True,correctness:MapRemoveNonFirst:0
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Add (correctness),unchanged,False,correctness:MapAdd:0
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.RemoveFirst (correctness),content,True,correctness:MapRemoveFirst:0
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Valid (well-formedness),unchanged,False,well-formedness:MapValid:0
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.SpineValid (well-formedness),unchanged,False,well-formedness:MapSpineValid:0
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 17),content,True,correctness:MapRemove:16
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 18),content,True,correctness:MapRemove:17
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 11),content,True,correctness:MapRemove:10
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.FindIndex (correctness),unchanged,False,correctness:MapFindIndex:0
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 9),content,True,correctness:MapRemove:8
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 14),content,True,correctness:MapRemove:13
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 16),content,True,correctness:MapRemove:15
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 27),unchanged,False,correctness:MapRemove:26
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 10),content,True,correctness:MapRemove:9
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 15),content,True,correctness:MapRemove:14
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 12),content,True,correctness:MapRemove:11
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Init (correctness),unchanged,False,correctness:MapInit:0
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Find (correctness),unchanged,False,correctness:MapFind:0
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 13),content,True,correctness:MapRemove:12
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (well-formedness) (assertion batch 1),unchanged,False,well-formedness:MapRemove:0
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 26),unchanged,False,correctness:MapRemove:25
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 25),unchanged,False,correctness:MapRemove:24
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 43),unchanged,False,correctness:MapRemove:42
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 29),unchanged,False,correctness:MapRemove:28
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 32),unchanged,False,correctness:MapRemove:31
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 2),unchanged,False,correctness:MapRemove:1
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Add (well-formedness),unchanged,False,well-formedness:MapAdd:0
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (well-formedness) (assertion batch 2),unchanged,False,well-formedness:MapRemove:1
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 7),unchanged,False,correctness:MapRemove:6
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.FindIndex (well-formedness),unchanged,False,well-formedness:MapFindIndex:0
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 23),unchanged,False,correctness:MapRemove:22
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 21),unchanged,False,correctness:MapRemove:20
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 39),unchanged,False,correctness:MapRemove:38
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 45),unchanged,False,correctness:MapRemove:44
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 42),unchanged,False,correctness:MapRemove:41
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 33),unchanged,False,correctness:MapRemove:32
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 6),unchanged,False,correctness:MapRemove:5
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 48),unchanged,False,correctness:MapRemove:47
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 49),unchanged,False,correctness:MapRemove:48
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (well-formedness) (assertion batch 3),unchanged,False,well-formedness:MapRemove:2
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 37),unchanged,False,correctness:MapRemove:36
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 1),unchanged,False,correctness:MapRemove:0
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 20),unchanged,False,correctness:MapRemove:19
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 22),unchanged,False,correctness:MapRemove:21
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 28),unchanged,False,correctness:MapRemove:27
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 24),unchanged,False,correctness:MapRemove:23
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 30),unchanged,False,correctness:MapRemove:29
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 3),unchanged,False,correctness:MapRemove:2
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 38),unchanged,False,correctness:MapRemove:37
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 47),unchanged,False,correctness:MapRemove:46
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 36),unchanged,False,correctness:MapRemove:35
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 5),unchanged,False,correctness:MapRemove:4
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 35),unchanged,False,correctness:MapRemove:34
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.RemoveNonFirst (well-formedness),content,True,well-formedness:MapRemoveNonFirst:0
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 44),unchanged,False,correctness:MapRemove:43
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 41),unchanged,False,correctness:MapRemove:40
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 8),unchanged,False,correctness:MapRemove:7
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 34),unchanged,False,correctness:MapRemove:33
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 40),unchanged,False,correctness:MapRemove:39
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 19),unchanged,False,correctness:MapRemove:18
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 4),unchanged,False,correctness:MapRemove:3
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.SpineValidSplit (well-formedness),unchanged,False,well-formedness:MapSpineValidSplit:0
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (well-formedness) (assertion batch 4),unchanged,False,well-formedness:MapRemove:3
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Find (well-formedness),unchanged,False,well-formedness:MapFind:0
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 46),unchanged,False,correctness:MapRemove:45
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.Remove (correctness) (assertion batch 31),unchanged,False,correctness:MapRemove:30
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.RemoveFirst (well-formedness),content,True,well-formedness:MapRemoveFirst:0
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.SpineValidSplit (correctness),unchanged,False,correctness:MapSpineValidSplit:0
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.SpineValidCombine (well-formedness),unchanged,False,well-formedness:MapSpineValidCombine:0
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.SpineValidCombine (correctness),unchanged,False,correctness:MapSpineValidCombine:0
+lit/VSI-Benchmarks/b4.dfy:legacy,Map.SpineValid_One (well-formedness),unchanged,False,well-formedness:MapSpineValidOne:0
+lit/VSI-Benchmarks/b4.dfy:legacy,Node._ctor (correctness),unchanged,False,correctness:Nodector:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M2.ExecOneProperty (correctness),content,True,correctness:M2ExecOneProperty:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M2.CollectRestrict_Lemma (correctness),content,True,correctness:M2CollectRestrictLemma:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M0.EvalLemma (correctness),unchanged,False,correctness:M0EvalLemma:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M0.ParallelBuildsTheorem (correctness),unchanged,False,correctness:M0ParallelBuildsTheorem:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M2.CollectProperty (correctness),content,True,correctness:M2CollectProperty:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M0.BuildLemma (correctness),unchanged,False,correctness:M0BuildLemma:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M0.EvalArgsLemma (well-formedness),unchanged,False,well-formedness:M0EvalArgsLemma:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M0.DoLemma (correctness),unchanged,False,correctness:M0DoLemma:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M2.Collect_CertificateInsensitivity (correctness),group,True,correctness:M2CollectCertificateInsensitivity*
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M0.BuildLemma (well-formedness),unchanged,False,well-formedness:M0BuildLemma:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M0.DoLemma (well-formedness),unchanged,False,well-formedness:M0DoLemma:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M0.ParallelBuildsTheorem (well-formedness),group,False,well-formedness:M0ParallelBuildsTheorem*
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M0.evalArgs (well-formedness),unchanged,False,well-formedness:M0evalArgs:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M0.build (well-formedness),unchanged,False,well-formedness:M0build:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M0.Compatible (well-formedness),unchanged,False,well-formedness:M0Compatible:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M1.Main (correctness),unchanged,False,correctness:M1Main:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M0.Union (well-formedness),unchanged,False,well-formedness:M0Union:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M0.EvalLemma (well-formedness),unchanged,False,well-formedness:M0EvalLemma:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M0.eval (well-formedness),unchanged,False,well-formedness:M0eval:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M0.do (well-formedness),unchanged,False,well-formedness:M0do:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M0.EvalArgsLemma (correctness),unchanged,False,correctness:M0EvalArgsLemma:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M2.RestrictMonotonicity (correctness),content,True,correctness:M2RestrictMonotonicity:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M3.Union (well-formedness),content,True,well-formedness:M3Union:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M0.ValidArgs (well-formedness),unchanged,False,well-formedness:M0ValidArgs:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M0.Lemma_Combine (correctness),unchanged,False,correctness:M0LemmaCombine:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M2.Restrict (well-formedness),content,True,well-formedness:M2Restrict:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M2.ExecProperty (correctness),content,True,correctness:M2ExecProperty:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M3.EmptyEnv (well-formedness),unchanged,False,well-formedness:M3EmptyEnv:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M3.GetEnv (well-formedness),unchanged,False,well-formedness:M3GetEnv:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M2.CollectProperty (well-formedness),unmapped,,
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M2.CollectRestrict_Lemma (well-formedness),group,True,well-formedness:M2CollectRestrictLemma*
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M2.OracleWF_CertificateInsensitivity (correctness),group,True,correctness:M2OracleWFCertificateInsensitivit*
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M0.GetEnv (well-formedness),unchanged,False,well-formedness:M0GetEnv:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M0.SetEnv (well-formedness),unchanged,False,well-formedness:M0SetEnv:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M2.Oracle (well-formedness),content,True,well-formedness:M2Oracle:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M2.OracleWF_Property (correctness),content,True,correctness:M2OracleWFProperty:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M2.GetCert (well-formedness),unchanged,False,well-formedness:M2GetCert:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M3.SetEnv (well-formedness),unchanged,False,well-formedness:M3SetEnv:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M2.CollectDependencies (well-formedness),unmapped,,
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M0.Combine (well-formedness),unchanged,False,well-formedness:M0Combine:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M2.OracleProperty (correctness),content,True,correctness:M2OracleProperty:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M2.OracleWF_Property (well-formedness),unmapped,,
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M0.Extends (well-formedness),unchanged,False,well-formedness:M0Extends:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M0.Pre (well-formedness),unchanged,False,well-formedness:M0Pre:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M2.execOne (well-formedness),unchanged,False,well-formedness:M2execOne:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M1.GetSt (well-formedness),unchanged,False,well-formedness:M1GetSt:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M0.EmptyEnv (well-formedness),unchanged,False,well-formedness:M0EmptyEnv:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M2.OracleWF_CertificateInsensitivity (well-formedness),group,True,well-formedness:M2OracleWFCertificateInsen*
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M1.DomSt (well-formedness),unchanged,False,well-formedness:M1DomSt:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M2.OracleWF (well-formedness),content,True,well-formedness:M2OracleWF:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M2.Collect_CertificateInsensitivity (well-formedness),group,True,well-formedness:M2CollectCertificateInsens*
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M2.ExecOne_Lemma0 (correctness),unchanged,False,correctness:M2ExecOneLemma0:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M3.RunTool (well-formedness),unchanged,False,well-formedness:M3RunTool:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M0.Lemma_ExtendsTransitive (correctness),unchanged,False,correctness:M0LemmaExtendsTransitive:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M0.Lemma_Combine (well-formedness),unchanged,False,well-formedness:M0LemmaCombine:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M3.ValidEnv (well-formedness),unchanged,False,well-formedness:M3ValidEnv:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M2.FindCert (well-formedness),unchanged,False,well-formedness:M2FindCert:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M3.LocInv_Deps (well-formedness),unchanged,False,well-formedness:M3LocInvDeps:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M2.CheckWellFounded (well-formedness),unmapped,,
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M2.PickOne (well-formedness),unchanged,False,well-formedness:M2PickOne:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M3.LocInv_Cmd (well-formedness),unchanged,False,well-formedness:M3LocInvCmd:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M0.Post (well-formedness),unchanged,False,well-formedness:M0Post:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M3.LocInjectivity (correctness),unchanged,False,correctness:M3LocInjectivity:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M2.OracleArbitrary (well-formedness),unmapped,,
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M3.LocInv_Exp (well-formedness),unchanged,False,well-formedness:M3LocInvExp:0
+lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy,M0.Arity (well-formedness),unchanged,False,well-formedness:M0Arity:0
+lit/comp/Calls.dfy:legacy,VariableCapture.Test (correctness),content,False,correctness:VariableCaptureTest:0
+lit/comp/Calls.dfy:legacy,Main (correctness),unchanged,False,correctness:Main:0
+lit/comp/Calls.dfy:legacy,FunctionValues.Test (correctness),unchanged,False,correctness:FunctionValuesTest:0
+lit/comp/Calls.dfy:legacy,VariableCapture.SetToSeq (correctness),content,False,correctness:VariableCaptureSetToSeq:0
+lit/comp/Calls.dfy:legacy,VariableCapture.MapToSeq (correctness),content,True,correctness:VariableCaptureMapToSeq:0
+lit/comp/Calls.dfy:legacy,FunctionValues.NT (well-formedness),unchanged,False,well-formedness:FunctionValuesNT:0
+lit/comp/Comprehensions.dfy:legacy,LetSuchThat (correctness),unchanged,False,correctness:LetSuchThat:0
+lit/comp/Comprehensions.dfy:legacy,EnumerationsMaybeNull (correctness),content,True,correctness:EnumerationsMaybeNull:0
+lit/comp/Comprehensions.dfy:legacy,AssignSuchThat (correctness),unchanged,False,correctness:AssignSuchThat:0
+lit/comp/Comprehensions.dfy:legacy,Even (well-formedness),unchanged,False,well-formedness:Even:0
+lit/comp/Comprehensions.dfy:legacy,Main (correctness),unchanged,False,correctness:Main:0
+lit/comp/Comprehensions.dfy:legacy,Enumerations (correctness),content,True,correctness:Enumerations:0
+lit/comp/Comprehensions.dfy:legacy,FindRangeBindingGuard (correctness),unchanged,False,correctness:FindRangeBindingGuard:0
+lit/comp/Comprehensions.dfy:legacy,TestImplicitTypeTests.Test (correctness),unchanged,False,correctness:TestImplicitTypeTestsTest:0
+lit/comp/Comprehensions.dfy:legacy,FindRangeBindingGuardAlt (well-formedness),unchanged,False,well-formedness:FindRangeBindingGuardAlt:0
+lit/comp/Comprehensions.dfy:legacy,AltControlFlow (correctness),unchanged,False,correctness:AltControlFlow:0
+lit/comp/Comprehensions.dfy:legacy,SetComprehension0 (correctness),unchanged,False,correctness:SetComprehension0:0
+lit/comp/Comprehensions.dfy:legacy,OutParamsUnderLambdas (correctness),unchanged,False,correctness:OutParamsUnderLambdas:0
+lit/comp/Comprehensions.dfy:legacy,FindRangeIf (well-formedness),unchanged,False,well-formedness:FindRangeIf:0
+lit/comp/Comprehensions.dfy:legacy,GoNil (correctness),unchanged,False,correctness:GoNil:0
+lit/comp/Comprehensions.dfy:legacy,FindRangeIf (correctness),unchanged,False,correctness:FindRangeIf:0
+lit/comp/Comprehensions.dfy:legacy,EnumerationRegression.Test (correctness),content,False,correctness:EnumerationRegressionTest:0
+lit/comp/Comprehensions.dfy:legacy,Sequences (correctness),unchanged,False,correctness:Sequences:0
+lit/comp/Comprehensions.dfy:legacy,TestCollectionEmptiness (correctness),unchanged,False,correctness:TestCollectionEmptiness:0
+lit/comp/Comprehensions.dfy:legacy,FindRangeBindingGuardAlt (correctness),unchanged,False,correctness:FindRangeBindingGuardAlt:0
+lit/comp/Comprehensions.dfy:legacy,FindRangeBindingGuard (well-formedness),unchanged,False,well-formedness:FindRangeBindingGuard:0
+lit/comp/Comprehensions.dfy:legacy,SetComprehension1 (correctness),unchanged,False,correctness:SetComprehension1:0
+lit/comp/Comprehensions.dfy:legacy,EnumerationRegression.ToSeq (correctness),unchanged,False,correctness:EnumerationRegressionToSeq:0
+lit/comp/Comprehensions.dfy:legacy,FindRange (correctness),unchanged,False,correctness:FindRange:0
+lit/comp/Comprehensions.dfy:legacy,MapComprehension (correctness),content,True,correctness:MapComprehension:0
+lit/comp/Comprehensions.dfy:legacy,SetComprehension2 (correctness),unchanged,False,correctness:SetComprehension2:0
+lit/comp/Comprehensions.dfy:legacy,EnumerationRegression.Digit (well-formedness),content,False,well-formedness:EnumerationRegressionDigit:0
+lit/comp/Comprehensions.dfy:legacy,ObjectTests.Test (correctness),unchanged,False,correctness:ObjectTestsTest:0
+lit/comp/Comprehensions.dfy:legacy,SetComprehension (correctness),unchanged,False,correctness:SetComprehension:0
+lit/comp/Comprehensions.dfy:legacy,FindRange (well-formedness),unchanged,False,well-formedness:FindRange:0
+lit/comp/Comprehensions.dfy:legacy,EnumerationRegression.Long (well-formedness),unchanged,False,well-formedness:EnumerationRegressionLong:0
+lit/comp/Comprehensions.dfy:legacy,NewtypeRangeRegression.Test (correctness),unchanged,False,correctness:NewtypeRangeRegressionTest:0
+lit/comp/Comprehensions.dfy:legacy,EnumerationRegression.AlsoLong (well-formedness),unchanged,False,well-formedness:EnumerationRegressionAlsoLong:0
+lit/comp/ComprehensionsNewSyntax.dfy:legacy,MapComprehension (correctness),content,True,correctness:MapComprehension:0
+lit/comp/ComprehensionsNewSyntax.dfy:legacy,Main (correctness),unchanged,False,correctness:Main:0
+lit/comp/ComprehensionsNewSyntax.dfy:legacy,SetComprehension1 (correctness),unchanged,False,correctness:SetComprehension1:0
+lit/comp/ComprehensionsNewSyntax.dfy:legacy,TestImplicitTypeTests.Test (correctness),unchanged,False,correctness:TestImplicitTypeTestsTest:0
+lit/comp/ComprehensionsNewSyntax.dfy:legacy,EnumerationsMaybeNull (correctness),content,True,correctness:EnumerationsMaybeNull:0
+lit/comp/ComprehensionsNewSyntax.dfy:legacy,Enumerations (correctness),content,True,correctness:Enumerations:0
+lit/comp/ComprehensionsNewSyntax.dfy:legacy,SetComprehension2 (correctness),unchanged,False,correctness:SetComprehension2:0
+lit/comp/ComprehensionsNewSyntax.dfy:legacy,SetComprehension (correctness),unchanged,False,correctness:SetComprehension:0
+lit/comp/ComprehensionsNewSyntax.dfy:legacy,OutParamsUnderLambdas (correctness),unchanged,False,correctness:OutParamsUnderLambdas:0
+lit/comp/ComprehensionsNewSyntax.dfy:legacy,SetComprehension0 (correctness),unchanged,False,correctness:SetComprehension0:0
+lit/comp/firstSteps/6_Calls-VariableCapture.dfy:legacy,Main (correctness),unchanged,False,correctness:Main:0
+lit/comp/firstSteps/6_Calls-VariableCapture.dfy:legacy,VariableCapture.MapToSeq (correctness),unmapped,,
+lit/comp/firstSteps/6_Calls-VariableCapture.dfy:legacy,VariableCapture.Test (correctness),content,False,correctness:VariableCaptureTest:0
+lit/comp/firstSteps/6_Calls-VariableCapture.dfy:legacy,VariableCapture.SetToSeq (correctness),unmapped,,
+lit/comp/rust/loops.dfy:legacy,Main (correctness) (assertion batch 2),content,True,correctness:Main:1
+lit/comp/rust/loops.dfy:legacy,Main (correctness) (assertion batch 3),content,True,correctness:Main:2
+lit/comp/rust/loops.dfy:legacy,Main (correctness) (assertion batch 1),content,True,correctness:Main:0
+lit/comp/rust/loops.dfy:legacy,ToSet (correctness),unchanged,False,correctness:ToSet:0
+lit/comp/rust/loops.dfy:legacy,u8 (well-formedness),unchanged,False,well-formedness:u8:0
+lit/comp/rust/loops.dfy:legacy,Remap (correctness),content,True,correctness:Remap:0
+lit/comp/rust/loops.dfy:legacy,ZeroContainer._ctor (correctness),unchanged,False,correctness:ZeroContainerctor:0
+lit/comp/rust/loops.dfy:legacy,U8 (well-formedness),unchanged,False,well-formedness:U8:0
+lit/comp/rust/operators.dfy:legacy,Main (correctness),content,True,correctness:Main:0
+lit/comp/rust/operators.dfy:legacy,TestU128 (correctness),reordered,False,correctness:TestU128:0
+lit/comp/rust/operators.dfy:legacy,uint16 (well-formedness),unchanged,False,well-formedness:uint16:0
+lit/comp/rust/operators.dfy:legacy,uint8 (well-formedness),unchanged,False,well-formedness:uint8:0
+lit/comp/rust/operators.dfy:legacy,TestU64 (correctness),reordered,False,correctness:TestU64:0
+lit/comp/rust/operators.dfy:legacy,TestU32 (correctness),reordered,False,correctness:TestU32:0
+lit/comp/rust/operators.dfy:legacy,TestI64 (correctness),unchanged,False,correctness:TestI64:0
+lit/comp/rust/operators.dfy:legacy,TestU16 (correctness),unchanged,False,correctness:TestU16:0
+lit/comp/rust/operators.dfy:legacy,TestU8 (correctness),unchanged,False,correctness:TestU8:0
+lit/comp/rust/operators.dfy:legacy,int64 (well-formedness),unchanged,False,well-formedness:int64:0
+lit/comp/rust/operators.dfy:legacy,uint128 (well-formedness),reordered,False,well-formedness:uint128:0
+lit/comp/rust/operators.dfy:legacy,TestI8 (correctness),unchanged,False,correctness:TestI8:0
+lit/comp/rust/operators.dfy:legacy,int16 (well-formedness),unchanged,False,well-formedness:int16:0
+lit/comp/rust/operators.dfy:legacy,TestI128 (correctness),unchanged,False,correctness:TestI128:0
+lit/comp/rust/operators.dfy:legacy,uint32 (well-formedness),reordered,False,well-formedness:uint32:0
+lit/comp/rust/operators.dfy:legacy,int128 (well-formedness),unchanged,False,well-formedness:int128:0
+lit/comp/rust/operators.dfy:legacy,uint64 (well-formedness),reordered,False,well-formedness:uint64:0
+lit/comp/rust/operators.dfy:legacy,int8 (well-formedness),unchanged,False,well-formedness:int8:0
+lit/comp/rust/operators.dfy:legacy,TestI32 (correctness),unchanged,False,correctness:TestI32:0
+lit/comp/rust/operators.dfy:legacy,TestI16 (correctness),unchanged,False,correctness:TestI16:0
+lit/comp/rust/operators.dfy:legacy,int32 (well-formedness),unchanged,False,well-formedness:int32:0
+lit/comp/rust/operators.dfy:legacy,TestLessEq (correctness),reordered,False,correctness:TestLessEq:0
+lit/dafny0/DiscoverBounds.dfy:legacy,UT (well-formedness),unchanged,False,well-formedness:UT:0
+lit/dafny0/DiscoverBounds.dfy:legacy,NT (well-formedness),unchanged,False,well-formedness:NT:0
+lit/dafny0/DiscoverBounds.dfy:legacy,Main (correctness),unchanged,False,correctness:Main:0
+lit/dafny0/DiscoverBounds.dfy:legacy,OtherEq (correctness),unchanged,False,correctness:OtherEq:0
+lit/dafny0/DiscoverBounds.dfy:legacy,EnumerateOverInfiniteCollections (correctness),content,True,correctness:EnumerateOverInfiniteCollections:0
+lit/dafny0/DiscoverBounds.dfy:legacy,Upper (well-formedness),unchanged,False,well-formedness:Upper:0
+lit/dafny0/DiscoverBounds.dfy:legacy,Q (well-formedness),unchanged,False,well-formedness:Q:0
+lit/dafny0/DiscoverBounds.dfy:legacy,Lower (well-formedness),unchanged,False,well-formedness:Lower:0
+lit/dafny0/DiscoverBounds.dfy:legacy,Casts (correctness),unchanged,False,correctness:Casts:0
+lit/dafny0/DiscoverBounds.dfy:legacy,NR (well-formedness),unchanged,False,well-formedness:NR:0
+lit/dafny0/IMaps.dfy:legacy,m8 (correctness),content,True,correctness:m8:0
+lit/dafny0/IMaps.dfy:legacy,m (correctness),content,True,correctness:m:0
+lit/dafny0/IMaps.dfy:legacy,M (correctness),unchanged,False,correctness:M:0
+lit/dafny0/IMaps.dfy:legacy,m4 (correctness),content,True,correctness:m4:0
+lit/dafny0/IMaps.dfy:legacy,m3 (correctness),unchanged,False,correctness:m3:0
+lit/dafny0/IMaps.dfy:legacy,Update (well-formedness),content,True,well-formedness:Update:0
+lit/dafny0/IMaps.dfy:legacy,m12 (correctness),content,True,correctness:m12:0
+lit/dafny0/IMaps.dfy:legacy,m2 (correctness),unchanged,False,correctness:m2:0
+lit/dafny0/IMaps.dfy:legacy,m7 (correctness),unchanged,False,correctness:m7:0
+lit/dafny0/IMaps.dfy:legacy,m15 (correctness),content,True,correctness:m15:0
+lit/dafny0/IMaps.dfy:legacy,m5 (correctness),unchanged,False,correctness:m5:0
+lit/dafny0/IMaps.dfy:legacy,m13 (correctness),content,True,correctness:m13:0
+lit/dafny0/IMaps.dfy:legacy,minf (correctness),content,True,correctness:minf:0
+lit/dafny0/IMaps.dfy:legacy,m3 (well-formedness),unchanged,False,well-formedness:m3:0
+lit/dafny0/IMaps.dfy:legacy,m2 (well-formedness),unchanged,False,well-formedness:m2:0
+lit/dafny0/ISets.dfy:legacy,m1 (correctness),content,True,correctness:m1:0
+lit/dafny0/ISets.dfy:legacy,M (correctness),unchanged,False,correctness:M:0
+lit/dafny0/Maps.dfy:legacy,FailingIMapOperations (correctness),unchanged,False,correctness:FailingIMapOperations:0
+lit/dafny0/Maps.dfy:legacy,Main (correctness),unchanged,False,correctness:Main:0
+lit/dafny0/Maps.dfy:legacy,FailingMapOperations (correctness),unchanged,False,correctness:FailingMapOperations:0
+lit/dafny0/Maps.dfy:legacy,m (correctness),unchanged,False,correctness:m:0
+lit/dafny0/Maps.dfy:legacy,UpdateValidityMap (correctness),unchanged,False,correctness:UpdateValidityMap:0
+lit/dafny0/Maps.dfy:legacy,m14 (correctness),content,True,correctness:m14:0
+lit/dafny0/Maps.dfy:legacy,IMapCommonUseCase1 (correctness),unchanged,False,correctness:IMapCommonUseCase1:0
+lit/dafny0/Maps.dfy:legacy,IMapCommonUseCase0 (correctness),unchanged,False,correctness:IMapCommonUseCase0:0
+lit/dafny0/Maps.dfy:legacy,m4 (correctness),unchanged,False,correctness:m4:0
+lit/dafny0/Maps.dfy:legacy,CommonUseCase0 (correctness),unchanged,False,correctness:CommonUseCase0:0
+lit/dafny0/Maps.dfy:legacy,GeneralMaps3 (correctness),content,True,correctness:GeneralMaps3:0
+lit/dafny0/Maps.dfy:legacy,GeneralMaps5 (correctness),content,True,correctness:GeneralMaps5:0
+lit/dafny0/Maps.dfy:legacy,union (well-formedness),content,True,well-formedness:union:0
+lit/dafny0/Maps.dfy:legacy,m9 (correctness),unchanged,False,correctness:m9:0
+lit/dafny0/Maps.dfy:legacy,GeneralMaps2 (correctness),content,True,correctness:GeneralMaps2:0
+lit/dafny0/Maps.dfy:legacy,UpdateValiditySeqNull (correctness),unchanged,False,correctness:UpdateValiditySeqNull:0
+lit/dafny0/Maps.dfy:legacy,TestMapPropertyCardinality2 (correctness),unchanged,False,correctness:TestMapPropertyCardinality2:0
+lit/dafny0/Maps.dfy:legacy,GeneralMaps1 (correctness),content,True,correctness:GeneralMaps1:0
+lit/dafny0/Maps.dfy:legacy,UpdateValidityMultisetNull (correctness),unchanged,False,correctness:UpdateValidityMultisetNull:0
+lit/dafny0/Maps.dfy:legacy,UpdateValidityMapNull (correctness),unchanged,False,correctness:UpdateValidityMapNull:0
+lit/dafny0/Maps.dfy:legacy,TestIMapUnion (correctness),unchanged,False,correctness:TestIMapUnion:0
+lit/dafny0/Maps.dfy:legacy,TestMapPropertyCardinality1 (correctness),unchanged,False,correctness:TestMapPropertyCardinality1:0
+lit/dafny0/Maps.dfy:legacy,TestIMapSubtraction (correctness),unchanged,False,correctness:TestIMapSubtraction:0
+lit/dafny0/Maps.dfy:legacy,GeneralMaps4 (correctness),content,True,correctness:GeneralMaps4:0
+lit/dafny0/Maps.dfy:legacy,m5 (correctness),unchanged,False,correctness:m5:0
+lit/dafny0/Maps.dfy:legacy,UpdateValiditySeq (correctness),unchanged,False,correctness:UpdateValiditySeq:0
+lit/dafny0/Maps.dfy:legacy,IMapCommonUseCase2 (correctness),unchanged,False,correctness:IMapCommonUseCase2:0
+lit/dafny0/Maps.dfy:legacy,m10 (correctness),unchanged,False,correctness:m10:0
+lit/dafny0/Maps.dfy:legacy,UpdateValidityMap (well-formedness),unchanged,False,well-formedness:UpdateValidityMap:0
+lit/dafny0/Maps.dfy:legacy,GeneralMaps6 (correctness),content,True,correctness:GeneralMaps6:0
+lit/dafny0/Maps.dfy:legacy,CommonUseCase2 (correctness),unchanged,False,correctness:CommonUseCase2:0
+lit/dafny0/Maps.dfy:legacy,GeneralMaps8' (correctness),content,True,correctness:GeneralMaps8k:0
+lit/dafny0/Maps.dfy:legacy,UpdateValidityMapNull (well-formedness),unchanged,False,well-formedness:UpdateValidityMapNull:0
+lit/dafny0/Maps.dfy:legacy,m6 (correctness),unchanged,False,correctness:m6:0
+lit/dafny0/Maps.dfy:legacy,m2 (correctness),unchanged,False,correctness:m2:0
+lit/dafny0/Maps.dfy:legacy,m7 (correctness),unchanged,False,correctness:m7:0
+lit/dafny0/Maps.dfy:legacy,m8 (correctness),unchanged,False,correctness:m8:0
+lit/dafny0/Maps.dfy:legacy,UpdateValidityMultiset (correctness),unchanged,False,correctness:UpdateValidityMultiset:0
+lit/dafny0/Maps.dfy:legacy,CommonUseCase1 (correctness),unchanged,False,correctness:CommonUseCase1:0
+lit/dafny0/Maps.dfy:legacy,TestIMapPropertyMembership1 (correctness),unchanged,False,correctness:TestIMapPropertyMembership1:0
+lit/dafny0/Maps.dfy:legacy,m3 (correctness),unchanged,False,correctness:m3:0
+lit/dafny0/Maps.dfy:legacy,GeneralMaps0 (correctness),content,True,correctness:GeneralMaps0:0
+lit/dafny0/Maps.dfy:legacy,GeneralMaps8 (correctness),content,True,correctness:GeneralMaps8:0
+lit/dafny0/Maps.dfy:legacy,TestMapPropertyMembership3 (correctness),unchanged,False,correctness:TestMapPropertyMembership3:0
+lit/dafny0/Maps.dfy:legacy,TestMapPropertyMembership1 (correctness),unchanged,False,correctness:TestMapPropertyMembership1:0
+lit/dafny0/Maps.dfy:legacy,TestMapPropertyMembership0 (correctness),unchanged,False,correctness:TestMapPropertyMembership0:0
+lit/dafny0/Maps.dfy:legacy,UnboxTest (well-formedness),content,True,well-formedness:UnboxTest:0
+lit/dafny0/Maps.dfy:legacy,GeneralMaps8'' (correctness),content,True,correctness:GeneralMaps8kk:0
+lit/dafny0/Maps.dfy:legacy,TestIMapPropertyMembership3 (correctness),unchanged,False,correctness:TestIMapPropertyMembership3:0
+lit/dafny0/Maps.dfy:legacy,TestIMapPropertyMembership2 (correctness),unchanged,False,correctness:TestIMapPropertyMembership2:0
+lit/dafny0/Maps.dfy:legacy,TestIMapPropertyMembership0 (correctness),unchanged,False,correctness:TestIMapPropertyMembership0:0
+lit/dafny0/Maps.dfy:legacy,m12 (correctness),content,True,correctness:m12:0
+lit/dafny0/Maps.dfy:legacy,m13 (correctness),content,True,correctness:m13:0
+lit/dafny0/Maps.dfy:legacy,TestMapPropertyCardinality3 (correctness),unchanged,False,correctness:TestMapPropertyCardinality3:0
+lit/dafny0/Maps.dfy:legacy,Odd (well-formedness),unchanged,False,well-formedness:Odd:0
+lit/dafny0/Maps.dfy:legacy,m11 (correctness),unchanged,False,correctness:m11:0
+lit/dafny0/Maps.dfy:legacy,TestMapPropertyCardinality0 (correctness),unchanged,False,correctness:TestMapPropertyCardinality0:0
+lit/dafny0/Maps.dfy:legacy,TestIMapPropertyNonempty (correctness),unchanged,False,correctness:TestIMapPropertyNonempty:0
+lit/dafny0/Maps.dfy:legacy,GeneralMaps7 (correctness),content,True,correctness:GeneralMaps7:0
+lit/dafny0/Maps.dfy:legacy,domain (well-formedness),unchanged,False,well-formedness:domain:0
+lit/dafny0/Maps.dfy:legacy,TestMapUnion (correctness),unchanged,False,correctness:TestMapUnion:0
+lit/dafny0/Maps.dfy:legacy,TestMapPropertyMembership2 (correctness),unchanged,False,correctness:TestMapPropertyMembership2:0
+lit/dafny0/Maps.dfy:legacy,m15 (correctness),content,True,correctness:m15:0
+lit/dafny0/Maps.dfy:legacy,TestMapPropertyNonempty (correctness),unchanged,False,correctness:TestMapPropertyNonempty:0
+lit/dafny0/Maps.dfy:legacy,m3 (well-formedness),unchanged,False,well-formedness:m3:0
+lit/dafny0/Maps.dfy:legacy,TestMapSubtraction (correctness),unchanged,False,correctness:TestMapSubtraction:0
+lit/dafny0/Maps.dfy:legacy,m2 (well-formedness),unchanged,False,well-formedness:m2:0
+lit/dafny4/Bug108.dfy:legacy,Main (correctness),content,True,correctness:Main:0
+lit/dafny4/Bug114.dfy:legacy,M (correctness),content,True,correctness:M:0
+lit/dafny4/Bug54.dfy:legacy,G (well-formedness),unchanged,False,well-formedness:G:0
+lit/dafny4/Bug54.dfy:legacy,H (well-formedness),unchanged,False,well-formedness:H:0
+lit/dafny4/Bug54.dfy:legacy,P2 (well-formedness),content,True,well-formedness:P2:0
+lit/dafny4/Bug54.dfy:legacy,P1 (well-formedness),unchanged,False,well-formedness:P1:0
+lit/dafny4/Bug58.dfy:legacy,M2 (well-formedness),content,True,well-formedness:M2:0
+lit/dafny4/Bug58.dfy:legacy,L (well-formedness),content,True,well-formedness:L:0
+lit/dafny4/Bug58.dfy:legacy,L (correctness),content,True,correctness:L:0
+lit/dafny4/KozenSilva.dfy:legacy,Theorem1_LexLess_Is_Transitive# (correctness),unchanged,False,correctness:Theorem1LexLessIsTransitiveh:0
+lit/dafny4/KozenSilva.dfy:legacy,Theorem1_LexLess_Is_Transitive_Automatic# (correctness),group,False,correctness:Theorem1LexLessIsTransitiveAutomatic*
+lit/dafny4/KozenSilva.dfy:legacy,Theorem7_Merge_Is_Left_Inverse_Of_Split_Bisim# (correctness),group,False,correctness:Theorem7MergeIsLeftInverseOfSplitBi*
+lit/dafny4/KozenSilva.dfy:legacy,Theorem5_ClosureConversion_Is_Monotone# (correctness),unmapped,,
+lit/dafny4/KozenSilva.dfy:legacy,Theorem4a_ClEnvBelow_Is_Transitive# (correctness),unmapped,,
+lit/dafny4/KozenSilva.dfy:legacy,ValBelow (well-formedness),unchanged,False,well-formedness:ValBelow:0
+lit/dafny4/KozenSilva.dfy:legacy,ClEnvBelow (well-formedness),unchanged,False,well-formedness:ClEnvBelow:0
+lit/dafny4/KozenSilva.dfy:legacy,ClosureConvertedMap (well-formedness),content,True,well-formedness:ClosureConvertedMap:0
+lit/dafny4/KozenSilva.dfy:legacy,Theorem4b_ValBelow_Is_Transitive# (correctness),unchanged,False,correctness:Theorem4bValBelowIsTransitiveh:0
+lit/dafny4/KozenSilva.dfy:legacy,EquivalenceTheorem (correctness),unchanged,False,correctness:EquivalenceTheorem:0
+lit/dafny4/KozenSilva.dfy:legacy,Theorem7_Merge_Is_Left_Inverse_Of_Split_Equal# (correctness),group,False,correctness:Theorem7MergeIsLeftInverseOfSplitEq*
+lit/dafny4/KozenSilva.dfy:legacy,CapsuleEnvironmentBelow (well-formedness),unchanged,False,well-formedness:CapsuleEnvironmentBelow:0
+lit/dafny4/KozenSilva.dfy:legacy,SplitRight (well-formedness),unchanged,False,well-formedness:SplitRight:0
+lit/dafny4/KozenSilva.dfy:legacy,Theorem2_Pointwise_Addition_Is_Monotone# (correctness),group,False,correctness:Theorem2PointwiseAdditionIsMonotoneh*
+lit/dafny4/KozenSilva.dfy:legacy,NotLexLess' (well-formedness),unchanged,False,well-formedness:NotLexLessk:0
+lit/dafny4/KozenSilva.dfy:legacy,Theorem1_Alt_Lemma (correctness),unchanged,False,correctness:Theorem1AltLemma:0
+lit/dafny4/KozenSilva.dfy:legacy,Subtype (well-formedness),unchanged,False,well-formedness:Subtype:0
+lit/dafny4/KozenSilva.dfy:legacy,EquivalenceTheorem0_Lemma (correctness),unchanged,False,correctness:EquivalenceTheorem0Lemma:0
+lit/dafny4/KozenSilva.dfy:legacy,Theorem3_Subtype_Is_Transitive# (correctness),unchanged,False,correctness:Theorem3SubtypeIsTransitiveh:0
+lit/dafny4/KozenSilva.dfy:legacy,ClosureConversion (well-formedness),content,True,well-formedness:ClosureConversion:0
+lit/dafny4/KozenSilva.dfy:legacy,EquivalenceTheorem1_Lemma (correctness),unchanged,False,correctness:EquivalenceTheorem1Lemma:0
+lit/dafny4/KozenSilva.dfy:legacy,Theorem1_Alt (correctness),unchanged,False,correctness:Theorem1Alt:0
+lit/dafny4/KozenSilva.dfy:legacy,EquivalenceTheorem1 (correctness),unchanged,False,correctness:EquivalenceTheorem1:0
+lit/dafny4/KozenSilva.dfy:legacy,Theorem6_Bisim_Is_Symmetric# (correctness),unchanged,False,correctness:Theorem6BisimIsSymmetrich:0
+lit/dafny4/KozenSilva.dfy:legacy,EquivalenceTheorem0# (correctness),unchanged,False,correctness:EquivalenceTheorem0h:0
+lit/dafny4/Regression19.dfy:legacy,NonemptySet (correctness),unchanged,False,correctness:NonemptySet:0
+lit/dafny4/Regression19.dfy:legacy,NonemptyMap (correctness),unchanged,False,correctness:NonemptyMap:0
+lit/dafny4/Regression19.dfy:legacy,M (correctness),content,True,correctness:M:0
+lit/dafny4/UnionFind.dfy:legacy,M2.UnionFind.FindAux (correctness),content,True,correctness:M2UnionFindFindAux:0
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 124),content,True,correctness:M3UnionFindJoin:123
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 119),content,True,correctness:M3UnionFindJoin:118
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 143),content,True,correctness:M3UnionFindJoin:142
+lit/dafny4/UnionFind.dfy:legacy,M1.UnionFind.New (correctness),content,True,correctness:M1UnionFindNew:0
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.JoinMaintainsReaches1 (correctness),unchanged,False,correctness:M3UnionFindJoinMaintainsReaches1:0
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 90),content,True,correctness:M3UnionFindJoin:89
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 47),content,True,correctness:M3UnionFindJoin:46
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 34),content,True,correctness:M3UnionFindJoin:33
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 109),content,True,correctness:M3UnionFindJoin:108
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 162),content,True,correctness:M3UnionFindJoin:161
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 65),content,True,correctness:M3UnionFindJoin:64
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 161),content,True,correctness:M3UnionFindJoin:160
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 66),content,True,correctness:M3UnionFindJoin:65
+lit/dafny4/UnionFind.dfy:legacy,M1.UnionFind.Union (correctness),content,True,correctness:M1UnionFindUnion:0
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 27),content,True,correctness:M3UnionFindJoin:26
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 160),content,True,correctness:M3UnionFindJoin:159
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 120),content,True,correctness:M3UnionFindJoin:119
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 78),content,True,correctness:M3UnionFindJoin:77
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 118),content,True,correctness:M3UnionFindJoin:117
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 131),content,True,correctness:M3UnionFindJoin:130
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 108),content,True,correctness:M3UnionFindJoin:107
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 63),content,True,correctness:M3UnionFindJoin:62
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 107),content,True,correctness:M3UnionFindJoin:106
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 39),content,True,correctness:M3UnionFindJoin:38
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 159),content,True,correctness:M3UnionFindJoin:158
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 64),content,True,correctness:M3UnionFindJoin:63
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 71),content,True,correctness:M3UnionFindJoin:70
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 106),content,True,correctness:M3UnionFindJoin:105
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 114),content,True,correctness:M3UnionFindJoin:113
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 1),content,True,correctness:Main:0
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 2),content,True,correctness:Main:1
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 80),content,True,correctness:Main:79
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 117),content,True,correctness:M3UnionFindJoin:116
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 70),content,True,correctness:Main:69
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 60),content,True,correctness:Main:59
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 68),content,True,correctness:Main:67
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 83),content,True,correctness:M3UnionFindJoin:82
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 49),content,True,correctness:Main:48
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 69),content,True,correctness:Main:68
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 136),content,True,correctness:M3UnionFindJoin:135
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 32),content,True,correctness:Main:31
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 59),content,True,correctness:Main:58
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 38),content,True,correctness:Main:37
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 53),content,True,correctness:Main:52
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 39),content,True,correctness:Main:38
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 64),content,True,correctness:Main:63
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 52),content,True,correctness:Main:51
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 24),content,True,correctness:Main:23
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 28),content,True,correctness:Main:27
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 15),content,True,correctness:Main:14
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 58),content,True,correctness:Main:57
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 42),content,True,correctness:Main:41
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 45),content,True,correctness:Main:44
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 57),content,True,correctness:Main:56
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 47),content,True,correctness:Main:46
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 62),content,True,correctness:Main:61
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 50),content,True,correctness:Main:49
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 65),content,True,correctness:Main:64
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 88),content,True,correctness:Main:87
+lit/dafny4/UnionFind.dfy:legacy,M2.UnionFind.Find (correctness),content,True,correctness:M2UnionFindFind:0
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 93),content,True,correctness:M3UnionFindJoin:92
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 20),content,True,correctness:Main:19
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 86),content,True,correctness:Main:85
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 121),content,True,correctness:M3UnionFindJoin:120
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 54),content,True,correctness:Main:53
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 71),content,True,correctness:Main:70
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 35),content,True,correctness:Main:34
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 29),content,True,correctness:Main:28
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 67),content,True,correctness:Main:66
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 46),content,True,correctness:Main:45
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 56),content,True,correctness:Main:55
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 116),content,True,correctness:M3UnionFindJoin:115
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 115),content,True,correctness:M3UnionFindJoin:114
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 21),content,True,correctness:Main:20
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 14),content,True,correctness:Main:13
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 151),content,True,correctness:M3UnionFindJoin:150
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 55),content,True,correctness:M3UnionFindJoin:54
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 17),content,True,correctness:Main:16
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 30),content,True,correctness:Main:29
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 83),content,True,correctness:Main:82
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 5),content,True,correctness:Main:4
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 84),content,True,correctness:Main:83
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 63),content,True,correctness:Main:62
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 13),content,True,correctness:Main:12
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 55),content,True,correctness:Main:54
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 26),content,True,correctness:Main:25
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 27),content,True,correctness:Main:26
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 11),content,True,correctness:Main:10
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 10),content,True,correctness:Main:9
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 40),content,True,correctness:Main:39
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 66),content,True,correctness:Main:65
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 61),content,True,correctness:Main:60
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 34),content,True,correctness:Main:33
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 18),content,True,correctness:Main:17
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 48),content,True,correctness:Main:47
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 23),content,True,correctness:Main:22
+lit/dafny4/UnionFind.dfy:legacy,M2.UnionFind.Find (well-formedness),content,True,well-formedness:M2UnionFindFind:0
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 37),content,True,correctness:Main:36
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 41),content,True,correctness:Main:40
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 78),content,True,correctness:Main:77
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 43),content,True,correctness:Main:42
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 72),content,True,correctness:Main:71
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 122),content,True,correctness:M3UnionFindJoin:121
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 85),content,True,correctness:Main:84
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 147),content,True,correctness:M3UnionFindJoin:146
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 31),content,True,correctness:Main:30
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 51),content,True,correctness:M3UnionFindJoin:50
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 16),content,True,correctness:Main:15
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 4),content,True,correctness:Main:3
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 87),content,True,correctness:Main:86
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 44),content,True,correctness:Main:43
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 51),content,True,correctness:Main:50
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 19),content,True,correctness:Main:18
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 9),content,True,correctness:Main:8
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 36),content,True,correctness:Main:35
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 74),content,True,correctness:Main:73
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 50),content,True,correctness:M3UnionFindJoin:49
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 6),content,True,correctness:Main:5
+lit/dafny4/UnionFind.dfy:legacy,M1.UnionFind.ValidM1 (well-formedness),content,True,well-formedness:M1UnionFindValidM1:0
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 22),content,True,correctness:Main:21
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 146),content,True,correctness:M3UnionFindJoin:145
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 156),content,True,correctness:M3UnionFindJoin:155
+lit/dafny4/UnionFind.dfy:legacy,M2.UnionFind.NextReachesSame (correctness),content,True,correctness:M2UnionFindNextReachesSame:0
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 60),content,True,correctness:M3UnionFindJoin:59
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 12),content,True,correctness:Main:11
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 158),content,True,correctness:M3UnionFindJoin:157
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 148),content,True,correctness:M3UnionFindJoin:147
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 77),content,True,correctness:Main:76
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 105),content,True,correctness:M3UnionFindJoin:104
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 52),content,True,correctness:M3UnionFindJoin:51
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.ExtendedReach' (correctness),unchanged,False,correctness:M3UnionFindExtendedReachk:0
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 79),content,True,correctness:Main:78
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 53),content,True,correctness:M3UnionFindJoin:52
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 8),content,True,correctness:Main:7
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 104),content,True,correctness:M3UnionFindJoin:103
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 33),content,True,correctness:Main:32
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 75),content,True,correctness:Main:74
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 61),content,True,correctness:M3UnionFindJoin:60
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 98),content,True,correctness:M3UnionFindJoin:97
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 3),content,True,correctness:Main:2
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 73),content,True,correctness:Main:72
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 157),content,True,correctness:M3UnionFindJoin:156
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 59),content,True,correctness:M3UnionFindJoin:58
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 128),content,True,correctness:M3UnionFindJoin:127
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 7),content,True,correctness:Main:6
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 70),content,True,correctness:M3UnionFindJoin:69
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 95),content,True,correctness:M3UnionFindJoin:94
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 82),content,True,correctness:Main:81
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 94),content,True,correctness:M3UnionFindJoin:93
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 62),content,True,correctness:M3UnionFindJoin:61
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 2),content,True,correctness:M3UnionFindJoin:1
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 8),content,True,correctness:M3UnionFindJoin:7
+lit/dafny4/UnionFind.dfy:legacy,M2.UnionFind.FindAux (well-formedness),content,True,well-formedness:M2UnionFindFindAux:0
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 177),content,True,correctness:M3UnionFindJoin:176
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 103),content,True,correctness:M3UnionFindJoin:102
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 172),content,True,correctness:M3UnionFindJoin:171
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 96),content,True,correctness:M3UnionFindJoin:95
+lit/dafny4/UnionFind.dfy:legacy,M2.UnionFind.NextReachesSame (well-formedness),content,True,well-formedness:M2UnionFindNextReachesSame:0
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 76),content,True,correctness:Main:75
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 130),content,True,correctness:M3UnionFindJoin:129
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.ReachUnaffectedByChangeFromRoot' (correctness),unchanged,False,correctness:M3UnionFindReachUnaffectedByChangeFromRootk:0
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 123),content,True,correctness:M3UnionFindJoin:122
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 36),content,True,correctness:M3UnionFindJoin:35
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 167),content,True,correctness:M3UnionFindJoin:166
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 14),content,True,correctness:M3UnionFindJoin:13
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 149),content,True,correctness:M3UnionFindJoin:148
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 152),content,True,correctness:M3UnionFindJoin:151
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (well-formedness) (assertion batch 7),content,True,well-formedness:M3UnionFindJoin:6
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 81),content,True,correctness:Main:80
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 32),content,True,correctness:M3UnionFindJoin:31
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 89),content,True,correctness:M3UnionFindJoin:88
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (well-formedness) (assertion batch 8),content,True,well-formedness:M3UnionFindJoin:7
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 6),content,True,correctness:M3UnionFindJoin:5
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 24),content,True,correctness:M3UnionFindJoin:23
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 23),content,True,correctness:M3UnionFindJoin:22
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 81),content,True,correctness:M3UnionFindJoin:80
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (well-formedness) (assertion batch 5),content,True,well-formedness:M3UnionFindJoin:4
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 154),content,True,correctness:M3UnionFindJoin:153
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 18),content,True,correctness:M3UnionFindJoin:17
+lit/dafny4/UnionFind.dfy:legacy,Main (correctness) (assertion batch 25),content,True,correctness:Main:24
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 22),content,True,correctness:M3UnionFindJoin:21
+lit/dafny4/UnionFind.dfy:legacy,M0.UnionFind._ctor (correctness),unchanged,False,correctness:M0UnionFindctor:0
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 26),content,True,correctness:M3UnionFindJoin:25
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 77),content,True,correctness:M3UnionFindJoin:76
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.ReachUnaffectedByChangeFromRoot' (well-formedness),unmapped,,
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 150),content,True,correctness:M3UnionFindJoin:149
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 153),content,True,correctness:M3UnionFindJoin:152
+lit/dafny4/UnionFind.dfy:legacy,M1.UnionFind.Reaches_Monotonic (well-formedness),unchanged,False,well-formedness:M1UnionFindReachesMonotonic:0
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 79),content,True,correctness:M3UnionFindJoin:78
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 75),content,True,correctness:M3UnionFindJoin:74
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 155),content,True,correctness:M3UnionFindJoin:154
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 102),content,True,correctness:M3UnionFindJoin:101
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 91),content,True,correctness:M3UnionFindJoin:90
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 80),content,True,correctness:M3UnionFindJoin:79
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 73),content,True,correctness:M3UnionFindJoin:72
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 126),content,True,correctness:M3UnionFindJoin:125
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 21),content,True,correctness:M3UnionFindJoin:20
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 45),content,True,correctness:M3UnionFindJoin:44
+lit/dafny4/UnionFind.dfy:legacy,M1.UnionFind.Union (well-formedness),content,True,well-formedness:M1UnionFindUnion:0
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 170),content,True,correctness:M3UnionFindJoin:169
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.ExtendedReach (correctness),unchanged,False,correctness:M3UnionFindExtendedReach:0
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 7),content,True,correctness:M3UnionFindJoin:6
+lit/dafny4/UnionFind.dfy:legacy,M2.UnionFind.ConstructReach (correctness),unchanged,False,correctness:M2UnionFindConstructReach:0
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 38),content,True,correctness:M3UnionFindJoin:37
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 54),content,True,correctness:M3UnionFindJoin:53
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 19),content,True,correctness:M3UnionFindJoin:18
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 58),content,True,correctness:M3UnionFindJoin:57
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 165),content,True,correctness:M3UnionFindJoin:164
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 84),content,True,correctness:M3UnionFindJoin:83
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 113),content,True,correctness:M3UnionFindJoin:112
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 166),content,True,correctness:M3UnionFindJoin:165
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 134),content,True,correctness:M3UnionFindJoin:133
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 43),content,True,correctness:M3UnionFindJoin:42
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 112),content,True,correctness:M3UnionFindJoin:111
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.JoinMaintainsReaches1 (well-formedness),unchanged,False,well-formedness:M3UnionFindJoinMaintainsReaches1:0
+lit/dafny4/UnionFind.dfy:legacy,M1.UnionFind.Reaches (well-formedness),unchanged,False,well-formedness:M1UnionFindReaches:0
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 92),content,True,correctness:M3UnionFindJoin:91
+lit/dafny4/UnionFind.dfy:legacy,M1.UnionFind.Join (well-formedness),content,True,well-formedness:M1UnionFindJoin:0
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 67),content,True,correctness:M3UnionFindJoin:66
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 69),content,True,correctness:M3UnionFindJoin:68
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 176),content,True,correctness:M3UnionFindJoin:175
+lit/dafny4/UnionFind.dfy:legacy,M2.UnionFind.UpdateMaintainsReaches (correctness),unchanged,False,correctness:M2UnionFindUpdateMaintainsReaches:0
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 100),content,True,correctness:M3UnionFindJoin:99
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (well-formedness) (assertion batch 3),content,True,well-formedness:M3UnionFindJoin:2
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (well-formedness) (assertion batch 2),content,True,well-formedness:M3UnionFindJoin:1
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 15),content,True,correctness:M3UnionFindJoin:14
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 85),content,True,correctness:M3UnionFindJoin:84
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 30),content,True,correctness:M3UnionFindJoin:29
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 4),content,True,correctness:M3UnionFindJoin:3
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 20),content,True,correctness:M3UnionFindJoin:19
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 42),content,True,correctness:M3UnionFindJoin:41
+lit/dafny4/UnionFind.dfy:legacy,M2.UnionFind.Reaches_SinkIsFunctionOfStart (correctness),unchanged,False,correctness:M2UnionFindReachesSinkIsFunctionOfStart:0
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 56),content,True,correctness:M3UnionFindJoin:55
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 88),content,True,correctness:M3UnionFindJoin:87
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 68),content,True,correctness:M3UnionFindJoin:67
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 86),content,True,correctness:M3UnionFindJoin:85
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 9),content,True,correctness:M3UnionFindJoin:8
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 1),content,True,correctness:M3UnionFindJoin:0
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 87),content,True,correctness:M3UnionFindJoin:86
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 40),content,True,correctness:M3UnionFindJoin:39
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 74),content,True,correctness:M3UnionFindJoin:73
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 174),content,True,correctness:M3UnionFindJoin:173
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 82),content,True,correctness:M3UnionFindJoin:81
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 31),content,True,correctness:M3UnionFindJoin:30
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 10),content,True,correctness:M3UnionFindJoin:9
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 135),content,True,correctness:M3UnionFindJoin:134
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 48),content,True,correctness:M3UnionFindJoin:47
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 97),content,True,correctness:M3UnionFindJoin:96
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.JoinMaintainsReaches0 (correctness),unchanged,False,correctness:M3UnionFindJoinMaintainsReaches0:0
+lit/dafny4/UnionFind.dfy:legacy,M2.UnionFind.UpdateMaintainsReaches (well-formedness),unchanged,False,well-formedness:M2UnionFindUpdateMaintainsReaches:0
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (well-formedness) (assertion batch 4),content,True,well-formedness:M3UnionFindJoin:3
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 35),content,True,correctness:M3UnionFindJoin:34
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 171),content,True,correctness:M3UnionFindJoin:170
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 49),content,True,correctness:M3UnionFindJoin:48
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 101),content,True,correctness:M3UnionFindJoin:100
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 132),content,True,correctness:M3UnionFindJoin:131
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 129),content,True,correctness:M3UnionFindJoin:128
+lit/dafny4/UnionFind.dfy:legacy,M0.UnionFind.New (well-formedness),unchanged,False,well-formedness:M0UnionFindNew:0
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 57),content,True,correctness:M3UnionFindJoin:56
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 44),content,True,correctness:M3UnionFindJoin:43
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 33),content,True,correctness:M3UnionFindJoin:32
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 111),content,True,correctness:M3UnionFindJoin:110
+lit/dafny4/UnionFind.dfy:legacy,M1.UnionFind.Collect (well-formedness),content,True,well-formedness:M1UnionFindCollect:0
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (well-formedness) (assertion batch 1),content,True,well-formedness:M3UnionFindJoin:0
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 137),content,True,correctness:M3UnionFindJoin:136
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 41),content,True,correctness:M3UnionFindJoin:40
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 16),content,True,correctness:M3UnionFindJoin:15
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 29),content,True,correctness:M3UnionFindJoin:28
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 127),content,True,correctness:M3UnionFindJoin:126
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 139),content,True,correctness:M3UnionFindJoin:138
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 125),content,True,correctness:M3UnionFindJoin:124
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 145),content,True,correctness:M3UnionFindJoin:144
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 141),content,True,correctness:M3UnionFindJoin:140
+lit/dafny4/UnionFind.dfy:legacy,M1.UnionFind.Reaches_Monotonic (correctness),unchanged,False,correctness:M1UnionFindReachesMonotonic:0
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 133),content,True,correctness:M3UnionFindJoin:132
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 72),content,True,correctness:M3UnionFindJoin:71
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 140),content,True,correctness:M3UnionFindJoin:139
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 28),content,True,correctness:M3UnionFindJoin:27
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 138),content,True,correctness:M3UnionFindJoin:137
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 142),content,True,correctness:M3UnionFindJoin:141
+lit/dafny4/UnionFind.dfy:legacy,M0.UnionFind.Union (well-formedness),content,True,well-formedness:M0UnionFindUnion:0
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 5),content,True,correctness:M3UnionFindJoin:4
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 144),content,True,correctness:M3UnionFindJoin:143
+lit/dafny4/UnionFind.dfy:legacy,M1.UnionFind.New (well-formedness),content,True,well-formedness:M1UnionFindNew:0
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 17),content,True,correctness:M3UnionFindJoin:16
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.JoinMaintainsReaches0 (well-formedness),unchanged,False,well-formedness:M3UnionFindJoinMaintainsReaches0:0
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 175),content,True,correctness:M3UnionFindJoin:174
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 99),content,True,correctness:M3UnionFindJoin:98
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 76),content,True,correctness:M3UnionFindJoin:75
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 173),content,True,correctness:M3UnionFindJoin:172
+lit/dafny4/UnionFind.dfy:legacy,M1.GoodCMap (well-formedness),unchanged,False,well-formedness:M1GoodCMap:0
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 25),content,True,correctness:M3UnionFindJoin:24
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 110),content,True,correctness:M3UnionFindJoin:109
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 169),content,True,correctness:M3UnionFindJoin:168
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 168),content,True,correctness:M3UnionFindJoin:167
+lit/dafny4/UnionFind.dfy:legacy,M1.MapsEqual (correctness),unchanged,False,correctness:M1MapsEqual:0
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 46),content,True,correctness:M3UnionFindJoin:45
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.ReachUnaffectedByChangeFromRoot (correctness),unchanged,False,correctness:M3UnionFindReachUnaffectedByChangeFromRoot:0
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.ReachUnaffectedByChangeFromRoot (well-formedness),unchanged,False,well-formedness:M3UnionFindReachUnaffectedByChangeFromRoot:0
+lit/dafny4/UnionFind.dfy:legacy,M0.UnionFind.Valid (well-formedness),unchanged,False,well-formedness:M0UnionFindValid:0
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 13),content,True,correctness:M3UnionFindJoin:12
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 37),content,True,correctness:M3UnionFindJoin:36
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 163),content,True,correctness:M3UnionFindJoin:162
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 12),content,True,correctness:M3UnionFindJoin:11
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (well-formedness) (assertion batch 6),content,True,well-formedness:M3UnionFindJoin:5
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 3),content,True,correctness:M3UnionFindJoin:2
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 164),content,True,correctness:M3UnionFindJoin:163
+lit/dafny4/UnionFind.dfy:legacy,M2.UnionFind.ConstructReach (well-formedness),unchanged,False,well-formedness:M2UnionFindConstructReach:0
+lit/dafny4/UnionFind.dfy:legacy,M2.UnionFind.Reaches_SinkIsFunctionOfStart (well-formedness),unchanged,False,well-formedness:M2UnionFindReachesSinkIsFunctionOfStart:0
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 11),content,True,correctness:M3UnionFindJoin:10
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.ExtendedReach' (well-formedness),unchanged,False,well-formedness:M3UnionFindExtendedReachk:0
+lit/dafny4/UnionFind.dfy:legacy,M3.UnionFind.ExtendedReach (well-formedness),unchanged,False,well-formedness:M3UnionFindExtendedReach:0
+lit/dafny4/UnionFind.dfy:legacy,M0.UnionFind.ValidM1 (well-formedness),unchanged,False,well-formedness:M0UnionFindValidM1:0
+lit/dafny4/UnionFind.dfy:legacy,M0.UnionFind.Find (well-formedness),unchanged,False,well-formedness:M0UnionFindFind:0
+lit/dafny4/UnionFind.dfy:legacy,M1.MapsEqual (well-formedness),unchanged,False,well-formedness:M1MapsEqual:0
+lit/dafny4/git-issue158.dfy:refresh,byte (well-formedness),unchanged,False,well-formedness:byte:0
+lit/dafny4/git-issue158.dfy:refresh,Main (correctness),unchanged,False,correctness:Main:0
+lit/dafny4/git-issue158.dfy:refresh,In (correctness),unchanged,False,correctness:In:0
+lit/dafny4/git-issue158.dfy:refresh,Compare (correctness),unchanged,False,correctness:Compare:0
+lit/dafny4/git-issue158.dfy:legacy,byte (well-formedness),content,False,well-formedness:byte:0
+lit/dafny4/git-issue158.dfy:legacy,Main (correctness),unchanged,False,correctness:Main:0
+lit/dafny4/git-issue158.dfy:legacy,Compare (correctness),content,False,correctness:Compare:0
+lit/dafny4/git-issue158.dfy:legacy,In (correctness),unchanged,False,correctness:In:0
+lit/dafny4/git-issue167.dfy:legacy,Main (correctness),content,True,correctness:Main:0
+lit/dafny4/git-issue167.dfy:legacy,LetTest (correctness),unchanged,False,correctness:LetTest:0
+lit/dafny4/git-issue167.dfy:legacy,Test.ConvertMap_AB (well-formedness),content,True,well-formedness:TestConvertMapAB:0
+lit/dafny4/git-issue167.dfy:legacy,TestApply (correctness),content,False,correctness:TestApply:0
+lit/dafny4/git-issue27.dfy:legacy,extract (well-formedness),content,True,well-formedness:extract:0
+lit/dafny4/git-issue27.dfy:legacy,word (well-formedness),unchanged,False,well-formedness:word:0
+lit/dafny4/git-issue75.dfy:legacy,L1 (correctness),content,True,correctness:L1:0
+lit/dafny4/git-issue75.dfy:legacy,t (well-formedness),unchanged,False,well-formedness:t:0
+lit/dafny4/git-issue75.dfy:legacy,L2 (correctness),content,True,correctness:L2:0
+lit/git-issues/git-issue-1158.dfy:legacy,Test (correctness),content,True,correctness:Test:0
+lit/git-issues/git-issue-1163.dfy:legacy,MyClass.N (correctness),unchanged,False,correctness:MyClassN:0
+lit/git-issues/git-issue-1163.dfy:legacy,MyClass.O (correctness),unchanged,False,correctness:MyClassO:0
+lit/git-issues/git-issue-1163.dfy:legacy,MyClass.Q (correctness),content,True,correctness:MyClassQ:0
+lit/git-issues/git-issue-1163.dfy:legacy,MyClass.SuchThat (correctness),unchanged,False,correctness:MyClassSuchThat:0
+lit/git-issues/git-issue-1165.dfy:legacy,ModifiesClauses (correctness),unchanged,False,correctness:ModifiesClauses:0
+lit/git-issues/git-issue-1165.dfy:legacy,TestMapMethod (correctness),content,True,correctness:TestMapMethod:0
+lit/git-issues/git-issue-1165.dfy:legacy,Fresh2 (correctness),unchanged,False,correctness:Fresh2:0
+lit/git-issues/git-issue-1165.dfy:legacy,Fresh0 (correctness),unchanged,False,correctness:Fresh0:0
+lit/git-issues/git-issue-1165.dfy:legacy,Fresh1 (correctness),unchanged,False,correctness:Fresh1:0
+lit/git-issues/git-issue-1165.dfy:legacy,ReadsClauses (well-formedness),unchanged,False,well-formedness:ReadsClauses:0
+lit/git-issues/git-issue-3320.dfy:legacy,SetComprehension (well-formedness),unchanged,False,well-formedness:SetComprehension:0
+lit/git-issues/git-issue-3320.dfy:legacy,MapComprehension (well-formedness),content,True,well-formedness:MapComprehension:0
+lit/git-issues/git-issue-3320.dfy:legacy,Main (correctness),unchanged,False,correctness:Main:0
+lit/git-issues/git-issue-336.dfy:legacy,TestMap (correctness),content,True,correctness:TestMap:0
+lit/git-issues/git-issue-336.dfy:legacy,TestSet0 (correctness),unchanged,False,correctness:TestSet0:0
+lit/git-issues/git-issue-336.dfy:legacy,TestSet2 (correctness),unchanged,False,correctness:TestSet2:0
+lit/git-issues/git-issue-336.dfy:legacy,TestSet1 (correctness),unchanged,False,correctness:TestSet1:0
+lit/git-issues/git-issue-6535.dfy:legacy,Bad (correctness),content,True,correctness:Bad:0
+lit/git-issues/git-issue-697b.dfy:legacy,doubleEvenCell (well-formedness),unchanged,False,well-formedness:doubleEvenCell:0
+lit/git-issues/git-issue-697b.dfy:legacy,EvenCell (well-formedness),unchanged,False,well-formedness:EvenCell:0
+lit/git-issues/git-issue-697b.dfy:legacy,Main (correctness),content,True,correctness:Main:0
+lit/git-issues/git-issue-851.dfy:legacy,OtherBindersInStatements.Forall1 (correctness),unchanged,False,correctness:OtherBindersInStatementsForall1:0
+lit/git-issues/git-issue-851.dfy:legacy,Main (correctness),unchanged,False,correctness:Main:0
+lit/git-issues/git-issue-851.dfy:legacy,ExampleA.BadGhost (well-formedness),unchanged,False,well-formedness:ExampleABadGhost:0
+lit/git-issues/git-issue-851.dfy:legacy,OtherBindersInExpressions.MapComprehension2 (well-formedness),group,True,well-formedness:OtherBindersInExpressionsMapComprehens*
+lit/git-issues/git-issue-851.dfy:legacy,OtherBindersInStatements.MapComprehension2 (correctness),unmapped,,
+lit/git-issues/git-issue-851.dfy:legacy,OtherBindersInExpressions.Forall1 (well-formedness),unmapped,,
+lit/git-issues/git-issue-851.dfy:legacy,OtherBindersInStatements.Lambda (correctness),unchanged,False,correctness:OtherBindersInStatementsLambda:0
+lit/git-issues/git-issue-851.dfy:legacy,OtherBindersInStatements.MapComprehension3 (correctness),unmapped,,
+lit/git-issues/git-issue-851.dfy:legacy,OtherBindersInStatements.Forall0 (correctness),unchanged,False,correctness:OtherBindersInStatementsForall0:0
+lit/git-issues/git-issue-851.dfy:legacy,OtherBindersInStatements.MapComprehension0 (correctness),unmapped,,
+lit/git-issues/git-issue-851.dfy:legacy,ExampleB.BadGhost (correctness),unchanged,False,correctness:ExampleBBadGhost:0
+lit/git-issues/git-issue-851.dfy:legacy,OtherBindersInExpressions.SetComprehension1 (well-formedness),group,False,well-formedness:OtherBindersInExpressionsSetComprehens*
+lit/git-issues/git-issue-851.dfy:legacy,ExampleB.BadSuchThatGhost (correctness),unchanged,False,correctness:ExampleBBadSuchThatGhost:0
+lit/git-issues/git-issue-851.dfy:legacy,OtherBindersInExpressions.MapComprehension0 (well-formedness),group,True,well-formedness:OtherBindersInExpressionsMapComprehens*
+lit/git-issues/git-issue-851.dfy:legacy,OtherBindersInExpressions.Forall3 (well-formedness),unmapped,,
+lit/git-issues/git-issue-851.dfy:legacy,OtherBindersInStatements.MapComprehension1 (correctness),unmapped,,
+lit/git-issues/git-issue-851.dfy:legacy,OtherBindersInExpressions.MapComprehension1 (well-formedness),group,True,well-formedness:OtherBindersInExpressionsMapComprehens*
+lit/git-issues/git-issue-851.dfy:legacy,OtherBindersInStatements.SetComprehension0 (correctness),unmapped,,
+lit/git-issues/git-issue-851.dfy:legacy,OtherBindersInExpressions.Exists (well-formedness),unmapped,,
+lit/git-issues/git-issue-851.dfy:legacy,OtherBindersInExpressions.MapComprehension3 (well-formedness),group,True,well-formedness:OtherBindersInExpressionsMapComprehens*
+lit/git-issues/git-issue-851.dfy:legacy,OtherBindersInStatements.SetComprehension1 (correctness),unmapped,,
+lit/git-issues/git-issue-851.dfy:legacy,OtherBindersInExpressions.Lambda (well-formedness),unmapped,,
+lit/git-issues/git-issue-851.dfy:legacy,OtherBindersInStatements.Exists (correctness),unchanged,False,correctness:OtherBindersInStatementsExists:0
+lit/git-issues/git-issue-851.dfy:legacy,ExampleB.BadCompiled (correctness),unchanged,False,correctness:ExampleBBadCompiled:0
+lit/git-issues/git-issue-851.dfy:legacy,OtherBindersInExpressions.SetComprehension0 (well-formedness),group,False,well-formedness:OtherBindersInExpressionsSetComprehens*
+lit/git-issues/git-issue-851.dfy:legacy,ExampleB.Test (correctness),unchanged,False,correctness:ExampleBTest:0
+lit/git-issues/git-issue-851.dfy:legacy,ExampleA.Test (correctness),unchanged,False,correctness:ExampleATest:0
+lit/git-issues/git-issue-851.dfy:legacy,ExampleD.Test (correctness),unchanged,False,correctness:ExampleDTest:0
+lit/git-issues/git-issue-851.dfy:legacy,ExampleA_Compiled.C.F (well-formedness),unchanged,False,well-formedness:ExampleACompiledCF:0
+lit/git-issues/git-issue-851.dfy:legacy,ExampleA.C.F (well-formedness),unchanged,False,well-formedness:ExampleACF:0
+lit/git-issues/git-issue-851.dfy:legacy,ExampleC.Fine0 (correctness),unchanged,False,correctness:ExampleCFine0:0
+lit/git-issues/git-issue-851.dfy:legacy,ExampleA_Compiled.BadCompiled (well-formedness),unmapped,,
+lit/git-issues/git-issue-851.dfy:legacy,OtherBindersInExpressions.Forall2 (well-formedness),unmapped,,
+lit/git-issues/git-issue-851.dfy:legacy,OtherBindersInExpressions.Forall0 (well-formedness),unmapped,,
+lit/git-issues/git-issue-851.dfy:legacy,ExampleC.Fine1 (correctness),unchanged,False,correctness:ExampleCFine1:0
+lit/git-issues/git-issue-851.dfy:legacy,ExampleC.IfCase (correctness),unchanged,False,correctness:ExampleCIfCase:0
+synth/chain-01.dfy,Chain (correctness),content,True,correctness:Chain:0
+synth/chain-02.dfy,Chain (correctness),content,True,correctness:Chain:0
+synth/chain-04.dfy,Chain (correctness),content,True,correctness:Chain:0
+synth/chain-08.dfy,Chain (correctness),content,True,correctness:Chain:0
+synth/chain-16.dfy,Chain (correctness),content,True,correctness:Chain:0
+synth/equal-01.dfy,Equal (correctness),content,True,correctness:Equal:0
+synth/equal-02.dfy,Equal (correctness),content,True,correctness:Equal:0
+synth/equal-04.dfy,Equal (correctness),content,True,correctness:Equal:0
+synth/equal-08.dfy,Equal (correctness),content,True,correctness:Equal:0
+synth/equal-16.dfy,Equal (correctness),content,True,correctness:Equal:0
+synth/ichain-01.dfy,Chain (correctness),content,True,correctness:Chain:0
+synth/ichain-02.dfy,Chain (correctness),content,True,correctness:Chain:0
+synth/ichain-04.dfy,Chain (correctness),content,True,correctness:Chain:0
+synth/ichain-08.dfy,Chain (correctness),content,True,correctness:Chain:0
+synth/ichain-16.dfy,Chain (correctness),content,True,correctness:Chain:0
+synth/ilookups-01.dfy,Lookups (correctness),content,True,correctness:Lookups:0
+synth/ilookups-02.dfy,Lookups (correctness),content,True,correctness:Lookups:0
+synth/ilookups-04.dfy,Lookups (correctness),content,True,correctness:Lookups:0
+synth/ilookups-08.dfy,Lookups (correctness),content,True,correctness:Lookups:0
+synth/ilookups-16.dfy,Lookups (correctness),content,True,correctness:Lookups:0
+synth/keyed-01.dfy,Keyed (correctness),content,True,correctness:Keyed:0
+synth/keyed-02.dfy,Keyed (correctness),content,True,correctness:Keyed:0
+synth/keyed-04.dfy,Keyed (correctness),content,True,correctness:Keyed:0
+synth/keyed-08.dfy,Keyed (correctness),content,True,correctness:Keyed:0
+synth/keyed-16.dfy,Keyed (correctness),content,True,correctness:Keyed:0
+synth/lookups-01.dfy,Lookups (correctness),content,True,correctness:Lookups:0
+synth/lookups-02.dfy,Lookups (correctness),content,True,correctness:Lookups:0
+synth/lookups-04.dfy,Lookups (correctness),content,True,correctness:Lookups:0
+synth/lookups-08.dfy,Lookups (correctness),content,True,correctness:Lookups:0
+synth/lookups-16.dfy,Lookups (correctness),content,True,correctness:Lookups:0
+synth/spec-01.dfy,Store.Bump (well-formedness),content,True,well-formedness:StoreBump:0
+synth/spec-01.dfy,Store.Bump (correctness),content,True,correctness:StoreBump:0
+synth/spec-01.dfy,Spec (well-formedness),content,False,well-formedness:Spec:0
+synth/spec-01.dfy,Spec (correctness),content,True,correctness:Spec:0
+synth/spec-02.dfy,Store.Bump (correctness),content,True,correctness:StoreBump:0
+synth/spec-02.dfy,Store.Bump (well-formedness),content,True,well-formedness:StoreBump:0
+synth/spec-02.dfy,Spec (correctness),content,True,correctness:Spec:0
+synth/spec-02.dfy,Spec (well-formedness),unchanged,False,well-formedness:Spec:0
+synth/spec-04.dfy,Store.Bump (well-formedness),content,True,well-formedness:StoreBump:0
+synth/spec-04.dfy,Store.Bump (correctness),content,True,correctness:StoreBump:0
+synth/spec-04.dfy,Spec (correctness),content,True,correctness:Spec:0
+synth/spec-04.dfy,Spec (well-formedness),content,False,well-formedness:Spec:0
+synth/spec-08.dfy,Store.Bump (well-formedness),content,True,well-formedness:StoreBump:0
+synth/spec-08.dfy,Store.Bump (correctness),content,True,correctness:StoreBump:0
+synth/spec-08.dfy,Spec (well-formedness),unchanged,False,well-formedness:Spec:0
+synth/spec-08.dfy,Spec (correctness),content,True,correctness:Spec:0
+synth/spec-16.dfy,Store.Bump (well-formedness),content,True,well-formedness:StoreBump:0
+synth/spec-16.dfy,Store.Bump (correctness),content,True,correctness:StoreBump:0
+synth/spec-16.dfy,Spec (correctness),content,True,correctness:Spec:0
+synth/spec-16.dfy,Spec (well-formedness),content,False,well-formedness:Spec:0
+synth/update-01.dfy,Update (correctness),content,True,correctness:Update:0
+synth/update-02.dfy,Update (correctness),content,True,correctness:Update:0
+synth/update-04.dfy,Update (correctness),content,True,correctness:Update:0
+synth/update-08.dfy,Update (correctness),content,True,correctness:Update:0
+synth/update-16.dfy,Update (correctness),content,True,correctness:Update:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,Main (correctness),content,True,correctness:Main:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M2.UnionFind.FindAux (correctness),content,True,correctness:M2UnionFindFindAux:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 93),content,True,correctness:M3UnionFindJoin:92
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 148),content,True,correctness:M3UnionFindJoin:147
+lit/dafny4/UnionFind-noiso.dfy:refresh,M1.UnionFind.New (correctness),content,True,correctness:M1UnionFindNew:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.JoinMaintainsReaches1 (correctness),unchanged,False,correctness:M3UnionFindJoinMaintainsReaches1:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M1.UnionFind.Union (correctness),content,True,correctness:M1UnionFindUnion:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 40),content,True,correctness:M3UnionFindJoin:39
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 123),content,True,correctness:M3UnionFindJoin:122
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 48),content,True,correctness:M3UnionFindJoin:47
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 67),content,True,correctness:M3UnionFindJoin:66
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 128),content,True,correctness:M3UnionFindJoin:127
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 168),content,True,correctness:M3UnionFindJoin:167
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 112),content,True,correctness:M3UnionFindJoin:111
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 113),content,True,correctness:M3UnionFindJoin:112
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 35),content,True,correctness:M3UnionFindJoin:34
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 111),content,True,correctness:M3UnionFindJoin:110
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 166),content,True,correctness:M3UnionFindJoin:165
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 110),content,True,correctness:M3UnionFindJoin:109
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 122),content,True,correctness:M3UnionFindJoin:121
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 167),content,True,correctness:M3UnionFindJoin:166
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 124),content,True,correctness:M3UnionFindJoin:123
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 65),content,True,correctness:M3UnionFindJoin:64
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 27),content,True,correctness:M3UnionFindJoin:26
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 141),content,True,correctness:M3UnionFindJoin:140
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 86),content,True,correctness:M3UnionFindJoin:85
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 68),content,True,correctness:M3UnionFindJoin:67
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 66),content,True,correctness:M3UnionFindJoin:65
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 81),content,True,correctness:M3UnionFindJoin:80
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 165),content,True,correctness:M3UnionFindJoin:164
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 136),content,True,correctness:M3UnionFindJoin:135
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 118),content,True,correctness:M3UnionFindJoin:117
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 73),content,True,correctness:M3UnionFindJoin:72
+lit/dafny4/UnionFind-noiso.dfy:refresh,M1.UnionFind.ValidM1 (well-formedness),content,True,well-formedness:M1UnionFindValidM1:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 126),content,True,correctness:M3UnionFindJoin:125
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 121),content,True,correctness:M3UnionFindJoin:120
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 174),content,True,correctness:M3UnionFindJoin:173
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 184),content,True,correctness:M3UnionFindJoin:183
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 120),content,True,correctness:M3UnionFindJoin:119
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 119),content,True,correctness:M3UnionFindJoin:118
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 153),content,True,correctness:M3UnionFindJoin:152
+lit/dafny4/UnionFind-noiso.dfy:refresh,M2.UnionFind.Find (correctness),content,True,correctness:M2UnionFindFind:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M0.UnionFind.Valid (well-formedness),unchanged,False,well-formedness:M0UnionFindValid:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 125),content,True,correctness:M3UnionFindJoin:124
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 4),content,True,correctness:M3UnionFindJoin:3
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 107),content,True,correctness:M3UnionFindJoin:106
+lit/dafny4/UnionFind-noiso.dfy:refresh,M2.UnionFind.UpdateMaintainsReaches (correctness),unchanged,False,correctness:M2UnionFindUpdateMaintainsReaches:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 53),content,True,correctness:M3UnionFindJoin:52
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 109),content,True,correctness:M3UnionFindJoin:108
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 62),content,True,correctness:M3UnionFindJoin:61
+lit/dafny4/UnionFind-noiso.dfy:refresh,M1.UnionFind.Collect (well-formedness),content,True,well-formedness:M1UnionFindCollect:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 57),content,True,correctness:M3UnionFindJoin:56
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 105),content,True,correctness:M3UnionFindJoin:104
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 108),content,True,correctness:M3UnionFindJoin:107
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 179),content,True,correctness:M3UnionFindJoin:178
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 51),content,True,correctness:M3UnionFindJoin:50
+lit/dafny4/UnionFind-noiso.dfy:refresh,M2.UnionFind.NextReachesSame (correctness),content,True,correctness:M2UnionFindNextReachesSame:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 64),content,True,correctness:M3UnionFindJoin:63
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 7),content,True,correctness:M3UnionFindJoin:6
+lit/dafny4/UnionFind-noiso.dfy:refresh,M2.UnionFind.FindAux (well-formedness),content,True,well-formedness:M2UnionFindFindAux:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 61),content,True,correctness:M3UnionFindJoin:60
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 164),content,True,correctness:M3UnionFindJoin:163
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 102),content,True,correctness:M3UnionFindJoin:101
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 154),content,True,correctness:M3UnionFindJoin:153
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 54),content,True,correctness:M3UnionFindJoin:53
+lit/dafny4/UnionFind-noiso.dfy:refresh,M1.UnionFind.New (well-formedness),content,True,well-formedness:M1UnionFindNew:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 151),content,True,correctness:M3UnionFindJoin:150
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 55),content,True,correctness:M3UnionFindJoin:54
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 63),content,True,correctness:M3UnionFindJoin:62
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 172),content,True,correctness:M3UnionFindJoin:171
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 96),content,True,correctness:M3UnionFindJoin:95
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (well-formedness) (assertion batch 8),content,True,well-formedness:M3UnionFindJoin:7
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (well-formedness) (assertion batch 6),content,True,well-formedness:M3UnionFindJoin:5
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 52),content,True,correctness:M3UnionFindJoin:51
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 26),content,True,correctness:M3UnionFindJoin:25
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 135),content,True,correctness:M3UnionFindJoin:134
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 162),content,True,correctness:M3UnionFindJoin:161
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 98),content,True,correctness:M3UnionFindJoin:97
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 23),content,True,correctness:M3UnionFindJoin:22
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 97),content,True,correctness:M3UnionFindJoin:96
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 170),content,True,correctness:M3UnionFindJoin:169
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 5),content,True,correctness:M3UnionFindJoin:4
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 157),content,True,correctness:M3UnionFindJoin:156
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 131),content,True,correctness:M3UnionFindJoin:130
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 30),content,True,correctness:M3UnionFindJoin:29
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 99),content,True,correctness:M3UnionFindJoin:98
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 3),content,True,correctness:M3UnionFindJoin:2
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 163),content,True,correctness:M3UnionFindJoin:162
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 24),content,True,correctness:M3UnionFindJoin:23
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 180),content,True,correctness:M3UnionFindJoin:179
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 103),content,True,correctness:M3UnionFindJoin:102
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 60),content,True,correctness:M3UnionFindJoin:59
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.ReachUnaffectedByChangeFromRoot' (correctness),unchanged,False,correctness:M3UnionFindReachUnaffectedByChangeFromRootk:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 46),content,True,correctness:M3UnionFindJoin:45
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 77),content,True,correctness:M3UnionFindJoin:76
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (well-formedness) (assertion batch 4),content,True,well-formedness:M3UnionFindJoin:3
+lit/dafny4/UnionFind-noiso.dfy:refresh,M1.UnionFind.Join (well-formedness),content,True,well-formedness:M1UnionFindJoin:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 143),content,True,correctness:M3UnionFindJoin:142
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 42),content,True,correctness:M3UnionFindJoin:41
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 76),content,True,correctness:M3UnionFindJoin:75
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 22),content,True,correctness:M3UnionFindJoin:21
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.ExtendedReach' (correctness),unchanged,False,correctness:M3UnionFindExtendedReachk:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 44),content,True,correctness:M3UnionFindJoin:43
+lit/dafny4/UnionFind-noiso.dfy:refresh,M1.UnionFind.Union (well-formedness),content,True,well-formedness:M1UnionFindUnion:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 147),content,True,correctness:M3UnionFindJoin:146
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 152),content,True,correctness:M3UnionFindJoin:151
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 36),content,True,correctness:M3UnionFindJoin:35
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 130),content,True,correctness:M3UnionFindJoin:129
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (well-formedness) (assertion batch 5),content,True,well-formedness:M3UnionFindJoin:4
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 127),content,True,correctness:M3UnionFindJoin:126
+lit/dafny4/UnionFind-noiso.dfy:refresh,M2.UnionFind.NextReachesSame (well-formedness),content,True,well-formedness:M2UnionFindNextReachesSame:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M2.UnionFind.ConstructReach (correctness),unchanged,False,correctness:M2UnionFindConstructReach:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 145),content,True,correctness:M3UnionFindJoin:144
+lit/dafny4/UnionFind-noiso.dfy:refresh,M0.UnionFind._ctor (correctness),unchanged,False,correctness:M0UnionFindctor:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 25),content,True,correctness:M3UnionFindJoin:24
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 28),content,True,correctness:M3UnionFindJoin:27
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 2),content,True,correctness:M3UnionFindJoin:1
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 71),content,True,correctness:M3UnionFindJoin:70
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (well-formedness) (assertion batch 1),content,True,well-formedness:M3UnionFindJoin:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 17),content,True,correctness:M3UnionFindJoin:16
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 19),content,True,correctness:M3UnionFindJoin:18
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 149),content,True,correctness:M3UnionFindJoin:148
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 146),content,True,correctness:M3UnionFindJoin:145
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 116),content,True,correctness:M3UnionFindJoin:115
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 101),content,True,correctness:M3UnionFindJoin:100
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 1),content,True,correctness:M3UnionFindJoin:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 159),content,True,correctness:M3UnionFindJoin:158
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 178),content,True,correctness:M3UnionFindJoin:177
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 32),content,True,correctness:M3UnionFindJoin:31
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 39),content,True,correctness:M3UnionFindJoin:38
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 20),content,True,correctness:M3UnionFindJoin:19
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 114),content,True,correctness:M3UnionFindJoin:113
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 21),content,True,correctness:M3UnionFindJoin:20
+lit/dafny4/UnionFind-noiso.dfy:refresh,M1.UnionFind.Reaches_Monotonic (well-formedness),unchanged,False,well-formedness:M1UnionFindReachesMonotonic:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 15),content,True,correctness:M3UnionFindJoin:14
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 12),content,True,correctness:M3UnionFindJoin:11
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 181),content,True,correctness:M3UnionFindJoin:180
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 34),content,True,correctness:M3UnionFindJoin:33
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 80),content,True,correctness:M3UnionFindJoin:79
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 88),content,True,correctness:M3UnionFindJoin:87
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 10),content,True,correctness:M3UnionFindJoin:9
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 173),content,True,correctness:M3UnionFindJoin:172
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 161),content,True,correctness:M3UnionFindJoin:160
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 117),content,True,correctness:M3UnionFindJoin:116
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 92),content,True,correctness:M3UnionFindJoin:91
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 14),content,True,correctness:M3UnionFindJoin:13
+lit/dafny4/UnionFind-noiso.dfy:refresh,M1.UnionFind.Reaches (well-formedness),unchanged,False,well-formedness:M1UnionFindReaches:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 182),content,True,correctness:M3UnionFindJoin:181
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 106),content,True,correctness:M3UnionFindJoin:105
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 134),content,True,correctness:M3UnionFindJoin:133
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 160),content,True,correctness:M3UnionFindJoin:159
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 72),content,True,correctness:M3UnionFindJoin:71
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 155),content,True,correctness:M3UnionFindJoin:154
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 58),content,True,correctness:M3UnionFindJoin:57
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 133),content,True,correctness:M3UnionFindJoin:132
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 43),content,True,correctness:M3UnionFindJoin:42
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 140),content,True,correctness:M3UnionFindJoin:139
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (well-formedness) (assertion batch 7),content,True,well-formedness:M3UnionFindJoin:6
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 78),content,True,correctness:M3UnionFindJoin:77
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 100),content,True,correctness:M3UnionFindJoin:99
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 129),content,True,correctness:M3UnionFindJoin:128
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 74),content,True,correctness:M3UnionFindJoin:73
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 85),content,True,correctness:M3UnionFindJoin:84
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.ExtendedReach (correctness),unchanged,False,correctness:M3UnionFindExtendedReach:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 75),content,True,correctness:M3UnionFindJoin:74
+lit/dafny4/UnionFind-noiso.dfy:refresh,M1.UnionFind.Reaches_Monotonic (correctness),unchanged,False,correctness:M1UnionFindReachesMonotonic:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 87),content,True,correctness:M3UnionFindJoin:86
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 115),content,True,correctness:M3UnionFindJoin:114
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 137),content,True,correctness:M3UnionFindJoin:136
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 50),content,True,correctness:M3UnionFindJoin:49
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (well-formedness) (assertion batch 2),content,True,well-formedness:M3UnionFindJoin:1
+lit/dafny4/UnionFind-noiso.dfy:refresh,M0.UnionFind.Find (well-formedness),unchanged,False,well-formedness:M0UnionFindFind:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 8),content,True,correctness:M3UnionFindJoin:7
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 38),content,True,correctness:M3UnionFindJoin:37
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 37),content,True,correctness:M3UnionFindJoin:36
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 156),content,True,correctness:M3UnionFindJoin:155
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 49),content,True,correctness:M3UnionFindJoin:48
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 70),content,True,correctness:M3UnionFindJoin:69
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.JoinMaintainsReaches1 (well-formedness),unchanged,False,well-formedness:M3UnionFindJoinMaintainsReaches1:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 176),content,True,correctness:M3UnionFindJoin:175
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 84),content,True,correctness:M3UnionFindJoin:83
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 31),content,True,correctness:M3UnionFindJoin:30
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 183),content,True,correctness:M3UnionFindJoin:182
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 79),content,True,correctness:M3UnionFindJoin:78
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 104),content,True,correctness:M3UnionFindJoin:103
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.JoinMaintainsReaches0 (correctness),unchanged,False,correctness:M3UnionFindJoinMaintainsReaches0:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 59),content,True,correctness:M3UnionFindJoin:58
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 18),content,True,correctness:M3UnionFindJoin:17
+lit/dafny4/UnionFind-noiso.dfy:refresh,M0.UnionFind.Union (well-formedness),content,True,well-formedness:M0UnionFindUnion:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.ReachUnaffectedByChangeFromRoot (correctness),unchanged,False,correctness:M3UnionFindReachUnaffectedByChangeFromRoot:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 45),content,True,correctness:M3UnionFindJoin:44
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 132),content,True,correctness:M3UnionFindJoin:131
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 139),content,True,correctness:M3UnionFindJoin:138
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 177),content,True,correctness:M3UnionFindJoin:176
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 13),content,True,correctness:M3UnionFindJoin:12
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 83),content,True,correctness:M3UnionFindJoin:82
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 29),content,True,correctness:M3UnionFindJoin:28
+lit/dafny4/UnionFind-noiso.dfy:refresh,M2.UnionFind.Reaches_SinkIsFunctionOfStart (correctness),unchanged,False,correctness:M2UnionFindReachesSinkIsFunctionOfStart:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 158),content,True,correctness:M3UnionFindJoin:157
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 144),content,True,correctness:M3UnionFindJoin:143
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 94),content,True,correctness:M3UnionFindJoin:93
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 142),content,True,correctness:M3UnionFindJoin:141
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 69),content,True,correctness:M3UnionFindJoin:68
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 138),content,True,correctness:M3UnionFindJoin:137
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.JoinMaintainsReaches0 (well-formedness),unchanged,False,well-formedness:M3UnionFindJoinMaintainsReaches0:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 169),content,True,correctness:M3UnionFindJoin:168
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 47),content,True,correctness:M3UnionFindJoin:46
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 33),content,True,correctness:M3UnionFindJoin:32
+lit/dafny4/UnionFind-noiso.dfy:refresh,M0.UnionFind.New (well-formedness),unchanged,False,well-formedness:M0UnionFindNew:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 82),content,True,correctness:M3UnionFindJoin:81
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 41),content,True,correctness:M3UnionFindJoin:40
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 95),content,True,correctness:M3UnionFindJoin:94
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 89),content,True,correctness:M3UnionFindJoin:88
+lit/dafny4/UnionFind-noiso.dfy:refresh,M0.UnionFind.ValidM1 (well-formedness),unchanged,False,well-formedness:M0UnionFindValidM1:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 90),content,True,correctness:M3UnionFindJoin:89
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 6),content,True,correctness:M3UnionFindJoin:5
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 11),content,True,correctness:M3UnionFindJoin:10
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 91),content,True,correctness:M3UnionFindJoin:90
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.ExtendedReach' (well-formedness),unchanged,False,well-formedness:M3UnionFindExtendedReachk:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 56),content,True,correctness:M3UnionFindJoin:55
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 171),content,True,correctness:M3UnionFindJoin:170
+lit/dafny4/UnionFind-noiso.dfy:refresh,M1.GoodCMap (well-formedness),unchanged,False,well-formedness:M1GoodCMap:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (well-formedness) (assertion batch 3),content,True,well-formedness:M3UnionFindJoin:2
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 175),content,True,correctness:M3UnionFindJoin:174
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 16),content,True,correctness:M3UnionFindJoin:15
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 150),content,True,correctness:M3UnionFindJoin:149
+lit/dafny4/UnionFind-noiso.dfy:refresh,M2.UnionFind.Find (well-formedness),content,True,well-formedness:M2UnionFindFind:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.ReachUnaffectedByChangeFromRoot' (well-formedness),group,False,well-formedness:M3UnionFindReachUnaffectedByChangeFromRootk*
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.Join (correctness) (assertion batch 9),content,True,correctness:M3UnionFindJoin:8
+lit/dafny4/UnionFind-noiso.dfy:refresh,M2.UnionFind.UpdateMaintainsReaches (well-formedness),unchanged,False,well-formedness:M2UnionFindUpdateMaintainsReaches:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M2.UnionFind.Reaches_SinkIsFunctionOfStart (well-formedness),unmapped,,
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.ExtendedReach (well-formedness),unchanged,False,well-formedness:M3UnionFindExtendedReach:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M2.UnionFind.ConstructReach (well-formedness),unchanged,False,well-formedness:M2UnionFindConstructReach:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M3.UnionFind.ReachUnaffectedByChangeFromRoot (well-formedness),unmapped,,
+lit/dafny4/UnionFind-noiso.dfy:refresh,M1.MapsEqual (well-formedness),unchanged,False,well-formedness:M1MapsEqual:0
+lit/dafny4/UnionFind-noiso.dfy:refresh,M1.MapsEqual (correctness),unchanged,False,correctness:M1MapsEqual:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,Main (correctness),content,True,correctness:Main:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M2.UnionFind.FindAux (correctness),content,True,correctness:M2UnionFindFindAux:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 124),content,True,correctness:M3UnionFindJoin:123
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 119),content,True,correctness:M3UnionFindJoin:118
+lit/dafny4/UnionFind-noiso.dfy:legacy,M1.UnionFind.New (correctness),content,True,correctness:M1UnionFindNew:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 143),content,True,correctness:M3UnionFindJoin:142
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.JoinMaintainsReaches1 (correctness),unchanged,False,correctness:M3UnionFindJoinMaintainsReaches1:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 90),content,True,correctness:M3UnionFindJoin:89
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 47),content,True,correctness:M3UnionFindJoin:46
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 34),content,True,correctness:M3UnionFindJoin:33
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 109),content,True,correctness:M3UnionFindJoin:108
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 65),content,True,correctness:M3UnionFindJoin:64
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 162),content,True,correctness:M3UnionFindJoin:161
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 66),content,True,correctness:M3UnionFindJoin:65
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 161),content,True,correctness:M3UnionFindJoin:160
+lit/dafny4/UnionFind-noiso.dfy:legacy,M1.UnionFind.Union (correctness),content,True,correctness:M1UnionFindUnion:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 27),content,True,correctness:M3UnionFindJoin:26
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 160),content,True,correctness:M3UnionFindJoin:159
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 78),content,True,correctness:M3UnionFindJoin:77
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 120),content,True,correctness:M3UnionFindJoin:119
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 131),content,True,correctness:M3UnionFindJoin:130
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 118),content,True,correctness:M3UnionFindJoin:117
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 63),content,True,correctness:M3UnionFindJoin:62
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 108),content,True,correctness:M3UnionFindJoin:107
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 107),content,True,correctness:M3UnionFindJoin:106
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 39),content,True,correctness:M3UnionFindJoin:38
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 159),content,True,correctness:M3UnionFindJoin:158
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 64),content,True,correctness:M3UnionFindJoin:63
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 114),content,True,correctness:M3UnionFindJoin:113
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 71),content,True,correctness:M3UnionFindJoin:70
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 106),content,True,correctness:M3UnionFindJoin:105
+lit/dafny4/UnionFind-noiso.dfy:legacy,M1.UnionFind.ValidM1 (well-formedness),content,True,well-formedness:M1UnionFindValidM1:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 136),content,True,correctness:M3UnionFindJoin:135
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 117),content,True,correctness:M3UnionFindJoin:116
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 83),content,True,correctness:M3UnionFindJoin:82
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 121),content,True,correctness:M3UnionFindJoin:120
+lit/dafny4/UnionFind-noiso.dfy:legacy,M2.UnionFind.Find (correctness),content,True,correctness:M2UnionFindFind:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M2.UnionFind.Find (well-formedness),content,True,well-formedness:M2UnionFindFind:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M1.UnionFind.New (well-formedness),content,True,well-formedness:M1UnionFindNew:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 59),content,True,correctness:M3UnionFindJoin:58
+lit/dafny4/UnionFind-noiso.dfy:legacy,M0.UnionFind.New (well-formedness),unchanged,False,well-formedness:M0UnionFindNew:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 51),content,True,correctness:M3UnionFindJoin:50
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 122),content,True,correctness:M3UnionFindJoin:121
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 115),content,True,correctness:M3UnionFindJoin:114
+lit/dafny4/UnionFind-noiso.dfy:legacy,M1.UnionFind.Collect (well-formedness),content,True,well-formedness:M1UnionFindCollect:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 104),content,True,correctness:M3UnionFindJoin:103
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 60),content,True,correctness:M3UnionFindJoin:59
+lit/dafny4/UnionFind-noiso.dfy:legacy,M0.UnionFind.Valid (well-formedness),unchanged,False,well-formedness:M0UnionFindValid:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 116),content,True,correctness:M3UnionFindJoin:115
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 147),content,True,correctness:M3UnionFindJoin:146
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 95),content,True,correctness:M3UnionFindJoin:94
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 149),content,True,correctness:M3UnionFindJoin:148
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 148),content,True,correctness:M3UnionFindJoin:147
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 61),content,True,correctness:M3UnionFindJoin:60
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 52),content,True,correctness:M3UnionFindJoin:51
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 93),content,True,correctness:M3UnionFindJoin:92
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 26),content,True,correctness:M3UnionFindJoin:25
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 157),content,True,correctness:M3UnionFindJoin:156
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 105),content,True,correctness:M3UnionFindJoin:104
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 55),content,True,correctness:M3UnionFindJoin:54
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 141),content,True,correctness:M3UnionFindJoin:140
+lit/dafny4/UnionFind-noiso.dfy:legacy,M2.UnionFind.FindAux (well-formedness),content,True,well-formedness:M2UnionFindFindAux:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 94),content,True,correctness:M3UnionFindJoin:93
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 70),content,True,correctness:M3UnionFindJoin:69
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 45),content,True,correctness:M3UnionFindJoin:44
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 50),content,True,correctness:M3UnionFindJoin:49
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 41),content,True,correctness:M3UnionFindJoin:40
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 156),content,True,correctness:M3UnionFindJoin:155
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 98),content,True,correctness:M3UnionFindJoin:97
+lit/dafny4/UnionFind-noiso.dfy:legacy,M1.UnionFind.Reaches_Monotonic (correctness),unchanged,False,correctness:M1UnionFindReachesMonotonic:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M1.UnionFind.Union (well-formedness),content,True,well-formedness:M1UnionFindUnion:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 151),content,True,correctness:M3UnionFindJoin:150
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 96),content,True,correctness:M3UnionFindJoin:95
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 158),content,True,correctness:M3UnionFindJoin:157
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 53),content,True,correctness:M3UnionFindJoin:52
+lit/dafny4/UnionFind-noiso.dfy:legacy,M0.UnionFind._ctor (correctness),unchanged,False,correctness:M0UnionFindctor:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 146),content,True,correctness:M3UnionFindJoin:145
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 103),content,True,correctness:M3UnionFindJoin:102
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 44),content,True,correctness:M3UnionFindJoin:43
+lit/dafny4/UnionFind-noiso.dfy:legacy,M1.UnionFind.Join (well-formedness),content,True,well-formedness:M1UnionFindJoin:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 62),content,True,correctness:M3UnionFindJoin:61
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 142),content,True,correctness:M3UnionFindJoin:141
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 140),content,True,correctness:M3UnionFindJoin:139
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 87),content,True,correctness:M3UnionFindJoin:86
+lit/dafny4/UnionFind-noiso.dfy:legacy,M1.UnionFind.Reaches (well-formedness),unchanged,False,well-formedness:M1UnionFindReaches:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.ExtendedReach' (correctness),unchanged,False,correctness:M3UnionFindExtendedReachk:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M1.UnionFind.Reaches_Monotonic (well-formedness),unchanged,False,well-formedness:M1UnionFindReachesMonotonic:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M0.UnionFind.Find (well-formedness),unchanged,False,well-formedness:M0UnionFindFind:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.ReachUnaffectedByChangeFromRoot' (correctness),unchanged,False,correctness:M3UnionFindReachUnaffectedByChangeFromRootk:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 67),content,True,correctness:M3UnionFindJoin:66
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 113),content,True,correctness:M3UnionFindJoin:112
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 58),content,True,correctness:M3UnionFindJoin:57
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 3),content,True,correctness:M3UnionFindJoin:2
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 4),content,True,correctness:M3UnionFindJoin:3
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 48),content,True,correctness:M3UnionFindJoin:47
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 155),content,True,correctness:M3UnionFindJoin:154
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 82),content,True,correctness:M3UnionFindJoin:81
+lit/dafny4/UnionFind-noiso.dfy:legacy,M0.UnionFind.ValidM1 (well-formedness),unchanged,False,well-formedness:M0UnionFindValidM1:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 84),content,True,correctness:M3UnionFindJoin:83
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 35),content,True,correctness:M3UnionFindJoin:34
+lit/dafny4/UnionFind-noiso.dfy:legacy,M2.UnionFind.NextReachesSame (correctness),content,True,correctness:M2UnionFindNextReachesSame:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 69),content,True,correctness:M3UnionFindJoin:68
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 57),content,True,correctness:M3UnionFindJoin:56
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 75),content,True,correctness:M3UnionFindJoin:74
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 154),content,True,correctness:M3UnionFindJoin:153
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 132),content,True,correctness:M3UnionFindJoin:131
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 88),content,True,correctness:M3UnionFindJoin:87
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.JoinMaintainsReaches0 (correctness),unchanged,False,correctness:M3UnionFindJoinMaintainsReaches0:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 79),content,True,correctness:M3UnionFindJoin:78
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 29),content,True,correctness:M3UnionFindJoin:28
+lit/dafny4/UnionFind-noiso.dfy:legacy,M2.UnionFind.Reaches_SinkIsFunctionOfStart (well-formedness),unmapped,,
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 128),content,True,correctness:M3UnionFindJoin:127
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 22),content,True,correctness:M3UnionFindJoin:21
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 23),content,True,correctness:M3UnionFindJoin:22
+lit/dafny4/UnionFind-noiso.dfy:legacy,M2.UnionFind.ConstructReach (correctness),unchanged,False,correctness:M2UnionFindConstructReach:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 21),content,True,correctness:M3UnionFindJoin:20
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 31),content,True,correctness:M3UnionFindJoin:30
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 15),content,True,correctness:M3UnionFindJoin:14
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 18),content,True,correctness:M3UnionFindJoin:17
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 167),content,True,correctness:M3UnionFindJoin:166
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.ExtendedReach (correctness),unchanged,False,correctness:M3UnionFindExtendedReach:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 33),content,True,correctness:M3UnionFindJoin:32
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 102),content,True,correctness:M3UnionFindJoin:101
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 123),content,True,correctness:M3UnionFindJoin:122
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.ExtendedReach' (well-formedness),unchanged,False,well-formedness:M3UnionFindExtendedReachk:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (well-formedness) (assertion batch 1),content,True,well-formedness:M3UnionFindJoin:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 73),content,True,correctness:M3UnionFindJoin:72
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 126),content,True,correctness:M3UnionFindJoin:125
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 14),content,True,correctness:M3UnionFindJoin:13
+lit/dafny4/UnionFind-noiso.dfy:legacy,M2.UnionFind.UpdateMaintainsReaches (correctness),unchanged,False,correctness:M2UnionFindUpdateMaintainsReaches:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 137),content,True,correctness:M3UnionFindJoin:136
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 86),content,True,correctness:M3UnionFindJoin:85
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 101),content,True,correctness:M3UnionFindJoin:100
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 92),content,True,correctness:M3UnionFindJoin:91
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 20),content,True,correctness:M3UnionFindJoin:19
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 6),content,True,correctness:M3UnionFindJoin:5
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 130),content,True,correctness:M3UnionFindJoin:129
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 76),content,True,correctness:M3UnionFindJoin:75
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 42),content,True,correctness:M3UnionFindJoin:41
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 13),content,True,correctness:M3UnionFindJoin:12
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (well-formedness) (assertion batch 7),content,True,well-formedness:M3UnionFindJoin:6
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 172),content,True,correctness:M3UnionFindJoin:171
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 49),content,True,correctness:M3UnionFindJoin:48
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 25),content,True,correctness:M3UnionFindJoin:24
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 80),content,True,correctness:M3UnionFindJoin:79
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 138),content,True,correctness:M3UnionFindJoin:137
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 54),content,True,correctness:M3UnionFindJoin:53
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 177),content,True,correctness:M3UnionFindJoin:176
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 77),content,True,correctness:M3UnionFindJoin:76
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 56),content,True,correctness:M3UnionFindJoin:55
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (well-formedness) (assertion batch 8),content,True,well-formedness:M3UnionFindJoin:7
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 2),content,True,correctness:M3UnionFindJoin:1
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 150),content,True,correctness:M3UnionFindJoin:149
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 129),content,True,correctness:M3UnionFindJoin:128
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 174),content,True,correctness:M3UnionFindJoin:173
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 164),content,True,correctness:M3UnionFindJoin:163
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 1),content,True,correctness:M3UnionFindJoin:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 16),content,True,correctness:M3UnionFindJoin:15
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 74),content,True,correctness:M3UnionFindJoin:73
+lit/dafny4/UnionFind-noiso.dfy:legacy,M0.UnionFind.Union (well-formedness),content,True,well-formedness:M0UnionFindUnion:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 17),content,True,correctness:M3UnionFindJoin:16
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 169),content,True,correctness:M3UnionFindJoin:168
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 111),content,True,correctness:M3UnionFindJoin:110
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 89),content,True,correctness:M3UnionFindJoin:88
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 144),content,True,correctness:M3UnionFindJoin:143
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 24),content,True,correctness:M3UnionFindJoin:23
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 153),content,True,correctness:M3UnionFindJoin:152
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 30),content,True,correctness:M3UnionFindJoin:29
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 43),content,True,correctness:M3UnionFindJoin:42
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 97),content,True,correctness:M3UnionFindJoin:96
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 173),content,True,correctness:M3UnionFindJoin:172
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 99),content,True,correctness:M3UnionFindJoin:98
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 100),content,True,correctness:M3UnionFindJoin:99
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 5),content,True,correctness:M3UnionFindJoin:4
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 72),content,True,correctness:M3UnionFindJoin:71
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 127),content,True,correctness:M3UnionFindJoin:126
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 91),content,True,correctness:M3UnionFindJoin:90
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 171),content,True,correctness:M3UnionFindJoin:170
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 37),content,True,correctness:M3UnionFindJoin:36
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 11),content,True,correctness:M3UnionFindJoin:10
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 134),content,True,correctness:M3UnionFindJoin:133
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 36),content,True,correctness:M3UnionFindJoin:35
+lit/dafny4/UnionFind-noiso.dfy:legacy,M2.UnionFind.Reaches_SinkIsFunctionOfStart (correctness),unchanged,False,correctness:M2UnionFindReachesSinkIsFunctionOfStart:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 135),content,True,correctness:M3UnionFindJoin:134
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 175),content,True,correctness:M3UnionFindJoin:174
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 125),content,True,correctness:M3UnionFindJoin:124
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 40),content,True,correctness:M3UnionFindJoin:39
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 38),content,True,correctness:M3UnionFindJoin:37
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (well-formedness) (assertion batch 3),content,True,well-formedness:M3UnionFindJoin:2
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 139),content,True,correctness:M3UnionFindJoin:138
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 133),content,True,correctness:M3UnionFindJoin:132
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 85),content,True,correctness:M3UnionFindJoin:84
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 28),content,True,correctness:M3UnionFindJoin:27
+lit/dafny4/UnionFind-noiso.dfy:legacy,M2.UnionFind.ConstructReach (well-formedness),unchanged,False,well-formedness:M2UnionFindConstructReach:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M2.UnionFind.NextReachesSame (well-formedness),content,True,well-formedness:M2UnionFindNextReachesSame:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (well-formedness) (assertion batch 2),content,True,well-formedness:M3UnionFindJoin:1
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 7),content,True,correctness:M3UnionFindJoin:6
+lit/dafny4/UnionFind-noiso.dfy:legacy,M1.GoodCMap (well-formedness),unchanged,False,well-formedness:M1GoodCMap:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 19),content,True,correctness:M3UnionFindJoin:18
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 170),content,True,correctness:M3UnionFindJoin:169
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 168),content,True,correctness:M3UnionFindJoin:167
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 176),content,True,correctness:M3UnionFindJoin:175
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (well-formedness) (assertion batch 4),content,True,well-formedness:M3UnionFindJoin:3
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 110),content,True,correctness:M3UnionFindJoin:109
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.ReachUnaffectedByChangeFromRoot (correctness),unchanged,False,correctness:M3UnionFindReachUnaffectedByChangeFromRoot:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 8),content,True,correctness:M3UnionFindJoin:7
+lit/dafny4/UnionFind-noiso.dfy:legacy,M2.UnionFind.UpdateMaintainsReaches (well-formedness),unchanged,False,well-formedness:M2UnionFindUpdateMaintainsReaches:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 152),content,True,correctness:M3UnionFindJoin:151
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 145),content,True,correctness:M3UnionFindJoin:144
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 81),content,True,correctness:M3UnionFindJoin:80
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.ExtendedReach (well-formedness),unchanged,False,well-formedness:M3UnionFindExtendedReach:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 46),content,True,correctness:M3UnionFindJoin:45
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 166),content,True,correctness:M3UnionFindJoin:165
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 32),content,True,correctness:M3UnionFindJoin:31
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 68),content,True,correctness:M3UnionFindJoin:67
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 12),content,True,correctness:M3UnionFindJoin:11
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 112),content,True,correctness:M3UnionFindJoin:111
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (well-formedness) (assertion batch 5),content,True,well-formedness:M3UnionFindJoin:4
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.JoinMaintainsReaches1 (well-formedness),unchanged,False,well-formedness:M3UnionFindJoinMaintainsReaches1:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (well-formedness) (assertion batch 6),content,True,well-formedness:M3UnionFindJoin:5
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 9),content,True,correctness:M3UnionFindJoin:8
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.JoinMaintainsReaches0 (well-formedness),unchanged,False,well-formedness:M3UnionFindJoinMaintainsReaches0:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 163),content,True,correctness:M3UnionFindJoin:162
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 165),content,True,correctness:M3UnionFindJoin:164
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.Join (correctness) (assertion batch 10),content,True,correctness:M3UnionFindJoin:9
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.ReachUnaffectedByChangeFromRoot' (well-formedness),group,False,well-formedness:M3UnionFindReachUnaffectedByChangeFromRootk*
+lit/dafny4/UnionFind-noiso.dfy:legacy,M1.MapsEqual (correctness),unchanged,False,correctness:M1MapsEqual:0
+lit/dafny4/UnionFind-noiso.dfy:legacy,M3.UnionFind.ReachUnaffectedByChangeFromRoot (well-formedness),unmapped,,
+lit/dafny4/UnionFind-noiso.dfy:legacy,M1.MapsEqual (well-formedness),unchanged,False,well-formedness:M1MapsEqual:0
+lit/proof-obligation-desc/comprehension-no-alias.dfy:legacy,ComprehensionNoAlias (well-formedness),group,True,well-formedness:Comprehensi*

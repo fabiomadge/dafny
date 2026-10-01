@@ -1,0 +1,3073 @@
+[
+ {
+  "id": "lit/VSI-Benchmarks/b4.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/VSI-Benchmarks",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/VSI-Benchmarks/b4.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/VSI-Benchmarks/b4.dfy:legacy",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/VSI-Benchmarks",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/VSI-Benchmarks/b4.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/cloudmake/CloudMake-ParallelBuilds.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/cloudmake",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--relax-definite-assignment",
+   "--manual-triggers",
+   "--allow-deprecation",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/cloudmake/CloudMake-ParallelBuilds.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/cloudmake/CloudMake-ParallelBuilds.dfy:legacy",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/cloudmake",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "--relax-definite-assignment",
+   "--manual-triggers",
+   "--allow-deprecation",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/cloudmake/CloudMake-ParallelBuilds.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/comp/Calls.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--relax-definite-assignment",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/Calls.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/comp/Calls.dfy:legacy",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "--relax-definite-assignment",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/Calls.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/comp/Comprehensions.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--relax-definite-assignment",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/Comprehensions.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/comp/Comprehensions.dfy:legacy",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "--relax-definite-assignment",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/Comprehensions.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/comp/ComprehensionsNewSyntax.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--relax-definite-assignment",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/ComprehensionsNewSyntax.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/comp/ComprehensionsNewSyntax.dfy:legacy",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "--relax-definite-assignment",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/ComprehensionsNewSyntax.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/comp/CovariantCollections.dfy:pinned",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "--relax-definite-assignment",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/CovariantCollections.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/comp/firstSteps/6_Calls-VariableCapture.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/firstSteps",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--relax-definite-assignment",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/firstSteps/6_Calls-VariableCapture.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/comp/firstSteps/6_Calls-VariableCapture.dfy:legacy",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/firstSteps",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "--relax-definite-assignment",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/firstSteps/6_Calls-VariableCapture.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/comp/rust/loops.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/rust",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--enforce-determinism",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/rust/loops.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/comp/rust/loops.dfy:legacy",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/rust",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "--enforce-determinism",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/rust/loops.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/comp/rust/operators.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/rust",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--enforce-determinism",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/rust/operators.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/comp/rust/operators.dfy:legacy",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/rust",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "--enforce-determinism",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/rust/operators.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny0/BitvectorResolution.dfy:pinned",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/BitvectorResolution.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny0/Compilation.legacy.dfy:pinned",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--allow-deprecation",
+   "--manual-triggers",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/Compilation.legacy.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny0/DiscoverBounds.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--allow-warnings",
+   "--relax-definite-assignment",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/DiscoverBounds.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny0/DiscoverBounds.dfy:legacy",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "--allow-warnings",
+   "--relax-definite-assignment",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/DiscoverBounds.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny0/DiscoverBoundsErrors.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/DiscoverBoundsErrors.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny0/DiscoverBoundsErrors.dfy:legacy",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/DiscoverBoundsErrors.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny0/GeneralNewtypeCollections.dfy:pinned",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=true",
+   "--general-newtypes=true",
+   "--general-traits=datatype",
+   "--reads-clauses-on-methods",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/GeneralNewtypeCollections.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny0/GeneralNewtypeCollectionsGeneric.dfy:pinned",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=true",
+   "--general-newtypes=true",
+   "--general-traits=datatype",
+   "--reads-clauses-on-methods",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/GeneralNewtypeCollectionsGeneric.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny0/GeneralNewtypeMemberCompile.dfy:pinned",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=true",
+   "--general-newtypes=true",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/GeneralNewtypeMemberCompile.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny0/IMaps.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--allow-deprecation",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/IMaps.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny0/IMaps.dfy:legacy",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "--allow-deprecation",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/IMaps.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny0/ISets.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/ISets.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny0/ISets.dfy:legacy",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/ISets.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny0/Maps.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--relax-definite-assignment",
+   "--allow-deprecation",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/Maps.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny0/Maps.dfy:legacy",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "--relax-definite-assignment",
+   "--allow-deprecation",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/Maps.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny0/QuantificationNewSyntaxResolution.dfy:pinned",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/QuantificationNewSyntaxResolution.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny0/ResolutionErrors5.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--allow-axioms",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/ResolutionErrors5.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny0/ResolutionErrors5.dfy:legacy",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "--allow-axioms",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/ResolutionErrors5.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny0/RestrictedBoundedPools.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/RestrictedBoundedPools.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny0/RestrictedBoundedPools.dfy:legacy",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/RestrictedBoundedPools.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny0/TypeAdjustments.dfy:pinned",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--relax-definite-assignment",
+   "--type-system-refresh",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/TypeAdjustments.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny4/Bug108.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--relax-definite-assignment",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4/Bug108.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny4/Bug108.dfy:legacy",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "--relax-definite-assignment",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4/Bug108.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny4/Bug114.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4/Bug114.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny4/Bug114.dfy:legacy",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4/Bug114.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny4/Bug54.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4/Bug54.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny4/Bug54.dfy:legacy",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4/Bug54.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny4/Bug58.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4/Bug58.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny4/Bug58.dfy:legacy",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4/Bug58.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny4/KozenSilva.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4/KozenSilva.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny4/KozenSilva.dfy:legacy",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4/KozenSilva.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny4/Regression1.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--allow-warnings",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4/Regression1.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny4/Regression1.dfy:legacy",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "--allow-warnings",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4/Regression1.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny4/Regression19.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4/Regression19.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny4/Regression19.dfy:legacy",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4/Regression19.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny4/UnionFind.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--relax-definite-assignment",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4/UnionFind.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny4/UnionFind.dfy:legacy",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "--relax-definite-assignment",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4/UnionFind.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny4/git-issue158.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4/git-issue158.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny4/git-issue158.dfy:legacy",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4/git-issue158.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny4/git-issue167.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4/git-issue167.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny4/git-issue167.dfy:legacy",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4/git-issue167.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny4/git-issue27.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4/git-issue27.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny4/git-issue27.dfy:legacy",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4/git-issue27.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny4/git-issue75.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--allow-warnings",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4/git-issue75.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny4/git-issue75.dfy:legacy",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "--allow-warnings",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4/git-issue75.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny4/parse-errors.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--show-snippets:false",
+   "--use-basename-for-filename",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4/parse-errors.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny4/parse-errors.dfy:legacy",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "--show-snippets:false",
+   "--use-basename-for-filename",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4/parse-errors.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/git-issues/git-issue-1158.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-1158.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/git-issues/git-issue-1158.dfy:legacy",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-1158.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/git-issues/git-issue-1163.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-1163.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/git-issues/git-issue-1163.dfy:legacy",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-1163.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/git-issues/git-issue-1165.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-1165.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/git-issues/git-issue-1165.dfy:legacy",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-1165.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/git-issues/git-issue-3320.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-3320.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/git-issues/git-issue-3320.dfy:legacy",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-3320.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/git-issues/git-issue-336.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-336.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/git-issues/git-issue-336.dfy:legacy",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-336.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/git-issues/git-issue-3855.dfy:pinned",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--show-snippets:false",
+   "--allow-axioms",
+   "--allow-deprecation",
+   "--use-basename-for-filename",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-3855.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/git-issues/git-issue-5285.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-5285.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/git-issues/git-issue-5285.dfy:legacy",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-5285.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/git-issues/git-issue-6535.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-6535.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/git-issues/git-issue-6535.dfy:legacy",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-6535.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/git-issues/git-issue-697b.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--relax-definite-assignment",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-697b.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/git-issues/git-issue-697b.dfy:legacy",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "--relax-definite-assignment",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-697b.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/git-issues/git-issue-697c.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-697c.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/git-issues/git-issue-697c.dfy:legacy",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-697c.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/git-issues/git-issue-851.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--allow-axioms",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-851.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/git-issues/git-issue-851.dfy:legacy",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "--allow-axioms",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-851.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "std/Collections/Imap.dfy",
+  "kind": "std",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/DafnyStandardLibraries/src/Std",
+  "args": [
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/DafnyStandardLibraries/src/Std/dfyconfig.toml",
+   "--filter-position=Collections/Imap.dfy"
+  ],
+  "limit": 5000000.0
+ },
+ {
+  "id": "std/Collections/Map.dfy",
+  "kind": "std",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/DafnyStandardLibraries/src/Std",
+  "args": [
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/DafnyStandardLibraries/src/Std/dfyconfig.toml",
+   "--filter-position=Collections/Map.dfy"
+  ],
+  "limit": 5000000.0
+ },
+ {
+  "id": "std/Parsers/Core/ParsersBuilders.dfy",
+  "kind": "std",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/DafnyStandardLibraries/src/Std",
+  "args": [
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/DafnyStandardLibraries/src/Std/dfyconfig.toml",
+   "--filter-position=Parsers/Core/ParsersBuilders.dfy"
+  ],
+  "limit": 5000000.0
+ },
+ {
+  "id": "synth/chain-01.dfy",
+  "kind": "synth",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth/chain-01.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "synth/chain-02.dfy",
+  "kind": "synth",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth/chain-02.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "synth/chain-04.dfy",
+  "kind": "synth",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth/chain-04.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "synth/chain-08.dfy",
+  "kind": "synth",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth/chain-08.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "synth/chain-16.dfy",
+  "kind": "synth",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth/chain-16.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "synth/equal-01.dfy",
+  "kind": "synth",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth/equal-01.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "synth/equal-02.dfy",
+  "kind": "synth",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth/equal-02.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "synth/equal-04.dfy",
+  "kind": "synth",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth/equal-04.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "synth/equal-08.dfy",
+  "kind": "synth",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth/equal-08.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "synth/equal-16.dfy",
+  "kind": "synth",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth/equal-16.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "synth/ichain-01.dfy",
+  "kind": "synth",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth/ichain-01.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "synth/ichain-02.dfy",
+  "kind": "synth",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth/ichain-02.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "synth/ichain-04.dfy",
+  "kind": "synth",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth/ichain-04.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "synth/ichain-08.dfy",
+  "kind": "synth",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth/ichain-08.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "synth/ichain-16.dfy",
+  "kind": "synth",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth/ichain-16.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "synth/ilookups-01.dfy",
+  "kind": "synth",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth/ilookups-01.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "synth/ilookups-02.dfy",
+  "kind": "synth",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth/ilookups-02.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "synth/ilookups-04.dfy",
+  "kind": "synth",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth/ilookups-04.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "synth/ilookups-08.dfy",
+  "kind": "synth",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth/ilookups-08.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "synth/ilookups-16.dfy",
+  "kind": "synth",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth/ilookups-16.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "synth/keyed-01.dfy",
+  "kind": "synth",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth/keyed-01.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "synth/keyed-02.dfy",
+  "kind": "synth",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth/keyed-02.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "synth/keyed-04.dfy",
+  "kind": "synth",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth/keyed-04.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "synth/keyed-08.dfy",
+  "kind": "synth",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth/keyed-08.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "synth/keyed-16.dfy",
+  "kind": "synth",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth/keyed-16.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "synth/lookups-01.dfy",
+  "kind": "synth",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth/lookups-01.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "synth/lookups-02.dfy",
+  "kind": "synth",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth/lookups-02.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "synth/lookups-04.dfy",
+  "kind": "synth",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth/lookups-04.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "synth/lookups-08.dfy",
+  "kind": "synth",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth/lookups-08.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "synth/lookups-16.dfy",
+  "kind": "synth",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth/lookups-16.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "synth/spec-01.dfy",
+  "kind": "synth",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth/spec-01.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "synth/spec-02.dfy",
+  "kind": "synth",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth/spec-02.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "synth/spec-04.dfy",
+  "kind": "synth",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth/spec-04.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "synth/spec-08.dfy",
+  "kind": "synth",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth/spec-08.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "synth/spec-16.dfy",
+  "kind": "synth",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth/spec-16.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "synth/update-01.dfy",
+  "kind": "synth",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth/update-01.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "synth/update-02.dfy",
+  "kind": "synth",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth/update-02.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "synth/update-04.dfy",
+  "kind": "synth",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth/update-04.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "synth/update-08.dfy",
+  "kind": "synth",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth/update-08.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "synth/update-16.dfy",
+  "kind": "synth",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/bench/synth/update-16.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny4/UnionFind-noiso.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/uf",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--relax-definite-assignment",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/uf/UnionFind-noiso.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny4/UnionFind-noiso.dfy:legacy",
+  "kind": "lit",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/uf",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "--relax-definite-assignment",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/uf/UnionFind-noiso.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/proof-obligation-desc/comprehension-no-alias.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/proof-obligation-desc",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--show-proof-obligation-expressions",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/proof-obligation-desc/comprehension-no-alias.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/proof-obligation-desc/comprehension-no-alias.dfy:legacy",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/proof-obligation-desc",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "--show-proof-obligation-expressions",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/proof-obligation-desc/comprehension-no-alias.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "dafnybench/Clover_convert_map_key.dfy",
+  "kind": "dafnybench",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/DafnyBench-main/DafnyBench/dataset/ground_truth",
+  "limit": 50000000.0,
+  "args": [
+   "--allow-warnings",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/DafnyBench-main/DafnyBench/dataset/ground_truth/Clover_convert_map_key.dfy"
+  ]
+ },
+ {
+  "id": "dafnybench/Clover_update_map.dfy",
+  "kind": "dafnybench",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/DafnyBench-main/DafnyBench/dataset/ground_truth",
+  "limit": 50000000.0,
+  "args": [
+   "--allow-warnings",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/DafnyBench-main/DafnyBench/dataset/ground_truth/Clover_update_map.dfy"
+  ]
+ },
+ {
+  "id": "dafnybench/DafnyProjects_tmp_tmp2acw_s4s_RawSort.dfy",
+  "kind": "dafnybench",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/DafnyBench-main/DafnyBench/dataset/ground_truth",
+  "limit": 50000000.0,
+  "args": [
+   "--allow-warnings",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/DafnyBench-main/DafnyBench/dataset/ground_truth/DafnyProjects_tmp_tmp2acw_s4s_RawSort.dfy"
+  ]
+ },
+ {
+  "id": "dafnybench/dafny-programs_tmp_tmpcwodh6qh_src_ticketsystem.dfy",
+  "kind": "dafnybench",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/DafnyBench-main/DafnyBench/dataset/ground_truth",
+  "limit": 50000000.0,
+  "args": [
+   "--allow-warnings",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/DafnyBench-main/DafnyBench/dataset/ground_truth/dafny-programs_tmp_tmpcwodh6qh_src_ticketsystem.dfy"
+  ]
+ },
+ {
+  "id": "dafnybench/dafny_experiments_tmp_tmpz29_3_3i_circuit.dfy",
+  "kind": "dafnybench",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/DafnyBench-main/DafnyBench/dataset/ground_truth",
+  "limit": 50000000.0,
+  "args": [
+   "--allow-warnings",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/DafnyBench-main/DafnyBench/dataset/ground_truth/dafny_experiments_tmp_tmpz29_3_3i_circuit.dfy"
+  ]
+ },
+ {
+  "id": "dafnybench/fv2020-tms_tmp_tmpnp85b47l_modeling_concurrency_safety.dfy",
+  "kind": "dafnybench",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/DafnyBench-main/DafnyBench/dataset/ground_truth",
+  "limit": 50000000.0,
+  "args": [
+   "--allow-warnings",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/DafnyBench-main/DafnyBench/dataset/ground_truth/fv2020-tms_tmp_tmpnp85b47l_modeling_concurrency_safety.dfy"
+  ]
+ },
+ {
+  "id": "dafnybench/iron-sync_tmp_tmps49o3tyz_lib_Base_MapRemove.dfy",
+  "kind": "dafnybench",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/DafnyBench-main/DafnyBench/dataset/ground_truth",
+  "limit": 50000000.0,
+  "args": [
+   "--allow-warnings",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/DafnyBench-main/DafnyBench/dataset/ground_truth/iron-sync_tmp_tmps49o3tyz_lib_Base_MapRemove.dfy"
+  ]
+ },
+ {
+  "id": "dafnybench/verification-class_tmp_tmpz9ik148s_2022_chapter05-distributed-state-machines_exercises_UtilitiesLibrary.dfy",
+  "kind": "dafnybench",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/DafnyBench-main/DafnyBench/dataset/ground_truth",
+  "limit": 50000000.0,
+  "args": [
+   "--allow-warnings",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/DafnyBench-main/DafnyBench/dataset/ground_truth/verification-class_tmp_tmpz9ik148s_2022_chapter05-distributed-state-machines_exercises_UtilitiesLibrary.dfy"
+  ]
+ },
+ {
+  "id": "kondo/clientServer/manual",
+  "kind": "kondo",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/clientServer/manual",
+  "limit": 50000000.0,
+  "args": [
+   "--disable-nonlinear-arithmetic",
+   "--allow-warnings",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/lib/UtilitiesLibrary.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/lib/MonotonicityLibrary.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/clientServer/types.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/clientServer/hosts.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/clientServer/manual/distributedSystem.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/clientServer/manual/messageInvariants.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/clientServer/manual/applicationProof.dfy"
+  ]
+ },
+ {
+  "id": "kondo/clientServer/sync",
+  "kind": "kondo",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/clientServer/sync",
+  "limit": 50000000.0,
+  "args": [
+   "--disable-nonlinear-arithmetic",
+   "--allow-warnings",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/lib/UtilitiesLibrary.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/clientServer/types.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/clientServer/hosts.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/clientServer/sync/system.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/clientServer/sync/spec.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/clientServer/sync/applicationProof.dfy"
+  ]
+ },
+ {
+  "id": "kondo/distributedLock/manual",
+  "kind": "kondo",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/distributedLock/manual",
+  "limit": 50000000.0,
+  "args": [
+   "--disable-nonlinear-arithmetic",
+   "--allow-warnings",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/lib/UtilitiesLibrary.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/lib/MonotonicityLibrary.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/distributedLock/types.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/distributedLock/hosts.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/distributedLock/manual/distributedSystem.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/distributedLock/manual/applicationProof.dfy"
+  ]
+ },
+ {
+  "id": "kondo/distributedLock/sync",
+  "kind": "kondo",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/distributedLock/sync",
+  "limit": 50000000.0,
+  "args": [
+   "--disable-nonlinear-arithmetic",
+   "--allow-warnings",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/lib/UtilitiesLibrary.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/distributedLock/types.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/distributedLock/hosts.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/distributedLock/sync/system.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/distributedLock/sync/spec.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/distributedLock/sync/applicationProof.dfy"
+  ]
+ },
+ {
+  "id": "kondo/flexPaxos/sync",
+  "kind": "kondo",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/flexPaxos/sync",
+  "limit": 50000000.0,
+  "args": [
+   "--disable-nonlinear-arithmetic",
+   "--allow-warnings",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/lib/UtilitiesLibrary.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/flexPaxos/types.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/flexPaxos/hosts.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/flexPaxos/sync/system.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/flexPaxos/sync/spec.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/flexPaxos/sync/applicationProof.dfy"
+  ]
+ },
+ {
+  "id": "kondo/lockServer/manual",
+  "kind": "kondo",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/lockServer/manual",
+  "limit": 50000000.0,
+  "args": [
+   "--disable-nonlinear-arithmetic",
+   "--allow-warnings",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/lib/UtilitiesLibrary.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/lib/MonotonicityLibrary.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/lockServer/types.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/lockServer/hosts.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/lockServer/manual/distributedSystem.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/lockServer/manual/messageInvariants.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/lockServer/manual/applicationProof.dfy"
+  ]
+ },
+ {
+  "id": "kondo/lockServer/sync",
+  "kind": "kondo",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/lockServer/sync",
+  "limit": 50000000.0,
+  "args": [
+   "--disable-nonlinear-arithmetic",
+   "--allow-warnings",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/lib/UtilitiesLibrary.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/lockServer/types.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/lockServer/hosts.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/lockServer/sync/system.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/lockServer/sync/spec.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/lockServer/sync/applicationProof.dfy"
+  ]
+ },
+ {
+  "id": "kondo/paxos/sync",
+  "kind": "kondo",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/paxos/sync",
+  "limit": 50000000.0,
+  "args": [
+   "--disable-nonlinear-arithmetic",
+   "--allow-warnings",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/lib/UtilitiesLibrary.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/paxos/types.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/paxos/hosts.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/paxos/sync/system.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/paxos/sync/spec.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/paxos/sync/applicationProof.dfy"
+  ]
+ },
+ {
+  "id": "kondo/ringLeaderElection/manual",
+  "kind": "kondo",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/ringLeaderElection/manual",
+  "limit": 50000000.0,
+  "args": [
+   "--disable-nonlinear-arithmetic",
+   "--allow-warnings",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/lib/UtilitiesLibrary.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/lib/MonotonicityLibrary.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/ringLeaderElection/types.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/ringLeaderElection/hosts.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/ringLeaderElection/manual/distributedSystem.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/ringLeaderElection/manual/messageInvariants.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/ringLeaderElection/manual/applicationProof.dfy"
+  ]
+ },
+ {
+  "id": "kondo/ringLeaderElection/sync",
+  "kind": "kondo",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/ringLeaderElection/sync",
+  "limit": 50000000.0,
+  "args": [
+   "--disable-nonlinear-arithmetic",
+   "--allow-warnings",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/lib/UtilitiesLibrary.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/ringLeaderElection/types.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/ringLeaderElection/hosts.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/ringLeaderElection/sync/system.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/ringLeaderElection/sync/spec.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/ringLeaderElection/sync/applicationProof.dfy"
+  ]
+ },
+ {
+  "id": "kondo/shardedKv/manual",
+  "kind": "kondo",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/shardedKv/manual",
+  "limit": 50000000.0,
+  "args": [
+   "--disable-nonlinear-arithmetic",
+   "--allow-warnings",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/lib/UtilitiesLibrary.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/lib/MonotonicityLibrary.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/shardedKv/types.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/shardedKv/hosts.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/shardedKv/manual/distributedSystem.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/shardedKv/manual/applicationProof.dfy"
+  ]
+ },
+ {
+  "id": "kondo/shardedKv/sync",
+  "kind": "kondo",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/shardedKv/sync",
+  "limit": 50000000.0,
+  "args": [
+   "--disable-nonlinear-arithmetic",
+   "--allow-warnings",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/lib/UtilitiesLibrary.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/shardedKv/types.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/shardedKv/hosts.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/shardedKv/sync/system.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/shardedKv/sync/spec.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/shardedKv/sync/applicationProof.dfy"
+  ]
+ },
+ {
+  "id": "kondo/shardedKvBatched/manual",
+  "kind": "kondo",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/shardedKvBatched/manual",
+  "limit": 50000000.0,
+  "args": [
+   "--disable-nonlinear-arithmetic",
+   "--allow-warnings",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/lib/UtilitiesLibrary.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/lib/MonotonicityLibrary.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/shardedKvBatched/types.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/shardedKvBatched/hosts.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/shardedKvBatched/manual/distributedSystem.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/shardedKvBatched/manual/applicationProof.dfy"
+  ]
+ },
+ {
+  "id": "kondo/shardedKvBatched/sync",
+  "kind": "kondo",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/shardedKvBatched/sync",
+  "limit": 50000000.0,
+  "args": [
+   "--disable-nonlinear-arithmetic",
+   "--allow-warnings",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/lib/UtilitiesLibrary.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/shardedKvBatched/types.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/shardedKvBatched/hosts.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/shardedKvBatched/sync/system.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/shardedKvBatched/sync/spec.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/shardedKvBatched/sync/applicationProof.dfy"
+  ]
+ },
+ {
+  "id": "kondo/simplifiedLeaderElection/manual",
+  "kind": "kondo",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/simplifiedLeaderElection/manual",
+  "limit": 50000000.0,
+  "args": [
+   "--disable-nonlinear-arithmetic",
+   "--allow-warnings",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/lib/UtilitiesLibrary.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/lib/MonotonicityLibrary.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/simplifiedLeaderElection/types.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/simplifiedLeaderElection/hosts.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/simplifiedLeaderElection/manual/distributedSystem.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/simplifiedLeaderElection/manual/messageInvariants.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/simplifiedLeaderElection/manual/applicationProof.dfy"
+  ]
+ },
+ {
+  "id": "kondo/simplifiedLeaderElection/sync",
+  "kind": "kondo",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/simplifiedLeaderElection/sync",
+  "limit": 50000000.0,
+  "args": [
+   "--disable-nonlinear-arithmetic",
+   "--allow-warnings",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/lib/UtilitiesLibrary.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/simplifiedLeaderElection/types.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/simplifiedLeaderElection/hosts.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/simplifiedLeaderElection/sync/system.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/simplifiedLeaderElection/sync/spec.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/simplifiedLeaderElection/sync/applicationProof.dfy"
+  ]
+ },
+ {
+  "id": "kondo/twoPhaseCommit/manual",
+  "kind": "kondo",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/twoPhaseCommit/manual",
+  "limit": 50000000.0,
+  "args": [
+   "--disable-nonlinear-arithmetic",
+   "--allow-warnings",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/lib/UtilitiesLibrary.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/lib/MonotonicityLibrary.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/twoPhaseCommit/types.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/twoPhaseCommit/hosts.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/twoPhaseCommit/manual/distributedSystem.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/twoPhaseCommit/manual/messageInvariants.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/twoPhaseCommit/manual/applicationProof.dfy"
+  ]
+ },
+ {
+  "id": "kondo/twoPhaseCommit/paper-version",
+  "kind": "kondo",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/twoPhaseCommit/paper-version",
+  "limit": 50000000.0,
+  "args": [
+   "--disable-nonlinear-arithmetic",
+   "--allow-warnings",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "../../lib/UtilitiesLibrary.dfy",
+   "../../lib/MonotonicityLibrary.dfy",
+   "../types.dfy",
+   "../hosts.dfy",
+   "distributedSystem.dfy",
+   "spec.dfy",
+   "messageInvariants.dfy",
+   "applicationProof.dfy"
+  ]
+ },
+ {
+  "id": "kondo/twoPhaseCommit/sync",
+  "kind": "kondo",
+  "cwd": "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/twoPhaseCommit/sync",
+  "limit": 50000000.0,
+  "args": [
+   "--disable-nonlinear-arithmetic",
+   "--allow-warnings",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/lib/UtilitiesLibrary.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/twoPhaseCommit/types.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/twoPhaseCommit/hosts.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/twoPhaseCommit/sync/system.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/twoPhaseCommit/sync/spec.dfy",
+   "/home/fmadge/.claude/jobs/a7e0e99d/tmp/corpora/Kondo-main/kondoPrototypes/twoPhaseCommit/sync/applicationProof.dfy"
+  ]
+ },
+ {
+  "id": "lit/c++/bit-vectors.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/c++",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--relax-definite-assignment",
+   "--allow-deprecation",
+   "--unicode-char",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/c++/bit-vectors.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/c++/maps.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/c++",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--relax-definite-assignment",
+   "--allow-deprecation",
+   "--unicode-char",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/c++/maps.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/c++/seqs.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/c++",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--relax-definite-assignment",
+   "--allow-deprecation",
+   "--unicode-char",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/c++/seqs.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/c++/sets.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/c++",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--relax-definite-assignment",
+   "--allow-deprecation",
+   "--unicode-char",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/c++/sets.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/cli/defaultTimeLimit.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/cli",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--use-basename-for-filename",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/cli/defaultTimeLimit.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/comp/Arrays.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--relax-definite-assignment",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/Arrays.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/comp/EuclideanDivision.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--relax-definite-assignment",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/EuclideanDivision.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/comp/Extern.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/Extern.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/comp/GeneralNewtypes.dfy:pinned",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--relax-definite-assignment",
+   "--type-system-refresh=true",
+   "--general-newtypes=true",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/GeneralNewtypes.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/comp/TypeParams.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--relax-definite-assignment",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/TypeParams.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/comp/UnicodeStrings.dfy:pinned",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh=false",
+   "--general-newtypes=false",
+   "--unicode-char",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/UnicodeStrings.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/comp/rust/newtypes.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/rust",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--enforce-determinism",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/comp/rust/newtypes.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny0/CanCall.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/CanCall.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny0/Compilation.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/Compilation.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny0/GeneralNewtypeVerify.dfy:pinned",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh",
+   "--general-newtypes",
+   "--relax-definite-assignment",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/GeneralNewtypeVerify.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny0/TypeConversions.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--relax-definite-assignment",
+   "--general-newtypes=false",
+   "--rprint:-",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/TypeConversions.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny0/TypeInferenceRefresh.dfy:pinned",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--type-system-refresh",
+   "--relax-definite-assignment",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny0/TypeInferenceRefresh.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny1/Rippling.legacy.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny1",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--allow-deprecation",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny1/Rippling.legacy.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny2/SnapshotableTrees.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny2",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--solver-option=O:smt.qi.eager_threshold=80",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny2/SnapshotableTrees.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny4/ExpandedGuardedness.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--relax-definite-assignment",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4/ExpandedGuardedness.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/dafny4/git-issue39.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/dafny4/git-issue39.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/git-issues/git-issue-2927.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-2927.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/git-issues/git-issue-697j.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--allow-warnings",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-697j.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/git-issues/github-issue-4483.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/github-issue-4483.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/unicodecharsFalse/comp/Arrays.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/unicodecharsFalse/comp",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--allow-warnings",
+   "--unicode-char",
+   "--verify-included-files",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/unicodecharsFalse/comp/Arrays.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "lit/unicodecharsFalse/comp/Comprehensions.dfy:refresh",
+  "kind": "lit",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/unicodecharsFalse/comp",
+  "args": [
+   "--type-system-refresh",
+   "--general-traits=datatype",
+   "--general-newtypes",
+   "--use-basename-for-filename",
+   "--show-snippets:false",
+   "--standard-libraries:false",
+   "--relax-definite-assignment",
+   "--allow-deprecation",
+   "--unicode-char",
+   "--verify-included-files",
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/IntegrationTests/TestFiles/LitTests/LitTest/unicodecharsFalse/comp/Comprehensions.dfy"
+  ],
+  "limit": 50000000.0
+ },
+ {
+  "id": "std/JSON/ConcreteSyntax.SpecProperties.dfy",
+  "kind": "std",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/DafnyStandardLibraries/src/Std",
+  "args": [
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/DafnyStandardLibraries/src/Std/dfyconfig.toml",
+   "--filter-position=JSON/ConcreteSyntax.SpecProperties.dfy"
+  ],
+  "limit": 5000000.0
+ },
+ {
+  "id": "std/JSON/Serializer.dfy",
+  "kind": "std",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/DafnyStandardLibraries/src/Std",
+  "args": [
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/DafnyStandardLibraries/src/Std/dfyconfig.toml",
+   "--filter-position=JSON/Serializer.dfy"
+  ],
+  "limit": 5000000.0
+ },
+ {
+  "id": "std/JSON/Utils/Cursors.dfy",
+  "kind": "std",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/DafnyStandardLibraries/src/Std",
+  "args": [
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/DafnyStandardLibraries/src/Std/dfyconfig.toml",
+   "--filter-position=JSON/Utils/Cursors.dfy"
+  ],
+  "limit": 5000000.0
+ },
+ {
+  "id": "std/JSON/Utils/Parsers.dfy",
+  "kind": "std",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/DafnyStandardLibraries/src/Std",
+  "args": [
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/DafnyStandardLibraries/src/Std/dfyconfig.toml",
+   "--filter-position=JSON/Utils/Parsers.dfy"
+  ],
+  "limit": 5000000.0
+ },
+ {
+  "id": "std/JSON/Utils/Views.Writers.dfy",
+  "kind": "std",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/DafnyStandardLibraries/src/Std",
+  "args": [
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/DafnyStandardLibraries/src/Std/dfyconfig.toml",
+   "--filter-position=JSON/Utils/Views.Writers.dfy"
+  ],
+  "limit": 5000000.0
+ },
+ {
+  "id": "std/JSON/ZeroCopy/API.dfy",
+  "kind": "std",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/DafnyStandardLibraries/src/Std",
+  "args": [
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/DafnyStandardLibraries/src/Std/dfyconfig.toml",
+   "--filter-position=JSON/ZeroCopy/API.dfy"
+  ],
+  "limit": 5000000.0
+ },
+ {
+  "id": "std/JSON/ZeroCopy/Deserializer.dfy",
+  "kind": "std",
+  "cwd": "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/DafnyStandardLibraries/src/Std",
+  "args": [
+   "/local/home/fmadge/dafny/.claude/worktrees/review-pr6539/Source/DafnyStandardLibraries/src/Std/dfyconfig.toml",
+   "--filter-position=JSON/ZeroCopy/Deserializer.dfy"
+  ],
+  "limit": 5000000.0
+ }
+]

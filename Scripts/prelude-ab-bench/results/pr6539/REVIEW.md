@@ -149,8 +149,8 @@ synthetic programs; and master's `UnionFind.dfy`. Controls: `master2` (the same 
 process), the flip placebo, and `pointwise`. `classify.py` separates the VCs whose SMT contains
 the changed axiom from those the change only reorders.
 
-Affected proofs, Z3 4.16.0, per program (each program weighs the same; intervals resample
-programs):
+Affected proofs of the 63 programs measured under all six preludes, Z3 4.16.0, per program (each
+program weighs the same; intervals resample programs; `results/pr6539/v2/`):
 
 | comparison | all 63 programs (934 VCs) | VCs whose SMT contains the axiom (900) | 26 external programs (84 VCs) |
 |---|---|---|---|
@@ -161,8 +161,10 @@ programs):
 | **PR vs master** | **+0.6% [-0.6, +1.9]** | +0.5% | +0.5% |
 | `domguard` vs master | +0.1% [-0.9, +1.0] | -0.1% | -0.1% |
 
-On Z3 5.1.0 (the first run's data, master/PR/placebo/`domguard` only): PR vs master +0.9%
-[-1.0, +2.8], `domguard` vs PR -0.6% [-2.0, +0.4]. Verdicts at the tests' limits change only for
+The 16 programs that the change only perturbs, measured under master, `master2`, the placebo and
+the PR (585 VCs): PR vs master +0.0% [-0.1, +0.1]. With them, over 80 programs, PR vs master is
++0.5% [-0.5, +1.6]. On Z3 5.1.0 (the first run's data, master/PR/placebo/`domguard` only): PR vs
+master +0.9% [-1.0, +2.8], `domguard` vs PR -0.6% [-2.0, +0.4]. Verdicts at the tests' limits change only for
 `git-issue-6535` and the synthetic `keyed-16` (6 of 8 seeds under 50M, from 8); three other flips
 also happen under the placebo, so they are brittleness. Totals are carried by a few heavy VCs
 (mostly UnionFind's): +11% [-5, +21] for the PR. On the synthetic programs, nesting costs 7× at

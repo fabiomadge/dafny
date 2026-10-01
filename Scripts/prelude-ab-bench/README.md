@@ -61,5 +61,7 @@ dumps off; without `--solver` Dafny uses the `z3` next to it.
 
 ## Results for #6539
 
-`results/pr6539/`: reports and per-VC data for Z3 4.16.0 (the version CI uses) and Z3 5.1.0,
-and `REVIEW.md`, the review they informed.
+`results/pr6539/REVIEW.md` is the review these results informed. `v2/` holds the current run:
+reports, per-VC data, classifications and raw CSVs for Z3 4.16.0 (the version CI uses), and the
+first run's Z3 5.1.0 data re-reported with program-level intervals. `v1/` is the first run, whose
+corpus was selected by grepping and whose intervals resampled VCs; it is kept for its raw data.
