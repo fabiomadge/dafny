@@ -3855,12 +3855,8 @@ namespace Microsoft.Dafny.Compilers {
       List<Statement> body, List<Label> labels, ConcreteSyntaxTree wr) {
 
       var nativeType = AsNativeType(loopIndex.Type);
-      var typeName = TypeName(loopIndex.Type, wr, tok);
-      // The loop updates the counter, so a Java lambda cannot capture it, but it can capture the index,
-      // which each iteration declares as a copy of the counter.
-      var counter = ProtectedFreshId("_counter");
 
-      wr.Write($"for ({typeName} {counter} = ");
+      wr.Write($"for ({TypeName(loopIndex.Type, wr, tok)} {loopIndex.GetOrCreateCompileName(currentIdGenerator)} = ");
       var startWr = wr.Fork();
       wr.Write($"; ");
 
@@ -3869,35 +3865,34 @@ namespace Microsoft.Dafny.Compilers {
         if (endVarName == null) {
           wr.Write("");
         } else if (nativeType == null) {
-          wr.Write($"{counter}.compareTo({endVarName}) < 0");
+          wr.Write($"{loopIndex.GetOrCreateCompileName(currentIdGenerator)}.compareTo({endVarName}) < 0");
         } else if (0 <= nativeType.LowerBound) {
-          wr.Write($"{HelperClass(nativeType)}.compareUnsigned({counter}, {endVarName}) < 0");
+          wr.Write($"{HelperClass(nativeType)}.compareUnsigned({loopIndex.GetOrCreateCompileName(currentIdGenerator)}, {endVarName}) < 0");
         } else {
-          wr.Write($"{counter} < {endVarName}");
+          wr.Write($"{loopIndex.GetOrCreateCompileName(currentIdGenerator)} < {endVarName}");
         }
         if (nativeType == null) {
-          bodyWr = wr.NewBlock($"; {counter} = {counter}.add(java.math.BigInteger.ONE))");
+          bodyWr = wr.NewBlock($"; {loopIndex.GetOrCreateCompileName(currentIdGenerator)} = {loopIndex.GetOrCreateCompileName(currentIdGenerator)}.add(java.math.BigInteger.ONE))");
         } else {
-          bodyWr = wr.NewBlock($"; {counter}++)");
+          bodyWr = wr.NewBlock($"; {loopIndex.GetOrCreateCompileName(currentIdGenerator)}++)");
         }
       } else {
         if (endVarName == null) {
           wr.Write("");
         } else if (nativeType == null) {
-          wr.Write($"{endVarName}.compareTo({counter}) < 0");
+          wr.Write($"{endVarName}.compareTo({loopIndex.GetOrCreateCompileName(currentIdGenerator)}) < 0");
         } else if (0 <= nativeType.LowerBound) {
-          wr.Write($"{HelperClass(nativeType)}.compareUnsigned({endVarName}, {counter}) < 0");
+          wr.Write($"{HelperClass(nativeType)}.compareUnsigned({endVarName}, {loopIndex.GetOrCreateCompileName(currentIdGenerator)}) < 0");
         } else {
-          wr.Write($"{endVarName} < {counter}");
+          wr.Write($"{endVarName} < {loopIndex.GetOrCreateCompileName(currentIdGenerator)}");
         }
         bodyWr = wr.NewBlock($"; )");
         if (nativeType == null) {
-          bodyWr.WriteLine($"{counter} = {counter}.subtract(java.math.BigInteger.ONE);");
+          bodyWr.WriteLine($"{loopIndex.GetOrCreateCompileName(currentIdGenerator)} = {loopIndex.GetOrCreateCompileName(currentIdGenerator)}.subtract(java.math.BigInteger.ONE);");
         } else {
-          bodyWr.WriteLine($"{counter}--;");
+          bodyWr.WriteLine($"{loopIndex.GetOrCreateCompileName(currentIdGenerator)}--;");
         }
       }
-      bodyWr.WriteLine($"{typeName} {loopIndex.GetOrCreateCompileName(currentIdGenerator)} = {counter};");
       bodyWr = EmitContinueLabel(labels, bodyWr);
       TrStmtList(body, bodyWr);
 

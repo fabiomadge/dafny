@@ -48,11 +48,11 @@ namespace Microsoft.Dafny.Compilers {
         case IdentifierExpr identifierExpr: {
             var e = identifierExpr;
             if (inLetExprBody && (e.Var is not BoundVar ||
-                                  (!TargetLambdaCanCaptureReassignedLocals && boundVarsAssignedBySearch.Contains(e.Var)))) {
+                                  (!TargetLambdaCanCaptureReassignedLocals && reassignedBoundVars.Contains(e.Var)))) {
               // copy variable to a temp since
               //   - C# doesn't allow out param in letExpr body, and
-              //   - Java doesn't allow any non-final variable in letExpr body, such as a bound variable that a
-              //     such-that search assigns.
+              //   - Java doesn't allow any non-final variable in letExpr body, such as a for-loop index or a
+              //     bound variable that a such-that search assigns.
               var name = ProtectedFreshId("_pat_let_tv");
               EmitIdentifier(name, wr);
               DeclareLocalVar(name, null, null, false, IdName(e.Var), copyInstrWriters.Peek(), e.Type);

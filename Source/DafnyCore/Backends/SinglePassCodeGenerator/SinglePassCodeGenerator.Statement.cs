@@ -375,6 +375,7 @@ namespace Microsoft.Dafny.Compilers {
               wStmts = wr.Fork();
               EmitExpr(s.End, false, DeclareLocalVar(endVarName, s.End.Type, s.End.Origin, wr), wStmts);
             }
+            reassignedBoundVars.Add(s.LoopIndex);
             var startExprWriter = EmitForStmt(s.Origin, s.LoopIndex, s.GoingUp, endVarName, s.Body.Body, s.Labels, wr);
             EmitExpr(s.Start, false, startExprWriter, wStmts);
             break;
