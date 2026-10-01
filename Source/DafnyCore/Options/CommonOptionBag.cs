@@ -208,7 +208,7 @@ java - Compile to Java.
 py - Compile to Python.
 cpp - (experimental) Compile to C++.
 
-Note that the C++ backend has various limitations (see Docs/Compilation/Cpp.md). This includes lack of support for BigIntegers (aka int), most higher order functions, and advanced features like traits or co-inductive types.".TrimStart()
+Note that the C++ backend has various limitations (see Docs/Compilation/Cpp.md). This includes lack of support for BigIntegers (aka int) and advanced features like traits or co-inductive types.".TrimStart()
   ) {
     ArgumentHelpName = "language",
   };
@@ -452,8 +452,8 @@ dfy - Compile to Dafny.
 
 Note that the C++ backend has various limitations (see
 Docs/Compilation/Cpp.md). This includes lack of support for
-BigIntegers (aka int), most higher order functions, and advanced
-features like traits or co-inductive types.".TrimStart(), "cs");
+BigIntegers (aka int) and advanced features like traits or
+co-inductive types.".TrimStart(), "cs");
 
     DafnyOptions.RegisterLegacyUi(OptimizeErasableDatatypeWrapper, DafnyOptions.ParseBoolean, "Compilation options", "optimizeErasableDatatypeWrapper", @"
 0 - Include all non-ghost datatype constructors in the compiled code

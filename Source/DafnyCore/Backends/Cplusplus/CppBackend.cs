@@ -60,7 +60,7 @@ public class CppBackend : ExecutableBackend {
     cmd.Description = $@"Translate Dafny sources to {TargetName} source and build files.
 
 This back-end has various limitations (see Docs/Compilation/Cpp.md).
-This includes lack of support for BigIntegers (aka int), most higher order functions,
+This includes lack of support for BigIntegers (aka int)
 and advanced features like traits or co-inductive types.";
     return cmd;
   }

@@ -1274,6 +1274,8 @@ namespace Microsoft.Dafny.Compilers {
       ConcreteSyntaxTree wStmts);
     protected abstract void EmitApplyExpr(Type functionType, IOrigin tok, Expression function, List<Expression> arguments, bool inLetExprBody, ConcreteSyntaxTree wr, ConcreteSyntaxTree wStmts);
     protected virtual bool TargetLambdaCanUseEnclosingLocals => true;
+    // Whether a lambda that mentions `this` gets it as a bound variable, like a lambda in a tail-recursive member.
+    protected virtual bool TargetLambdaBindsReceiver => false;
     protected abstract ConcreteSyntaxTree EmitBetaRedex(List<string> boundVars, List<Expression> arguments, List<Type> boundTypes,
       Type resultType, IOrigin resultTok, bool inLetExprBody, ConcreteSyntaxTree wr, ref ConcreteSyntaxTree wStmts);
     protected virtual void EmitConstructorCheck(string source, DatatypeCtor ctor, ConcreteSyntaxTree wr) {
@@ -1289,6 +1291,10 @@ namespace Microsoft.Dafny.Compilers {
       DatatypeCtor ctor, Func<List<Type>> getTypeArgs, Type bvType, ConcreteSyntaxTree wr);
     protected abstract ConcreteSyntaxTree CreateLambda(List<Type> inTypes, IOrigin tok, List<string> inNames,
       Type resultType, ConcreteSyntaxTree wr, ConcreteSyntaxTree wStmts, bool untyped = false);
+    // A lambda that is applied where it is created (see EmitLambdaApply), so it can't outlive what it uses.
+    protected virtual ConcreteSyntaxTree CreateAppliedLambda(List<Type> inTypes, IOrigin tok, List<string> inNames,
+      Type resultType, ConcreteSyntaxTree wr, ConcreteSyntaxTree wStmts) =>
+      CreateLambda(inTypes, tok, inNames, resultType, wr, wStmts);
 
     /// <summary>
     /// Emit an "Immediately Invoked Function Expression" with the semantics of

@@ -7,6 +7,9 @@ module {:extern "Extern"} Extern {
   method {:extern "Extern", "Caller"} Caller(inc:uint64-->uint64, x:uint64) returns (y:uint64)
     requires inc.requires(x)
 
+  function {:extern "Extern", "Twice"} Twice(x:uint64) : uint64
+    requires x < 100
+
 method {:extern "Extern", "GenericCaller"} GenericCaller<A>(inc:A-->A, x:A) returns (y:A)
     requires inc.requires(x)
 
@@ -45,6 +48,8 @@ module Test {
   method CallTest() {
     var x := Caller(AddOne, 5);
     print x, "\n";
+    var t := Caller(Twice, 21);
+    print t, "\n";
     var y := GenericCaller(AddOne, 6);
     print y, "\n";
     var c := new GenericClass(AddOne, 7);
