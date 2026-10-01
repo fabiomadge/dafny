@@ -40,16 +40,16 @@ the whole path reaches 180 characters, and a shortened name no longer says which
   A/A test). `placebo` flips the old axiom's equation: the same meaning in different text.
   `pointwise` is the PR's quantifier without its guard, keeping master's meaning, so master ->
   pointwise is what the PR's *shape* costs and pointwise -> pr what its *guard* costs.
-- **Reach is not what the source mentions.** A prelude change reorders the SMT of VCs that do
-  not use the changed axiom, which moves their cost like any perturbation, and some VCs differ
-  between two runs of the same input. For #6539 the screen found cost changes in 76 lit and
-  standard-library jobs, many without a map comprehension; `classify.py` (one solver log per
+- **Reach is not what the source mentions, and depends on the seed.** At seed 0, Dafny's
+  default, a prelude change reorders the SMT of VCs that do not use the changed axiom, which
+  moves their cost like any perturbation. #6539's seed-0 screen found cost changes in 76 lit and
+  standard-library jobs, many without a map comprehension, and `classify.py` (one solver log per
   procedure, `--solver-log <dir>/@PROC@.smt2`) showed that most of those VCs never contain the
-  axiom. Select by screen and classification, not by grepping sources. Some programs' Boogie
-  output changes between identical runs (the order of declarations), so their costs do too. That
-  happens mostly at seed 0, Dafny's default: of #6539's 192 measured jobs, 27 differ between two
-  runs of master at seed 0, and at most 7 at each of seeds 1 to 7. So screen at a nonzero seed, and
-  let the A/A run tell reach from noise.
+  axiom: 694 such VCs changed at seed 0. At each of seeds 1 to 7 the change moved the same 1,365
+  or so VCs with the axiom, and 0 to 7 without it, no more than the A/A run. Seed 0 is also where
+  identical runs differ most, from the order in which Boogie emits declarations: of the 192
+  measured jobs, 27 differ between two runs of master at seed 0, and at most 7 at any other seed.
+  So screen at a nonzero seed, with an A/A run, and classify the SMT; don't grep sources.
 - **A screen only covers what runs.** `corpus.py` turns each lit test's first RUN line into
   `verify` flags. 25 of the 1,946 jobs still cannot run that way (tests of `build`, `run`, the
   auditor, formatting, or of CLI errors); none contains a comprehension.

@@ -183,7 +183,8 @@ above. It also selected programs by grepping for comprehensions. The screen foun
 reaching programs with none, such as `dafny0/CanCall.dfy` and the standard library's JSON
 deserializer (617 VCs). None of their VCs whose solver logs could be attributed (36 of 37 and all
 1,070) contains the axiom, and their SMT is identical or only reordered. Their cost changes are
-perturbation.
+perturbation, and only at Dafny's default seed: at seeds 1 to 7 the change moves 0 to 7 VCs
+without the axiom per seed, as many as two runs of master differ by, against 694 at seed 0.
 
 ## Suggested title, commit message and description
 
