@@ -1,0 +1,1 @@
+The index of a `for` loop can now be used in a datatype update or let expression when compiling to Java
