@@ -1248,16 +1248,13 @@ namespace Microsoft.Dafny.Compilers {
     }
 
     protected override void EmitThis(ConcreteSyntaxTree wr, bool callToInheritedMember) {
-      if (thisContext != null && (enclosingMethod is { IsTailRecursive: true } || enclosingFunction is { IsTailRecursive: true })) {
-        wr.Write(TailRecursiveThis);
-        return;
-      }
+      var tailRecursive = enclosingMethod is { IsTailRecursive: true } || enclosingFunction is { IsTailRecursive: true };
       var custom =
-        (enclosingMethod != null && (enclosingMethod.IsTailRecursive || NeedsCustomReceiver(enclosingMethod))) ||
-        (enclosingFunction != null && (enclosingFunction.IsTailRecursive || NeedsCustomReceiver(enclosingFunction))) ||
+        (enclosingMethod != null && NeedsCustomReceiver(enclosingMethod)) ||
+        (enclosingFunction != null && NeedsCustomReceiver(enclosingFunction)) ||
         (thisContext is NewtypeDecl && !callToInheritedMember) ||
         thisContext is TraitDecl;
-      wr.Write(custom ? "_this" : "this");
+      wr.Write(tailRecursive ? TailRecursiveThis : custom ? "_this" : "this");
     }
 
     protected override void DeclareLocalVar(string name, Type /*?*/ type, IOrigin /*?*/ tok, bool leaveRoomForRhs,
