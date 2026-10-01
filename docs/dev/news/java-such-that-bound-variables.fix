@@ -1,0 +1,1 @@
+A variable bound by a let-such-that expression or by an `if x :| P(x)` statement can now be used in a let expression, match expression, or datatype update when compiling to Java
