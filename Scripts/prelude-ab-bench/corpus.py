@@ -93,7 +93,7 @@ def run_limit(job, cap):
 
 
 DECL = re.compile(r"((?:@\w+(?:\([^)]*\))?\s*)*)\b(?:(?:ghost|static|opaque|twostate|least|greatest)\s+)*"
-                  r"(?:lemma|method|function|predicate|constructor|iterator)\s+((?:\{:[^}]*\}\s*)*)(\w+)")
+                  r"(?:lemma|method|function|predicate|constructor|iterator)\s+((?:\{:[^}]*\}\s*)*)([\w'?]+)")  # a Dafny name
 TYPE = re.compile(r"\b(?:class|trait|datatype|codatatype|newtype|module)\s+(?:\{:[^}]*\}\s*)*([\w.]+)")
 LIMIT = re.compile(r'@ResourceLimit\(\s*"([^"]+)"\s*\)|\{:resource_limit\s+"?([\d.eE+]+)"?\s*\}|\{:rlimit\s+(\d+)\s*\}'
                    r'|@TimeLimitMultiplier\(\s*(\d+)\s*\)|\{:timeLimitMultiplier\s+(\d+)\s*\}')
