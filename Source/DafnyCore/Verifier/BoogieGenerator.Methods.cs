@@ -254,6 +254,8 @@ namespace Microsoft.Dafny {
     ///         o != null && $Is(o, TClassA(G))  // or dtype(o) = TClassA(G)
     ///         ==>
     ///         $Is(h[o, f], TT(PP)));
+    ///     // where h[o, f] is a box that the field's type unboxes, the conclusion is
+    ///     // $Is($Unbox(h[o, f]), TT(PP)) && $IsBox(h[o, f], TT(PP)).
     ///
     ///     // allocation axiom:
     ///     // As above for "G" and "ii", but "h" is included no matter what.
@@ -384,8 +386,7 @@ namespace Microsoft.Dafny {
       } else {
         is_hf = MkIs(oDotF, f.Type); // $Is(h[o, f], ..)
         if (heapBox != null) {
-          // The heap holds a box of the field's type, and saying so at the box, $IsBox(h[o, f], ..), is what lets
-          // the per-type box/unbox axiom conclude $Box($Unbox(h[o, f])) == h[o, f].  (No axiom says that of every box.)
+          // lets the per-type box/unbox axiom give $Box($Unbox(h[o, f])) == h[o, f], which CondApplyBox relies on
           is_hf = BplAnd(is_hf, MkIsBox(heapBox, f.Type));
         }
         isalloc_hf = MkIsAlloc(oDotF, f.Type, h); // $IsAlloc(h[o, f], ..)

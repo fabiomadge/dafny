@@ -188,10 +188,8 @@ const $ArbitraryBoxValue: Box;
 function $Box<T>(T): Box;
 function $Unbox<T>(Box): T;
 axiom (forall<T> x : T   :: { $Box(x) } {:weight 3} $Unbox($Box(x)) == x);
-// There is no axiom "forall<T> x: Box :: $Box($Unbox(x): T) == x".  It would say that every box holds a
-// value of every type T, which is false for a type with finitely many values, such as bool: every box
-// would be $Box(true) or $Box(false).  The inverse holds of a box that holds a value of the type, and is
-// given below for each type, guarded by $IsBox (and generated for the other types, see AddBoxUnboxAxiom).
+// The inverse holds only of a box of a value of the type: below and in AddBoxUnboxAxiom, guarded by $IsBox.
+// Unguarded, it would make every box $Box(true) or $Box(false).
 
 
 // Corresponding entries for boxes...

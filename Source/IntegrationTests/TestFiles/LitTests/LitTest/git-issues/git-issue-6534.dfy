@@ -1,14 +1,21 @@
 // RUN: %exits-with 4 %verify "%s" > "%t"
 // RUN: %diff "%s.expect" "%t"
 
-// The prelude had an axiom saying that every box is the box of a value of every type,
-// which is false: at bool, every box would be $Box(true) or $Box(false). No program is
-// known to prove false by it; the axioms themselves had no model (see the issue). The fix
-// deletes it, and relies instead on the inverse for a box known to hold a value of the
-// type. Proofs about fields had relied on the deleted axiom, so the fix also says that the
-// value a field holds in the heap is a box of the field's type. Each constructor below
-// needs that: its postcondition is about the box of the value just stored in a field.
+// Opt<int> and Opt<bool> values share a Boogie type, so the solver may instantiate the second
+// precondition at x, y and z, which unboxes 0, 1 and 2 as bools.
+datatype Opt<T> = None | Some(v: T)
 
+function F(b: bool): int { if b then 1 else 0 }
+
+lemma Bad(x: Opt<int>, y: Opt<int>, z: Opt<int>)
+  requires x == Some(0) && y == Some(1) && z == Some(2)
+  requires forall o: Opt<bool> :: o.Some? ==> F(o.v) <= 1
+  ensures false // error: must not be provable
+{
+  assert x.v == 0 && y.v == 1 && z.v == 2;
+}
+
+// Each postcondition is about the box of the value just stored in a field.
 class Node {
   var next: Node?
   constructor ()
@@ -42,9 +49,7 @@ class Booleans {
   }
 }
 
-// A vacuity control.  The facts the fix states are in play here: fields of several types are
-// read and written, and their values go into collections as boxes.  With them present, false
-// must still not be provable.
+// Field values of several types, boxed into collections.
 class Cell {
   var i: int
   var b: bool
