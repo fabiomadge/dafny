@@ -93,8 +93,9 @@ Self-contained. Nothing obvious is missing, but:
 ## Up to date with master
 
 Yes: the base is master's tip, so no rebase is needed. It merges cleanly with the author's
-sibling PRs #6540–#6545 (#6543–#6545 also edit the prelude). No other open prelude PR touches
-these axioms, except the stale #4537 and #4598, which restructure the whole prelude.
+sibling PRs #6540–#6545 (#6543–#6545 also edit the prelude; they are reviewed in
+`results/series`). No other open prelude PR touches these axioms, except the stale #4537 and
+#4598, which restructure the whole prelude.
 
 ## Code, comments, tests
 

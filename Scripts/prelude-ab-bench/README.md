@@ -82,6 +82,9 @@ the whole path reaches 180 characters, and a shortened name no longer says which
 
 ## Results for #6539
 
+`results/series/README.md` compares the author's six sibling PRs, #6540 to #6545, which are
+reviewed in `results/pr65NN/REVIEW.md` and benchmarked as binaries as well as preludes.
+
 `results/pr6539/REVIEW.md` is the review these results informed. `v2/` holds the current run:
 reports, per-VC data, classifications and raw CSVs for Z3 4.16.0 (the version CI uses) and Z3
 5.1.0. `report-z3-4.16.0.md` covers all 80 programs; the `-63-programs` report and the Z3 5.1.0
