@@ -47,10 +47,12 @@ namespace Microsoft.Dafny.Compilers {
           }
         case IdentifierExpr identifierExpr: {
             var e = identifierExpr;
-            if (inLetExprBody && !(e.Var is BoundVar)) {
+            if (inLetExprBody && (e.Var is not BoundVar ||
+                                  (!TargetLambdaCanCaptureReassignedLocals && reassignedBoundVars.Contains(e.Var)))) {
               // copy variable to a temp since
               //   - C# doesn't allow out param in letExpr body, and
-              //   - Java doesn't allow any non-final variable in letExpr body.
+              //   - Java doesn't allow any non-final variable in letExpr body, such as a for-loop index or a
+              //     bound variable that a such-that search assigns.
               var name = ProtectedFreshId("_pat_let_tv");
               EmitIdentifier(name, wr);
               DeclareLocalVar(name, null, null, false, IdName(e.Var), copyInstrWriters.Peek(), e.Type);
@@ -390,7 +392,15 @@ namespace Microsoft.Dafny.Compilers {
 
                 TrAssignSuchThat(new List<IVariable>(e.BoundVars).ConvertAll(bv => (IVariable)bv), su.Substitute(e.RHSs[0]),
                   su.SubstituteBoundedPoolList(e.Constraint_Bounds), w, inLetExprBody);
-                EmitReturnExpr(su.Substitute(e.Body), e.Body.Type, true, w);
+                if (!TargetLambdaCanCaptureReassignedLocals) {
+                  // copies of the bound variables go after the search, which assigns them
+                  copyInstrWriters.Push(w.Fork());
+                }
+                // Unless the lambda can use enclosing locals, CaptureFreeVariables passed them in, so the body need not copy them
+                EmitReturnExpr(su.Substitute(e.Body), e.Body.Type, TargetLambdaCanUseEnclosingLocals, w);
+                if (!TargetLambdaCanCaptureReassignedLocals) {
+                  copyInstrWriters.Pop();
+                }
               }
             }
 

@@ -3814,6 +3814,7 @@ namespace Microsoft.Dafny.Compilers {
     }
 
     protected override bool TargetLambdaCanUseEnclosingLocals => false;
+    protected override bool TargetLambdaCanCaptureReassignedLocals => false;
 
     protected override ConcreteSyntaxTree EmitBetaRedex(List<string> boundVars, List<Expression> arguments,
       List<Type> boundTypes, Type resultType, IOrigin resultTok, bool inLetExprBody, ConcreteSyntaxTree wr,
