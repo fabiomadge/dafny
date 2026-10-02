@@ -1,4 +1,4 @@
-// RUN: %verify "%s" > "%t"
+// RUN: %exits-with 4 %verify "%s" > "%t"
 // RUN: %diff "%s.expect" "%t"
 
 // The axiom for (o - m) + n applies exactly where o - m is defined, m <= o.Offset.
