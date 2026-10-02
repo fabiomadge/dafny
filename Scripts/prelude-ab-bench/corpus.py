@@ -71,21 +71,60 @@ def run_flags(line, src_dir, valued=frozenset()):
     return flags
 
 
-def run_limit(job, cap):
-    """The resource limit a job can run under, at most cap: Dafny multiplies it by a declaration's
-    time-limit multiplier into a 32-bit {:rlimit}, and aborts once that overflows."""
+def sources(job):
+    """The job's Dafny sources: its .dfy arguments (or a project's filtered file) and their includes."""
     todo = [t.split("=", 1)[1].rsplit(":", 1)[0] if t.startswith("--filter-position=") else t
             for t in job["args"] if t.endswith(".dfy") or t.startswith("--filter-position=")]
-    seen, worst = set(), 1
+    seen = []
     while todo:
         f = os.path.normpath(os.path.join(job["cwd"], todo.pop()))
         if f in seen or not os.path.isfile(f):
             continue
-        seen.add(f)
-        text = open(f, encoding="utf-8-sig", errors="replace").read()
-        worst = max([worst] + [int(x or y) for x, y in MULTIPLIER.findall(text)])
-        todo += [os.path.join(os.path.dirname(f), i) for i in INCLUDE.findall(text)]
+        seen.append(f)
+        todo += [os.path.join(os.path.dirname(f), i) for i in INCLUDE.findall(open(f, encoding="utf-8-sig", errors="replace").read())]
+    return [(f, open(f, encoding="utf-8-sig", errors="replace").read()) for f in seen]
+
+
+def run_limit(job, cap):
+    """The resource limit a job can run under, at most cap: Dafny multiplies it by a declaration's
+    time-limit multiplier into a 32-bit {:rlimit}, and aborts once that overflows."""
+    worst = max([1] + [int(x or y) for _, text in sources(job) for x, y in MULTIPLIER.findall(text)])
     return int(min(float(cap), (2 ** 31 - 1) // worst))
+
+
+DECL = re.compile(r"((?:@\w+(?:\([^)]*\))?\s*)*)\b(?:(?:ghost|static|opaque|twostate|least|greatest)\s+)*"
+                  r"(?:lemma|method|function|predicate|constructor|iterator)\s+((?:\{:[^}]*\}\s*)*)(\w+)")
+TYPE = re.compile(r"\b(?:class|trait|datatype|codatatype|newtype|module)\s+(?:\{:[^}]*\}\s*)*([\w.]+)")
+LIMIT = re.compile(r'@ResourceLimit\(\s*"([^"]+)"\s*\)|\{:resource_limit\s+"?([\d.eE+]+)"?\s*\}|\{:rlimit\s+(\d+)\s*\}'
+                   r'|@TimeLimitMultiplier\(\s*(\d+)\s*\)|\{:timeLimitMultiplier\s+(\d+)\s*\}')
+
+
+def declared_limits(job):
+    """Per-declaration resource limits, keyed by (enclosing type or module, member) and by member:
+    {:resource_limit N} and @ResourceLimit("N") give N, {:rlimit N} N * 1000, and a time-limit
+    multiplier N times the job's limit. A member name with conflicting limits is left out."""
+    by_pair, by_member = {}, {}
+    for _, text in sources(job):
+        types = [(m.start(), m.group(1).split(".")[-1]) for m in TYPE.finditer(text)]
+        for m in DECL.finditer(text):
+            found = LIMIT.findall(m.group(1) + " " + m.group(2))
+            if not found:
+                continue
+            res, res2, rl, mul, mul2 = found[-1]
+            limit = float(res or res2) if res or res2 else float(rl) * 1000 if rl else int(mul or mul2) * job["limit"]
+            owner = max((t for t in types if t[0] < m.start()), default=(0, ""))[1]
+            by_pair[(owner, m.group(3))] = limit
+            by_member.setdefault(m.group(3), set()).add(limit)
+    return by_pair, {k: v.pop() for k, v in by_member.items() if len(v) == 1}
+
+
+def vc_limit(job, limits, vc):
+    """The limit at which a VC's verdict is read: its declaration's own, else the job's."""
+    name = vc.split(" (")[0].split(".")
+    by_pair, by_member = limits
+    if len(name) > 1 and (name[-2], name[-1]) in by_pair:
+        return by_pair[(name[-2], name[-1])]
+    return by_member.get(name[-1], job["limit"])
 
 
 def resolver_jobs(jid, path, flags, kind="lit", limit=50e6, both=True):

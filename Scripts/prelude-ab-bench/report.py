@@ -6,11 +6,13 @@ variant are reported when present. A VC is *affected* when its resource counts u
 under the PR differ for some seed. That includes VCs the change merely perturbs (their SMT is
 reordered, not changed) and VCs that are nondeterministic across processes; the master2 (A/A)
 and placebo rows measure those floors, and classify.py's classes.csv separates VCs whose SMT
-contains the changed axiom. Costs are means over seeds. Verdicts are read at each job's own
-limit (50M per VC for lit tests and synthetic programs, 5M for the standard library), though
-the runs themselves used a much higher limit so that costs beyond it are measured.
+contains the changed axiom. Costs are means over seeds. Verdicts are read at each VC's limit:
+its declaration's own ({:resource_limit}, @ResourceLimit, {:rlimit}, or a time-limit multiplier of
+the job's), else the job's (50M per VC for lit tests and synthetic programs, 5M for the standard
+library), though the runs themselves used a much higher limit so that costs beyond it are measured.
 """
 import collections, csv, glob, json, math, os, re, statistics as st, sys
+from corpus import declared_limits, vc_limit
 
 CLASSES = [p for a in sys.argv[1:] if a.startswith("--classes=") for p in a.split("=", 1)[1].split(",") if p]
 TITLE = next((a.split("=", 1)[1] for a in sys.argv[1:] if a.startswith("--title=")), "Prelude A/B benchmark")
@@ -64,10 +66,10 @@ def passes(r, p):  # the seeds at which a VC passes within its job's limit under
 ALTS = sorted({p for j in data for p in data[j]} - set(PRE))
 allrows, vcrows = [], []
 for job in sorted(data):
-    limit = jobs[job]["limit"]
+    limits = declared_limits(jobs[job])
     names = sorted({n for p in data[job] for s in data[job][p] for n in data[job][p][s]})
     for n in names:
-        rec = {"job": job, "vc": n, "limit": limit}
+        rec = {"job": job, "vc": n, "limit": vc_limit(jobs[job], limits, n)}  # a declaration's own limit wins
         for p in PRE + ALTS:
             runs = [data[job][p][s].get(n) for s in seeds if s in data[job].get(p, {})]
             runs = [r for r in runs if r]
