@@ -1248,12 +1248,13 @@ namespace Microsoft.Dafny.Compilers {
     }
 
     protected override void EmitThis(ConcreteSyntaxTree wr, bool callToInheritedMember) {
+      var tailRecursive = enclosingMethod is { IsTailRecursive: true } || enclosingFunction is { IsTailRecursive: true };
       var custom =
-        (enclosingMethod != null && (enclosingMethod.IsTailRecursive || NeedsCustomReceiver(enclosingMethod))) ||
-        (enclosingFunction != null && (enclosingFunction.IsTailRecursive || NeedsCustomReceiver(enclosingFunction))) ||
+        (enclosingMethod != null && NeedsCustomReceiver(enclosingMethod)) ||
+        (enclosingFunction != null && NeedsCustomReceiver(enclosingFunction)) ||
         (thisContext is NewtypeDecl && !callToInheritedMember) ||
         thisContext is TraitDecl;
-      wr.Write(custom ? "_this" : "this");
+      wr.Write(tailRecursive ? TailRecursiveThis : custom ? "_this" : "this");
     }
 
     protected override void DeclareLocalVar(string name, Type /*?*/ type, IOrigin /*?*/ tok, bool leaveRoomForRhs,
@@ -3476,16 +3477,29 @@ namespace Microsoft.Dafny.Compilers {
       wrTypeMethod.WriteLine($"return ({DafnyTypeDescriptor}<Array{i}<T>>) ({DafnyTypeDescriptor}<?>) TYPE;");
     }
 
+    /// <summary>
+    /// The receiver in the current iteration of a tail-recursive member. Tail calls reassign "_this", so Java lambdas
+    /// cannot capture it, but they can capture this copy, which is effectively final.
+    /// </summary>
+    private const string TailRecursiveThis = "_this_final";
+
     protected override ConcreteSyntaxTree EmitTailCallStructure(MemberDecl member, ConcreteSyntaxTree wr) {
-      if (!member.IsStatic && !NeedsCustomReceiver(member)) {
+      string receiverTypeName = null;
+      if (!member.IsStatic) {
         var receiverType = UserDefinedType.FromTopLevelDecl(member.Origin, member.EnclosingClass);
-        var receiverTypeName = TypeName(receiverType, wr, member.Origin);
-        if (member.EnclosingClass.IsExtern(Options, out _, out _)) {
-          receiverTypeName = FormatExternBaseClassName(receiverTypeName);
+        receiverTypeName = TypeName(receiverType, wr, member.Origin);
+        if (!NeedsCustomReceiver(member)) {
+          if (member.EnclosingClass.IsExtern(Options, out _, out _)) {
+            receiverTypeName = FormatExternBaseClassName(receiverTypeName);
+          }
+          wr.WriteLine("{0} _this = this;", receiverTypeName);
         }
-        wr.WriteLine("{0} _this = this;", receiverTypeName);
       }
-      return wr.NewBlock("TAIL_CALL_START: while (true)");
+      wr = wr.NewBlock("TAIL_CALL_START: while (true)");
+      if (receiverTypeName != null) {
+        wr.WriteLine("{0} {1} = _this;", receiverTypeName, TailRecursiveThis);
+      }
+      return wr;
     }
 
     protected override void EmitJumpToTailCallStart(ConcreteSyntaxTree wr) {

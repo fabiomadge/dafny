@@ -5158,12 +5158,17 @@ namespace Microsoft.Dafny.Compilers {
       return EmitCallToIsMethod(declWithConstraints, type, wr);
     }
 
+    /// <summary>
+    /// Wraps "wr" in a beta redex that binds the free variables of "expr" -- and, if "captureThis" holds and "expr" uses
+    /// the receiver, also the receiver -- and returns in "su" the substitution from these to the bound variables.
+    /// If "captureOnlyAsRequiredByTargetLanguage", this is done only if target-language lambdas cannot use enclosing locals.
+    /// </summary>
     protected ConcreteSyntaxTree CaptureFreeVariables(Expression expr, bool captureOnlyAsRequiredByTargetLanguage,
-      out Substituter su, bool inLetExprBody, ConcreteSyntaxTree wr, ref ConcreteSyntaxTree wStmts) {
+      out Substituter su, bool inLetExprBody, ConcreteSyntaxTree wr, ref ConcreteSyntaxTree wStmts, bool captureThis = false) {
       if (captureOnlyAsRequiredByTargetLanguage && TargetLambdaCanUseEnclosingLocals) {
         // nothing to do
       } else {
-        CreateFreeVarSubstitution(expr, out var bvars, out var fexprs, out su);
+        CreateFreeVarSubstitution(expr, captureThis, out var bvars, out var fexprs, out su);
         if (bvars.Count != 0) {
           return EmitBetaRedex(bvars.ConvertAll(IdName), fexprs, bvars.ConvertAll(bv => bv.Type), expr.Type, expr.Origin, inLetExprBody, wr, ref wStmts);
         }
@@ -5173,11 +5178,15 @@ namespace Microsoft.Dafny.Compilers {
     }
 
     protected void CreateFreeVarSubstitution(
-      Expression expr,
+      Expression expr, bool captureThis,
       out List<BoundVar> bvars, out List<Expression> fexprs, out Substituter su) {
       Contract.Requires(expr != null);
+      Contract.Requires(!captureThis || thisContext != null);
 
-      var fvs = FreeVariablesUtil.ComputeFreeVariables(Options, expr);
+      var fvs = new HashSet<IVariable>();
+      bool usesHeap = false, usesOldHeap = false;
+      Type usesThis = null;
+      FreeVariablesUtil.ComputeFreeVariables(Options, expr, fvs, ref usesHeap, ref usesOldHeap, new HashSet<Label>(), ref usesThis, false);
       var sm = new Dictionary<IVariable, Expression>();
 
       bvars = [];
@@ -5198,7 +5207,19 @@ namespace Microsoft.Dafny.Compilers {
         };
       }
 
-      su = new Substituter(null, sm, new Dictionary<TypeParameter, Type>());
+      Expression receiverReplacement = null;
+      if (captureThis && usesThis != null) {
+        var receiver = new ThisExpr(thisContext);
+        fexprs.Add(receiver);
+        var bv = new BoundVar(expr.Origin, ProtectedFreshId("_this"), receiver.Type);
+        bvars.Add(bv);
+        receiverReplacement = new IdentifierExpr(bv.Origin, bv.Name) {
+          Var = bv, // resolved here!
+          Type = bv.Type
+        };
+      }
+
+      su = new Substituter(receiverReplacement, sm, new Dictionary<TypeParameter, Type>());
     }
 
     protected ConcreteSyntaxTree StringLiteral(StringLiteralExpr str) {

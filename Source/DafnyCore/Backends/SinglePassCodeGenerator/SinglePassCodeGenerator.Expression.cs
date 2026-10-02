@@ -556,22 +556,9 @@ namespace Microsoft.Dafny.Compilers {
         case LambdaExpr lambdaExpr: {
             var e = lambdaExpr;
 
-            IVariable receiver = null;
-            if (thisContext != null && (enclosingMethod is { IsTailRecursive: true } || enclosingFunction is { IsTailRecursive: true })) {
-              var name = ProtectedFreshId("_this");
-              var ty = ModuleResolver.GetThisType(e.Origin, thisContext);
-              receiver = new LocalVariable(SourceOrigin.NoToken, name, ty, false) {
-                type = ty
-              };
-              var _this = new ThisExpr(thisContext);
-              wr = EmitBetaRedex([IdName(receiver)], [_this],
-                [_this.Type], lambdaExpr.Type, lambdaExpr.Origin, inLetExprBody, wr, ref wStmts);
-            }
-
-            wr = CaptureFreeVariables(e, false, out var su, inLetExprBody, wr, ref wStmts);
-            if (receiver != null) {
-              su = new Substituter(new IdentifierExpr(e.Origin, receiver), su.substMap, su.typeMap);
-            }
+            // The lambda may outlive the current iteration of a tail-recursive member, whose tail calls reassign the receiver
+            var captureThis = thisContext != null && (enclosingMethod is { IsTailRecursive: true } || enclosingFunction is { IsTailRecursive: true });
+            wr = CaptureFreeVariables(e, false, out var su, inLetExprBody, wr, ref wStmts, captureThis);
 
             wr = CreateLambda(e.BoundVars.ConvertAll(bv => bv.Type), Token.NoToken, e.BoundVars.ConvertAll(IdName),
               e.Body.Type, wr, wStmts);
