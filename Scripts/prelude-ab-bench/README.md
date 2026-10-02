@@ -30,7 +30,10 @@ python3 report.py work/jobs.json work/out work/report.md work/vcs.csv --classes=
 
 `run.py` resumes: it skips (job, prelude, seed) runs whose CSV exists, and kills a run after
 `--run-timeout` seconds. `dafny.sh` runs `Binaries/Dafny.dll` (override with `DAFNY_DLL`) with core
-dumps off; without `--solver` Dafny uses the `z3` next to it. `classify.py` keeps its solver logs
+dumps off; without `--solver` Dafny uses the `z3` next to it. To compare translators rather than
+preludes, run each binary into the same output directory under its own name: `DAFNY_DLL=<binary>
+run.py … --prelude-dir <dir> --preludes pr` reads `<dir>/pr.bpl`. `report.py` needs `master` and
+`pr`; it reports a `placebo`, `master2` or any other variant when there are runs of it. `classify.py` keeps its solver logs
 under `--log-root` (default `$TMPDIR/pab`), which must be short: Boogie shortens a log's name once
 the whole path reaches 180 characters, and a shortened name no longer says which VC it is.
 

@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""report.py <jobs.json> <outdir> <report.md> [vcs.csv] [--classes=classes.csv,...]
+"""report.py <jobs.json> <outdir> <report.md> [vcs.csv] [--classes=classes.csv,...] [--title=...]
 
-Summarises run.py's CSVs. A VC is *affected* when its resource counts under master and under
-the PR differ for some seed. That includes VCs the change merely perturbs (their SMT is
+Summarises run.py's CSVs, which need runs under master and pr; placebo, master2 and any other
+variant are reported when present. A VC is *affected* when its resource counts under master and
+under the PR differ for some seed. That includes VCs the change merely perturbs (their SMT is
 reordered, not changed) and VCs that are nondeterministic across processes; the master2 (A/A)
 and placebo rows measure those floors, and classify.py's classes.csv separates VCs whose SMT
 contains the changed axiom. Costs are means over seeds. Verdicts are read at each job's own
@@ -12,12 +13,14 @@ the runs themselves used a much higher limit so that costs beyond it are measure
 import collections, csv, glob, json, math, os, re, statistics as st, sys
 
 CLASSES = [p for a in sys.argv[1:] if a.startswith("--classes=") for p in a.split("=", 1)[1].split(",") if p]
-argv = [a for a in sys.argv if not a.startswith("--classes=")]
+TITLE = next((a.split("=", 1)[1] for a in sys.argv[1:] if a.startswith("--title=")), "Prelude A/B benchmark")
+argv = [a for a in sys.argv if not a.startswith(("--classes=", "--title="))]
 jobs_path, outdir, report_path = argv[1:4]
 vcs_path = argv[4] if len(argv) > 4 else None
 jobs = {j["id"]: j for j in json.load(open(jobs_path))}
 esc = {j.replace("/", "__").replace(":", "--"): j for j in jobs}
-PRE = ["master", "pr", "placebo"]
+PRE = ["master", "pr"]  # required; a placebo joins them when it was run
+LABEL = {"master": "master", "pr": "PR", "placebo": "placebo"}
 
 
 def dur(s):
@@ -38,6 +41,9 @@ for path in glob.glob(os.path.join(outdir, "*.csv")):
     data[job][p][int(s)] = rows
 
 seeds = sorted({s for j in data for p in data[j] for s in data[j][p]})
+PL = any("placebo" in data[j] for j in data)
+if PL:
+    PRE.append("placebo")
 missing = [p for p in PRE if not any(p in data[j] for j in data)]
 if missing:
     sys.exit(f"report.py needs runs under the {', '.join(PRE)} preludes; none for {', '.join(missing)}")
@@ -76,7 +82,7 @@ for job in sorted(data):
 
 aff = [r for r in vcrows if r["affected"]]
 unaff = [r for r in vcrows if not r["affected"]]
-placebo_diff_unaff = [r for r in unaff if [x[1] for x in r["master"]] != [x[1] for x in r["placebo"]]]
+placebo_diff_unaff = [r for r in unaff if PL and [x[1] for x in r["master"]] != [x[1] for x in r["placebo"]]]
 
 
 def mean_ru(runs): return st.mean(r[1] for r in runs)
@@ -87,11 +93,11 @@ def pct(x): return f"{(x - 1) * 100:+.1f}%"
 
 out = []
 w = out.append
-w("# Map#Glue prelude A/B benchmark\n")
+w(f"# {TITLE}\n")
 w(f"Seeds per (VC, prelude): {len(seeds)} ({', '.join(map(str, seeds))}; 0 is Dafny's default). "
   f"VCs: {len(vcrows)} in {len(data)} jobs; **{len(aff)} affected** (master and PR counts differ), "
   f"{len(unaff)} unaffected (identical counts under master and PR for every seed).")
-w(f"Unaffected VCs whose counts differ under the placebo: {len(placebo_diff_unaff)}.\n")
+w(f"Unaffected VCs whose counts differ under the placebo: {len(placebo_diff_unaff)}.\n" if PL else "")
 
 import random
 random.seed(6539)
@@ -131,8 +137,8 @@ w("## Proof cost over affected VCs that pass everywhere\n")
 w("Totals are sums of per-VC means over seeds. \"Per program\" averages each program's own VC geomean, so a\n"
   "program with hundreds of VCs weighs no more than one with two. Brackets are 95% bootstrap intervals that\n"
   "resample programs, not VCs.\n")
-w("| group | programs | VCs | largest program | total PR/master | geomean over VCs | per program | placebo per program |")
-w("|---|---:|---:|---|---|---|---|---|")
+w("| group | programs | VCs | largest program | total PR/master | geomean over VCs | per program |" + (" placebo per program |" if PL else ""))
+w("|---|---:|---:|---|---|---|---|" + ("---|" if PL else ""))
 proofs = [r for r in aff if passing(r)]
 kinds = sorted({jobs[r["job"]]["kind"] for r in proofs})
 groups = [("all but synth", [r for r in proofs if jobs[r["job"]]["kind"] != "synth"])] + \
@@ -143,17 +149,17 @@ for g, rs in groups:
     count = collections.Counter(program(r) for r in rs)
     big, n_big = count.most_common(1)[0]
     tot, geo, per = boot(rs, "pr")
-    w(f"| {g} | {len(count)} | {len(rs)} | {big} ({100 * n_big / len(rs):.0f}% of VCs) | {tot} | {geo} | {per} | "
-      f"{boot(rs, 'placebo')[2]} |")
+    w(f"| {g} | {len(count)} | {len(rs)} | {big} ({100 * n_big / len(rs):.0f}% of VCs) | {tot} | {geo} | {per} |" +
+      (f" {boot(rs, 'placebo')[2]} |" if PL else ""))
 
 fails = [r for r in aff if not passing(r)]
 w(f"\n{len(fails)} affected VCs fail (a verification error) in some run; their cost is the solver's search for a "
   "counterexample, reported separately:\n")
-w("| job | VC | master mean (min..max) | PR mean (min..max) | placebo mean |")
-w("|---|---|---|---|---|")
+w("| job | VC | master mean (min..max) | PR mean (min..max) |" + (" placebo mean |" if PL else ""))
+w("|---|---|---|---|" + ("---|" if PL else ""))
 for r in sorted(fails, key=lambda r: -mean_ru(r["master"]))[:10]:
     rng = lambda runs: f"{mean_ru(runs)/1e6:.2f}M ({min(x[1] for x in runs)/1e6:.2f}..{max(x[1] for x in runs)/1e6:.2f})"
-    w(f"| {r['job']} | {r['vc']} | {rng(r['master'])} | {rng(r['pr'])} | {mean_ru(r['placebo'])/1e6:.2f}M |")
+    w(f"| {r['job']} | {r['vc']} | {rng(r['master'])} | {rng(r['pr'])} |" + (f" {mean_ru(r['placebo'])/1e6:.2f}M |" if PL else ""))
 groups = [("all", proofs)] + [(k, [r for r in proofs if jobs[r["job"]]["kind"] == k]) for k in ("lit", "std", "synth")]
 
 # Per-seed totals: spread across seeds, per prelude
@@ -168,58 +174,58 @@ for p in PRE:
 
 # Wall time
 w("\n## Solver time over those proofs (sum of per-VC means, seconds)\n")
-w("| group | master | PR | placebo |")
-w("|---|---:|---:|---:|")
+w("| group | " + " | ".join(LABEL[p] for p in PRE) + " |")
+w("|---|" + "---:|" * len(PRE))
 for g, rs in groups:
     if rs:
-        w(f"| {g} | {sum(mean_t(r['master']) for r in rs):.1f} | {sum(mean_t(r['pr']) for r in rs):.1f} | {sum(mean_t(r['placebo']) for r in rs):.1f} |")
+        w(f"| {g} | " + " | ".join(f"{sum(mean_t(r[p]) for r in rs):.1f}" for p in PRE) + " |")
 
 # Distribution of per-VC ratios
 w("\n## Distribution of per-VC cost ratios over those proofs (mean over seeds)\n")
-w("| ratio bucket | PR/master | placebo/master |")
-w("|---|---:|---:|")
+w("| ratio bucket | " + " | ".join(f"{LABEL[p]}/master" for p in PRE[1:]) + " |")
+w("|---|" + "---:|" * len(PRE[1:]))
 buckets = [(0, 0.5, "< 0.5x"), (0.5, 0.8, "0.5-0.8x"), (0.8, 0.95, "0.8-0.95x"), (0.95, 1.05, "0.95-1.05x"),
            (1.05, 1.25, "1.05-1.25x"), (1.25, 2, "1.25-2x"), (2, 4, "2-4x"), (4, 1e18, ">= 4x")]
 for lo, hi, lab in buckets:
-    c1 = sum(1 for r in proofs if lo <= mean_ru(r["pr"]) / max(mean_ru(r["master"]), 1) < hi)
-    c2 = sum(1 for r in proofs if lo <= mean_ru(r["placebo"]) / max(mean_ru(r["master"]), 1) < hi)
-    w(f"| {lab} | {c1} | {c2} |")
+    cs = [sum(1 for r in proofs if lo <= mean_ru(r[p]) / max(mean_ru(r["master"]), 1) < hi) for p in PRE[1:]]
+    w(f"| {lab} | " + " | ".join(map(str, cs)) + " |")
 
 # Verdicts at the job's own limit
 w("\n## Verdict changes at each job's limit (seeds passing out of %d)\n" % len(seeds))
-w("| job | VC | limit | master ok | PR ok | placebo ok | master RU | PR RU |")
-w("|---|---|---:|---:|---:|---:|---:|---:|")
+w("| job | VC | limit | " + " | ".join(f"{LABEL[p]} ok" for p in PRE) + " | master RU | PR RU |")
+w("|---|---|---:|" + "---:|" * (len(PRE) + 2))
 flips = 0
 for r in vcrows:
     oks = {p: passes(r, p) for p in PRE}
-    if oks["master"] != oks["pr"] or oks["master"] != oks["placebo"]:
+    if any(oks["master"] != oks[p] for p in PRE[1:]):
         flips += 1
-        w(f"| {r['job']} | {r['vc']} | {r['limit']/1e6:.0f}M | {oks['master']} | {oks['pr']} | {oks['placebo']} | "
+        w(f"| {r['job']} | {r['vc']} | {r['limit']/1e6:.0f}M | " + " | ".join(str(oks[p]) for p in PRE) + " | "
           f"{mean_ru(r['master'])/1e6:.2f}M | {mean_ru(r['pr'])/1e6:.2f}M |")
 if not flips:
-    w("| (none) | | | | | | | |")
+    w("| (none) |" + " |" * (len(PRE) + 4))
 
 # Largest absolute changes
 w("\n## Largest changes among those proofs (by |PR - master| mean RU)\n")
-w("| job | VC | master | PR | PR/master | placebo | min..max master | min..max PR |")
-w("|---|---|---:|---:|---:|---:|---|---|")
+w("| job | VC | master | PR | PR/master |" + (" placebo |" if PL else "") + " min..max master | min..max PR |")
+w("|---|---|---:|---:|---:|" + ("---:|" if PL else "") + "---|---|")
 for r in sorted(proofs, key=lambda r: -abs(mean_ru(r["pr"]) - mean_ru(r["master"])))[:25]:
-    mm, pp, pl = mean_ru(r["master"]), mean_ru(r["pr"]), mean_ru(r["placebo"])
+    mm, pp = mean_ru(r["master"]), mean_ru(r["pr"])
     rng = lambda runs: f"{min(x[1] for x in runs)/1e6:.2f}..{max(x[1] for x in runs)/1e6:.2f}M"
-    w(f"| {r['job']} | {r['vc']} | {mm/1e6:.2f}M | {pp/1e6:.2f}M | {pp/max(mm,1):.2f} | {pl/1e6:.2f}M | {rng(r['master'])} | {rng(r['pr'])} |")
+    pl = f" {mean_ru(r['placebo'])/1e6:.2f}M |" if PL else ""
+    w(f"| {r['job']} | {r['vc']} | {mm/1e6:.2f}M | {pp/1e6:.2f}M | {pp/max(mm,1):.2f} |{pl} {rng(r['master'])} | {rng(r['pr'])} |")
 
 # Per-job totals
 w("\n## Per job (proofs among the affected VCs)\n")
-w("| job | VCs | master | PR | PR vs master | placebo vs master |")
-w("|---|---:|---:|---:|---:|---:|")
+w("| job | VCs | master | PR | PR vs master |" + (" placebo vs master |" if PL else ""))
+w("|---|---:|---:|---:|---:|" + ("---:|" if PL else ""))
 byjob = collections.defaultdict(list)
 for r in proofs:
     byjob[r["job"]].append(r)
 for job in sorted(byjob, key=lambda j: -sum(mean_ru(r["master"]) for r in byjob[j])):
     rs = byjob[job]
     m = sum(mean_ru(r["master"]) for r in rs); p = sum(mean_ru(r["pr"]) for r in rs)
-    pl = sum(mean_ru(r["placebo"]) for r in rs)
-    w(f"| {job} | {len(rs)} | {m/1e6:.2f}M | {p/1e6:.2f}M | {pct(p/max(m,1))} | {pct(pl/max(m,1))} |")
+    pl = f" {pct(sum(mean_ru(r['placebo']) for r in rs) / max(m, 1))} |" if PL else ""
+    w(f"| {job} | {len(rs)} | {m/1e6:.2f}M | {p/1e6:.2f}M | {pct(p/max(m,1))} |{pl}")
 
 # Synthetic scaling
 syn = collections.defaultdict(dict)
@@ -232,14 +238,14 @@ for r in vcrows:
             d[p] += mean_ru(r[p])
 if syn:
     sizes = sorted({n for f in syn for n in syn[f]})
-    w("\n## Synthetic programs: total RU by size N (master / PR / placebo, mean over seeds)\n")
+    w(f"\n## Synthetic programs: total RU by size N ({' / '.join(LABEL[p] for p in PRE)}, mean over seeds)\n")
     w("| family | " + " | ".join(f"N={n}" for n in sizes) + " |")
     w("|---|" + "---|" * len(sizes))
     for fam in sorted(syn):
         cells = []
         for n in sizes:
             d = syn[fam].get(n)
-            cells.append(f"{d['master']/1e6:.2f} / {d['pr']/1e6:.2f} / {d['placebo']/1e6:.2f}" if d else "")
+            cells.append(" / ".join(f"{d[p]/1e6:.2f}" for p in PRE) if d else "")
         w(f"| {fam} | " + " | ".join(cells) + " |")
 
 # master's UnionFind.dfy: Main as one VC
@@ -283,10 +289,10 @@ if stab_p:
     newly = [r for r in stab if flaky(r, "pr") and not flaky(r, "master")]
     if newly:
         w("\nFlaky under the PR but not under master (seeds passing out of the run):\n")
-        w("| job | VC | master | PR | placebo | PR mean RU |")
-        w("|---|---|---:|---:|---:|---:|")
+        w("| job | VC | " + " | ".join(LABEL[p] for p in PRE) + " | PR mean RU |")
+        w("|---|---|" + "---:|" * (len(PRE) + 1))
         for r in sorted(newly, key=lambda r: -mean_ru(r["pr"]))[:15]:
-            w(f"| {r['job']} | {r['vc']} | {passes(r, 'master')} | {passes(r, 'pr')} | {passes(r, 'placebo')} | {mean_ru(r['pr'])/1e6:.2f}M |")
+            w(f"| {r['job']} | {r['vc']} | " + " | ".join(str(passes(r, p)) for p in PRE) + f" | {mean_ru(r['pr'])/1e6:.2f}M |")
 
 # Named comparisons: the noise floors first, then the change and its parts
 COMPARISONS = [

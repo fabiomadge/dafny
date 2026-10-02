@@ -19,6 +19,7 @@ HEADER = "TestResult.DisplayName,TestResult.Outcome,TestResult.Duration,TestResu
 ap = argparse.ArgumentParser()
 ap.add_argument("jobs"); ap.add_argument("outdir")
 ap.add_argument("--preludes", default="master,pr,placebo")
+ap.add_argument("--prelude-dir", default=f"{HERE}/preludes", help="where <prelude>.bpl is")
 ap.add_argument("--seeds", default="0,1,2,3,4")
 ap.add_argument("--workers", type=int, default=28)
 ap.add_argument("--resource-limit", default="500e6")
@@ -42,7 +43,7 @@ def run(item):
     j, p, s, stem = item
     if os.path.exists(stem + ".csv"):
         return stem, "cached", 0.0
-    cmd = ["bash", DFY, "verify", "--prelude", f"{HERE}/preludes/{p}.bpl",
+    cmd = ["bash", DFY, "verify", "--prelude", os.path.join(a.prelude_dir, f"{p}.bpl"),
            f"--resource-limit:{run_limit(j, a.resource_limit)}", "--verification-time-limit:300", "--cores:2",
            "--log-format", f"csv;LogFileName={stem}.csv.tmp"]
     if s:
