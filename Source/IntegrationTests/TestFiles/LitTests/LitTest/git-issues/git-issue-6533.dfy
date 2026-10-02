@@ -1,9 +1,9 @@
 // RUN: %exits-with 4 %verify "%s" > "%t"
 // RUN: %diff "%s.expect" "%t"
 
-// The assumption that follows a forall statement assigning to the heap used to assert
-// the call facts of its range for every datatype value, not only for values of the
-// bound variable's type. Here that contradicted the constructor of r and proved false.
+// After the forall statement, the range's call facts (t.n is defined, so t was built by T)
+// hold only of values of type T. Of r, which is an R, they would contradict its constructor;
+// {r} brings r into play.
 
 datatype T = T(n: nat)
 datatype R = X | Y(k: nat)
