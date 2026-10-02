@@ -42,6 +42,13 @@ inline void hash_combine(std::size_t& seed, T const& v)
     seed ^= std::hash<T>()(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
 
+// Order-independent, for unordered containers: equal ones can iterate in different orders.
+template <class T>
+inline void hash_combine_unordered(std::size_t& seed, T const& v)
+{
+    seed ^= (std::hash<T>()(v) + 0x9e3779b9) * 0x9e3779b97f4a7c15ULL;
+}
+
 // From https://stackoverflow.com/a/7185723
 class IntegerRange {
  public:
@@ -669,7 +676,7 @@ struct std::hash<DafnySet<U>> {
     size_t operator()(const DafnySet<U>& s) const {
         size_t seed = 0;
         for (auto const& elt:s.set) {
-            hash_combine<U>(seed, elt);
+            hash_combine_unordered<U>(seed, elt);
         }
         return seed;
     }
@@ -812,8 +819,11 @@ struct std::hash<DafnyMap<T,U>> {
     size_t operator()(const DafnyMap<T,U>& s) const {
         size_t seed = 0;
         for (auto const& kv:s.map) {
-            hash_combine<T>(seed, kv.first);
-            hash_combine<U>(seed, kv.second);
+            size_t kv_seed = 0;
+            // hash_combine<T> would make many small key-value pairs collide.
+            hash_combine_unordered<T>(kv_seed, kv.first);
+            hash_combine<U>(kv_seed, kv.second);
+            hash_combine_unordered(seed, kv_seed);
         }
         return seed;
     }
