@@ -891,9 +891,7 @@ function #_System._tuple#2._#Make2(Box, Box) : DatatypeType;
 function _System.Tuple2._0(DatatypeType) : Box;
 function _System.Tuple2._1(DatatypeType) : Box;
 
-// The first conjunct says that item is a pair.  The rest mention only a pair's components,
-// and item ranges over every Box, so without it any box whose projections happened to
-// name a key and its value would be an item too.
+// item ranges over every Box; the first conjunct says that it is a pair.
 axiom (forall m: Map, item: Box :: { Set#IsMember(Map#Items(m), item) }
   Set#IsMember(Map#Items(m), item) <==>
     item == $Box(#_System._tuple#2._#Make2(_System.Tuple2._0($Unbox(item)), _System.Tuple2._1($Unbox(item)))) &&
