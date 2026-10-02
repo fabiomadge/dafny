@@ -35,19 +35,19 @@ namespace FactorPathsOptimization {
       }
     }
     public static __T UniqueElementOf<__T>(Dafny.ISet<__T> s) {
-      return Dafny.Helpers.Let<int, __T>(0, _let_dummy_69 =>  {
-        __T _0_e = default(__T);
-        foreach (__T _assign_such_that_0 in (s).Elements) {
-          _0_e = (__T)_assign_such_that_0;
-          if ((s).Contains(_0_e)) {
+      return Dafny.Helpers.Id<Func<Dafny.ISet<__T>, __T>>((_0_s) => Dafny.Helpers.Let<int, __T>(0, _let_dummy_69 =>  {
+        __T _1_e = default(__T);
+        foreach (__T _assign_such_that_0 in (_0_s).Elements) {
+          _1_e = (__T)_assign_such_that_0;
+          if ((_0_s).Contains(_1_e)) {
             goto after__ASSIGN_SUCH_THAT_0;
           }
         }
         throw new System.Exception("assign-such-that search produced no value");
       after__ASSIGN_SUCH_THAT_0: ;
-        return _0_e;
+        return _1_e;
       }
-      );
+      ))(s);
     }
     public static RAST._IRASTTopDownVisitor<FactorPathsOptimization._IMapping> PathsVisitor() {
       return RAST.RASTTopDownVisitor<FactorPathsOptimization._IMapping>.create(((System.Func<FactorPathsOptimization._IMapping, RAST._IType, FactorPathsOptimization._IMapping>)((_0_current, _1_t) => {

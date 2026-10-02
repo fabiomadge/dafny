@@ -82,6 +82,11 @@ datatype D = D(f: int) {
     else
       Patterns(n - 1, acc + (var (a, b) := (n, 1); a + b + this.f) + match Some(n) { case Some(v) => v + this.f case None => 0 })
   }
+
+  // Tail calls reassign the parameters, too
+  function SuchThat(n: nat, acc: int): int {
+    if n == 0 then acc else SuchThat(n - 1, acc + var z :| z in {n + this.f}; z)
+  }
 }
 
 trait T {
@@ -114,7 +119,7 @@ method Main() {
   var r := c.CountUp(3, 0);
   print c.Loop(3, 0), " ", r, "\n"; // 27 3
 
-  print D(0).Last(3, () => -1), " ", D(2).LetInLambda(3, 0), " ", D(2).Patterns(3, 0), "\n"; // 12 12 27
+  print D(0).Last(3, () => -1), " ", D(2).LetInLambda(3, 0), " ", D(2).Patterns(3, 0), " ", D(2).SuchThat(3, 0), "\n"; // 12 12 27 12
 
   var k := new K();
   var x: N := 2;
