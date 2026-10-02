@@ -1,10 +1,9 @@
 // RUN: %exits-with 4 %verify "%s" > "%t"
 // RUN: %diff "%s.expect" "%t"
 
-// The equality axiom of a datatype with a single constructor used to range over every
-// datatype value, not only the values of that datatype. Here the solver used the axiom
-// of Unit at a value of another datatype, which proved the false postcondition of Bad,
-// and with it Contradiction.
+// Bad's postcondition is false, and the equality axiom of the single-constructor datatype Unit,
+// applied to values of R, must not prove it. The forall statement and {:induction false} are what
+// lead the solver to that axiom.
 
 datatype Unit = U
 datatype R = X | Y(n: nat)
@@ -26,9 +25,4 @@ lemma {:induction false} Bad(us: seq<Unit>, s: S)
   forall us': seq<Unit>, s': S | 0 < |us'| && s'.n <= 1
     ensures G(us', s') != []
   { }
-}
-
-lemma Contradiction() ensures false {
-  Bad([U], S(1));
-  assert G([U], S(1)) == [F(U, S(1))] + G([], S(1));
 }
