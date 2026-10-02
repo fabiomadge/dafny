@@ -67,11 +67,12 @@ ALTS = sorted({p for j in data for p in data[j]} - set(PRE))
 allrows, vcrows = [], []
 for job in sorted(data):
     limits = declared_limits(jobs[job])
+    paired = set.intersection(*(set(data[job].get(p, {})) for p in PRE))  # compare runs at the same seeds only
     names = sorted({n for p in data[job] for s in data[job][p] for n in data[job][p][s]})
     for n in names:
         rec = {"job": job, "vc": n, "limit": vc_limit(jobs[job], limits, n)}  # a declaration's own limit wins
         for p in PRE + ALTS:
-            runs = [data[job][p][s].get(n) for s in seeds if s in data[job].get(p, {})]
+            runs = [data[job][p][s].get(n) for s in seeds if s in paired and s in data[job].get(p, {})]
             runs = [r for r in runs if r]
             rec[p] = runs
         if not all(rec[p] for p in PRE):
