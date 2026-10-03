@@ -239,26 +239,7 @@ module Std.Strings {
     {
       forall d: nat | d < |chars|
         ensures chars[d] in charToDigit && charToDigit[chars[d]] == d
-      {
-        if d == 0 {
-        } else if d == 1 {
-        } else if d == 2 {
-        } else if d == 3 {
-        } else if d == 4 {
-        } else if d == 5 {
-        } else if d == 6 {
-        } else if d == 7 {
-        } else if d == 8 {
-        } else if d == 9 {
-        } else if d == 10 {
-        } else if d == 11 {
-        } else if d == 12 {
-        } else if d == 13 {
-        } else if d == 14 {
-        } else {
-          assert d == 15;
-        }
-      }
+      {}
     }
 
     @IsolateAssertions
@@ -305,20 +286,7 @@ module Std.Strings {
     {
       forall d: nat | d < |chars|
         ensures chars[d] in charToDigit && charToDigit[chars[d]] == d
-      {
-        if d == 0 {
-        } else if d == 1 {
-        } else if d == 2 {
-        } else if d == 3 {
-        } else if d == 4 {
-        } else if d == 5 {
-        } else if d == 6 {
-        } else if d == 7 {
-        } else if d == 8 {
-        } else {
-          assert d == 9;
-        }
-      }
+      {}
     }
 
     lemma LemmaNatRoundTrip(n: nat)
