@@ -72,7 +72,8 @@ the whole path reaches 180 characters, and a shortened name no longer says which
   change that makes proofs brittle shows up even when their mean cost does not move.
 - **Costs.** Resource counts from `--log-format csv`, under a 500M/300 s cap so that costs above
   the tests' own limits are measured; verdicts are read at each job's limit (50M lit/synth/external,
-  5M standard library). Dafny multiplies the cap by a declaration's `{:timeLimitMultiplier N}` into
+  5M standard library), or at a declaration's own (`{:resource_limit}`, `@ResourceLimit`, `{:rlimit}`,
+  a time-limit multiplier; a limit of 0 is none). Dafny multiplies the cap by a declaration's `{:timeLimitMultiplier N}` into
   a 32-bit `{:rlimit}`, and aborts when that overflows, so such programs run under (2^31 - 1)/N.
   Durations are recorded but taken under load: identical SMT gave durations within about ±5%, and
   log RU tracked log time with a correlation of 0.96.

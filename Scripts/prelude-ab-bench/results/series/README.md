@@ -10,12 +10,12 @@ compares them.
 | PR | fixes | a program proves `false` on `master` | verdict | before merging | cost per program |
 |---|---|---|---|---|---|
 | #6539 `Map#Glue` elements | #6535 | yes | merge after changes | guard via `Map#Domain`; correct two `UnionFind.dfy` claims; trim the description and the test | +0.6% [-0.6, +1.9]; Z3 5.1.0: +1.6% [+0.4, +2.9] |
-| #6540 single-constructor equality | #6531 | yes | merge (approved) | say what it costs: a Kondo proof fails at 2 of 4 seeds; correct the scope sentence | +2.0% [+1.0, +3.2] |
+| #6540 single-constructor equality | #6531 | yes | merge (approved) | say what it costs (a fixed few hundred to 2,000 RU per VC); correct the scope sentence | +2.0% [+1.0, +3.2] |
 | #6541 `BplForallTrim` | #6532 | yes | merge after changes | test the lambda half and the constant-field change, which also fixes a crash on `master`; state the cost | +1.5% [+1.2, +1.8] |
 | #6542 heap-update `forall` | #6533 | yes | merge | the test's comment | +2.8% [-3.5, +11.0] |
 | #6543 `Map#Items` pairs | #6537 | not known | merge | shorter comments | +0.5% [+0.1, +1.2] |
 | #6544 ORDINAL `(o - m) + n` | #6536 | no: the axiom proves a false postcondition, but well-formedness rejects the program | merge after changes | correct the claim that constant ordinal arithmetic is folded; test the region where the axiom was false | -0.0% [-0.1, +0.1] |
-| #6545 box identity | #6534 | yes, though the issue and the PR say none is known | merge after changes | that program as the regression test; land the 13 proof stabilizations separately, or say they hold only in CI's order | -4.3% [-4.7, -4.0] |
+| #6545 box identity | #6534 | yes, though the issue and the PR say none is known | merge after changes | that program as the regression test; land the 13 proof stabilizations separately (they hold only in CI's order; a version that holds at every seed is prototyped) | -4.3% [-4.7, -4.0] |
 | all seven | | | | | -4.2% [-4.6, -3.8] |
 
 Cost: the PR against `master` over the proofs whose cost it changes, each program weighing the same,
@@ -54,7 +54,8 @@ between identical runs. Jobs where some VC's verdict at its limit changed were r
 axiom without changing its meaning.
 
 Files: `report-<pr>.md` (seed 1), `report-<pr>-phase2.md` (seeds 1 to 4), `report-6545-own-sources.md`
-(#6545's binary, prelude and edited programs against `master`'s on the same programs), and
+(#6545's binary, prelude and edited programs against `master`'s on the same programs; seeds 1 to 4,
+and in `report-6545-own-sources-seeds-0-8.md` seeds 0 to 8), and
 `vcs-seed1.csv.gz`, every VC's resource count and outcome at seed 1 under each variant. In
 `jobs.json`, `$DAFNY` is this branch's checkout, whose programs are `5f717bf44`'s plus #6539's test
 changes (`dafny4/UnionFind.dfy`'s `{:isolate_assertions}` and `git-issues/git-issue-6535.dfy`), and
@@ -72,5 +73,8 @@ changes (`dafny4/UnionFind.dfy`'s `{:isolate_assertions}` and `git-issues/git-is
 | A/A, `master` twice | 0 | | +0.0% | +0.0% | 0 |
 
 One of the 28 is #6539's intended one: `git-issue-6535`'s false lemma is refused. Most others are
-brittle VCs near their limits that move both ways, often under the placebo too. The exceptions are in the reviews: #6540 loses Kondo's two-phase-commit proof at 2 of 4
-seeds, and #6545, as submitted, leaves several of the proofs it stabilizes flaky across seeds.
+brittle VCs near their limits that move both ways, often under the placebo too. Kondo's two-phase-commit
+proof, which #6540 seemed to lose at 2 of 4 seeds, fails on `master` too at 5 of 32 seeds (the PR: 8 of
+32). The exception is in its review: #6545, as submitted, leaves several of the proofs it stabilizes
+flaky across seeds; the prototype `4571f1330` makes eleven proofs in its edited files hold at every
+seed tried.

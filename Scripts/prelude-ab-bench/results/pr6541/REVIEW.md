@@ -183,6 +183,13 @@ is 2,077 programs: every lit and standard-library program, Kondo's and DafnyBenc
 are proofs, in 30 programs, it costs +1.5% [+1.2, +1.8] per program (each program weighs the same;
 95% bootstrap intervals that resample programs), and no verdict changes at any VC's limit.
 
+Most of it is one lemma counted 19 times. Every Kondo program includes `UtilitiesLibrary`, whose
+`EachUnionMemberBelongsToASet` costs +915 resource units (22,513 to 23,428), +2.1% per program.
+Its quantifier ranges over a type parameter, so its guard binds that one variable,
+`(exists member#1: Box :: $IsBox(member#1, T)) ==> UnionSeqOfSets#canCall(T, theSets#0)`. Binding
+only the possibly empty variables (the inefficiency above) would leave this guard, and so the
+cost, as they are.
+
 ## Suggested title, commit message and description
 
 Title: `fix: don't drop a possibly empty bound variable's type from call permissions`

@@ -102,7 +102,8 @@ LIMIT = re.compile(r'@ResourceLimit\(\s*"([^"]+)"\s*\)|\{:resource_limit\s+"?([\
 def declared_limits(job):
     """Per-declaration resource limits, keyed by (enclosing type or module, member) and by member:
     {:resource_limit N} and @ResourceLimit("N") give N, {:rlimit N} N * 1000, and a time-limit
-    multiplier N times the job's limit. A member name with conflicting limits is left out."""
+    multiplier N times the job's limit; a limit of 0 is none. A member name with conflicting limits
+    is left out."""
     by_pair, by_member = {}, {}
     for _, text in sources(job):
         types = [(m.start(), m.group(1).split(".")[-1]) for m in TYPE.finditer(text)]
@@ -112,6 +113,7 @@ def declared_limits(job):
                 continue
             res, res2, rl, mul, mul2 = found[-1]
             limit = float(res or res2) if res or res2 else float(rl) * 1000 if rl else int(mul or mul2) * job["limit"]
+            limit = limit or float("inf")
             owner = max((t for t in types if t[0] < m.start()), default=(0, ""))[1]
             by_pair[(owner, m.group(3))] = limit
             by_member.setdefault(m.group(3), set()).add(limit)

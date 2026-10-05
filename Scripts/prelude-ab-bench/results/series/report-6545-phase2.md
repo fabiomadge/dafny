@@ -94,6 +94,7 @@ resample programs, not VCs.
 | std/Actions/Producers.dfy | Std.Producers.FilteredProducer.Invoke (correctness) | 50M | 4 | 3 | 4 | 10.84M | 9.04M |
 | std/Actions/Producers.dfy | Std.Producers.FlattenedProducer.Invoke (correctness) | 100M | 4 | 4 | 3 | 36.31M | 45.58M |
 | std/Actions/Producers.dfy | Std.Producers.MappedProducer.Invoke (correctness) | 10M | 3 | 4 | 2 | 9.05M | 7.50M |
+| std/Actions/Producers.dfy | Std.Producers.ProducerState.ValidChangeTransitive (correctness) (assertion batch 90) | none | 3 | 4 | 3 | 1.26M | 0.17M |
 | std/Arithmetic/DivMod.dfy | Std.Arithmetic.DivMod.LemmaFundamentalDivModConverse (correctness) | 50M | 3 | 4 | 3 | 16.98M | 12.10M |
 | std/Arithmetic/DivMod.dfy | Std.Arithmetic.DivMod.LemmaMultiplyDivideLt (correctness) | 50M | 2 | 3 | 2 | 1.20M | 0.96M |
 | std/Base64.dfy | Std.Base64.DecodeValidEncode2Padding (correctness) | 5M | 2 | 3 | 2 | 4.11M | 3.28M |
@@ -158,10 +159,10 @@ Flaky: some seeds pass at the job's limit and others do not. Spread: the coeffic
 
 | prelude | flaky VCs | flaky, not under master | no longer flaky | median spread | 90th-percentile spread |
 |---|---:|---:|---:|---:|---:|
-| master | 25 | 0 | 0 | 0.23 | 0.93 |
-| master2 | 25 | 0 | 0 | 0.23 | 0.93 |
-| placebo | 26 | 7 | 6 | 0.23 | 0.93 |
-| pr | 24 | 10 | 11 | 0.16 | 0.93 |
+| master | 26 | 0 | 0 | 0.23 | 0.93 |
+| master2 | 26 | 0 | 0 | 0.23 | 0.93 |
+| placebo | 27 | 7 | 6 | 0.23 | 0.93 |
+| pr | 24 | 10 | 12 | 0.16 | 0.93 |
 
 Flaky under the PR but not under master (seeds passing out of the run):
 
@@ -200,7 +201,7 @@ restrict: elements defined everywhere, `$ArbitraryBoxValue` outside the domain. 
 
 | encoding | programs | VCs | total vs master | geomean over VCs vs master | per program vs master | per program vs PR | verdict flips vs master at limit |
 |---|---:|---:|---|---|---|---|---:|
-| pr | 16 | 3833 | -6.1% [-28.5%, +12.4%] | -0.9% [-3.3%, -0.1%] | -2.6% [-5.2%, +0.4%] |  | 29 |
+| pr | 16 | 3833 | -6.1% [-28.5%, +12.4%] | -0.9% [-3.3%, -0.1%] | -2.6% [-5.2%, +0.4%] |  | 30 |
 | master2 | 16 | 3833 | +0.0% [-0.0%, +0.0%] | +0.0% [-0.0%, +0.0%] | +0.0% [-0.0%, +0.0%] | +2.7% [-0.3%, +5.6%] | 0 |
 
 master2: largest differences from the PR

@@ -202,7 +202,8 @@ for r in vcrows:
     oks = {p: passes(r, p) for p in PRE}
     if any(oks["master"] != oks[p] for p in PRE[1:]):
         flips += 1
-        w(f"| {r['job']} | {r['vc']} | {r['limit']/1e6:.0f}M | " + " | ".join(str(oks[p]) for p in PRE) + " | "
+        lim = "none" if r["limit"] == float("inf") else f"{r['limit']/1e6:.0f}M"
+        w(f"| {r['job']} | {r['vc']} | {lim} | " + " | ".join(str(oks[p]) for p in PRE) + " | "
           f"{mean_ru(r['master'])/1e6:.2f}M | {mean_ru(r['pr'])/1e6:.2f}M |")
 if not flips:
     w("| (none) |" + " |" * (len(PRE) + 4))
@@ -393,7 +394,7 @@ if vcs_path:
                     [f"{p}_ru_by_seed" for p in ps] + [f"{p}_outcomes" for p in ps] +
                     [f"{p}_seconds_by_seed" for p in ps])
         for r in allrows:
-            cw.writerow([r["job"], r["vc"], r["affected"], int(r["limit"])] +
+            cw.writerow([r["job"], r["vc"], r["affected"], "" if r["limit"] == float("inf") else int(r["limit"])] +
                         [round(mean_ru(r[p])) if r[p] else "" for p in ps] +
                         [" ".join(str(x[1]) for x in r[p]) for p in ps] +
                         [" ".join(x[0] for x in r[p]) for p in ps] +

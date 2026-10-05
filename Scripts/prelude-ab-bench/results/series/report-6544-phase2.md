@@ -108,10 +108,10 @@ Flaky: some seeds pass at the job's limit and others do not. Spread: the coeffic
 
 | prelude | flaky VCs | flaky, not under master | no longer flaky | median spread | 90th-percentile spread |
 |---|---:|---:|---:|---:|---:|
-| master | 4 | 0 | 0 | 0.15 | 0.71 |
-| master2 | 4 | 0 | 0 | 0.15 | 0.71 |
-| placebo | 7 | 3 | 0 | 0.13 | 0.79 |
-| pr | 2 | 0 | 2 | 0.19 | 0.53 |
+| master | 5 | 0 | 0 | 0.15 | 0.71 |
+| master2 | 5 | 0 | 0 | 0.15 | 0.71 |
+| placebo | 8 | 3 | 0 | 0.13 | 0.79 |
+| pr | 3 | 0 | 2 | 0.19 | 0.53 |
 
 ## Comparisons over the affected proofs (all but synth)
 

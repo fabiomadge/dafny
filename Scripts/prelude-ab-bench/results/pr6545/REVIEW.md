@@ -9,10 +9,11 @@ from NuGet, unless it says Z3 5.1.0.
 
 Merge it, after three changes: lead the description and the regression test with a Dafny program
 that proves `false` through the deleted axiom (one exists, below; the issue and the PR say none is
-known), cut the comments and the description to what is essential, and either move the thirteen
-proof stabilizations into a PR of their own that lands first, or say in the description that they
-hold in CI's order but not across orders. The fix itself is right, minimal and self-contained, and
-it makes proofs cheaper: -4.3% per program over 1,249 programs (see the benchmark).
+known), cut the comments and the description to what is essential, and move the thirteen proof
+stabilizations into a PR of their own that lands first. As submitted they hold in CI's order but not
+across orders; a version that holds at every seed I tried is prototyped (see the benchmark). The fix
+itself is right, minimal and self-contained, and it makes proofs cheaper: -4.3% per program over
+1,249 programs.
 
 ## What it does, and should it be done
 
@@ -147,9 +148,10 @@ In two other orders the same proofs fail as with this PR alone: `M0.SchorrWaite`
   `LemmaMultiplyDivideLt` keeps `master`'s `@ResourceLimit("5e7")`, which its new four-line proof
   (under 0.1M in every run) no longer needs.
 
-All prototypes are on branch `review-pr6545` on fabiomadge/dafny, commit `c4637e279`: the regression test with `Bad`
-and its expected output (fails on `master`: `Bad` verifies there), the shorter prelude, C# and test
-comments, the doc comment, the release note.
+All prototypes are on branch `review-pr6545` on fabiomadge/dafny. Commit `c4637e279` has the regression
+test with `Bad` and its expected output (fails on `master`: `Bad` verifies there), the shorter
+prelude, C# and test comments, the doc comment and the release note. Commit `4571f1330` has
+stabilizations that hold at every seed I tried (see the benchmark).
 
 ## Fact-check of the description and commit messages
 
@@ -193,17 +195,51 @@ VCs change verdict at their limit, in both directions; among the losses are the 
 stabilizations address. Re-run at seeds 1 to 4 with a placebo (`master`'s identity written as
 `x == $Box($Unbox(x): T)`), many of them are brittle: the placebo moves several of the same VCs
 (`LemmaMultiplyDivideLt` from 3 seeds of 4 to 0, `ExtensibleArray.Append` from 1 to 0), while on
-these programs the PR costs -2.6% [-5.1, +0.4] per program and the placebo -0.0%.
+these programs the PR costs -2.6% [-5.2, +0.2] per program and the placebo -0.0%.
 
 **The PR as submitted, on the ten programs it edits**, at seeds 1 to 4, against `master` with the
-same edits: -0.1% [-2.4, +3.2] per program (lit +2.6% [+0.1, +7.3], the standard library -2.7%
-[-4.3, -1.0]). Thirteen VCs are flaky (pass at some seeds, fail at others) against nine on `master`
+same edits: -0.1% [-2.3, +2.9] per program (lit +2.6% [+0.1, +7.3], the standard library -2.7%
+[-4.3, -1.0]). Thirteen VCs are flaky (pass at some seeds, fail at others) against ten on `master`
 with the edits, seven of them new. Proofs that pass at 4 of 4 seeds on `master` with the edits and
 fail some with the PR include `SMN_Correct` (2 of 4; 14.8M to 40.4M on average) and `SMN''_Correct`
 (3 of 4) in `SmallestMissingNumber-functional.dfy`, `DivMod.LemmaFundamentalDivModConverse` (3 of 4;
 12.3M to 71.3M against its 50M), two Base64 lemmas and `FilteredProducer.Invoke`. So the
 stabilizations hold in the order CI uses (the library's CI run on the branch verifies everything),
 but not across orders.
+
+**Stabilizations that hold at every seed (prototyped, `4571f1330`).** At seeds 0 to 8, whole files,
+eleven proofs in the edited files fail at some seeds with the PR, on `master`, or both. Two of them,
+`EncodeBVIsBase64` (4 of 9 with the PR, 6 of 9 on `master`) and `DecodeValidEncode1Padding` (5 and
+6 of 9), are ones the PR stabilizes with attributes. The causes are few. The cardinality facts of
+`SmallestMissingNumber-functional.dfy` make the prelude's set axioms cascade (5.4M instances of the
+`Set#Difference` membership axiom in one VC). Trivial facts sit behind a costly context (a `% 3` fact
+after a sequence equality, a length fact after `reveal`). And proofs depend on an instance that Z3
+finds only sometimes. With one helper lemma, calls to existing lemmas, `hide *`, and two asserts,
+each of the eleven passes at seeds 0 to 8 (filtered runs: 0 to 11) with the PR and on `master`:
+
+| proof | before: PR, `master` (worst RU) | after: worst RU, both |
+|---|---|---|
+| `SMN_Correct` (legacy resolver, as its test runs) | 9/9 (40M), 8/9 (53M) | 3.8M |
+| `SMN'_Correct` | 9/9 at its new 200M limit (147M), 9/9 (132M) | 5.3M (25M with the refreshed resolver); the limit goes |
+| `SMN''_Correct` | 8/9 (160M, refreshed), 9/9 | 7.6M |
+| `DivMod.LemmaFundamentalDivModConverse` | 6/9 (250M), 9/9 | under 0.05M; its limit and multiplier go |
+| `Base64.EncodeBVIsBase64` | 4/9, 6/9 | 0.3M per batch; the PR's 50M limit goes |
+| `Base64.DecodeValidEncode1Padding` | 5/9, 6/9 | 0.8M per batch |
+| `Base64.DecodeValidEncode2Padding` | 8/9, 6/9 | 0.7M per batch, with `@IsolateAssertions` |
+| `Base64.DecodeRecursivelyBounds` | 8/9 (33M), 9/9 | 0.2M |
+| `Base64.DecodeValidUnpaddedPartialFrom1PaddedSeq` (well-formedness) | 8/9 (67M), 8/9 | 0.1M |
+| `Base64.EncodeBVLengthCongruentToZeroMod4` | 8/9, 7/9 | 16M |
+| `Base64.DecodeEncodeRecursively` | 8/9, 8/9 | 0.5M per batch |
+| `Producers.FilteredProducer.Invoke` | 8/9, 9/9 | 15M of its 50M |
+
+No statement changes; `DecodeValidUnpaddedPartialFrom1PaddedSeq`'s postcondition calls two lemmas
+before its unchanged expression, as `DecodeRecursivelyBlock`'s already does. The library verifies in
+its default order with the PR ("2313 verified, 0 errors", rebuilding `DafnyStandardLibraries.doo`,
+whose program differs only by these edits) and on `master`, and `dafny format --check` passes.
+Still flaky, on `master` as much as with the PR: `ConcatenatedProducer.Invoke` (a conjunct of
+`old(State()).ValidChange(State())` passes at 4 of 9 seeds either way, despite the PR's
+`@IsolateAssertions`), `M0.SchorrWaite`'s loop invariant (8 of 9 either way), and, on `master` only,
+`MappedProducer.Invoke` and `ExtensibleArray.Set`.
 
 ## Suggested title, commit message and description
 

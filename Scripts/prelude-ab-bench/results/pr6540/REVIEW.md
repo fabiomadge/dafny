@@ -8,11 +8,11 @@ upstream checks pass. Evidence below comes from this checkout's Dafny built at `
 ## Verdict
 
 Merge it; the approval stands. The fix is right, needed, minimal and self-contained, and the
-author's reason for guarding only one direction is measured to the digit. It does cost proofs:
-+2.0% per program over the 97 programs it reaches, and Kondo's two-phase-commit proof fails at 2 of
-4 seeds (see the benchmark). Suggested before merging, none blocking:
+author's reason for guarding only one direction is measured to the digit. Its cost is small:
++2.0% per program over the 97 programs it reaches, nearly all of it a fixed few hundred to 2,000
+resource units on small VCs (see the benchmark). Suggested before merging, none blocking:
 
-- **Say what it costs**, with that example.
+- **Say what it costs.**
 - **Correct the scope sentence.** The axiom was false for every single-constructor datatype, not
   only "whenever the constructor takes every value of its fields' types".
 - **Make one `Count == 1` test, and say why one direction stays unguarded.** Prototyped.
@@ -142,21 +142,31 @@ dafny-lang/libraries +0.7% [+0.3, +1.3], the standard library +0.1% [-0.2, +0.2]
 [-2.8, +2.2].
 
 At seed 1, nine VCs change verdict at their limit, all in Kondo's protocol proofs. Re-run at seeds
-1 to 4, most are brittle Paxos VCs near the 50M limit that move both ways. One is a lost proof:
+1 to 4, most are brittle Paxos VCs near the 50M limit that move both ways. One looked lost:
 in both `kondoPrototypes/twoPhaseCommit/manual` and `paper-version`, `InvNextLeaderVotesValid` passes
-at 4 of 4 seeds on `master` and fails at 2 of 4 with the PR, at the same cost (0.3M), with "possible
-violation of postcondition of forall statement" (`applicationProof.dfy`, line 92):
+at 4 of 4 seeds on `master` and at 2 of 4 with the PR. It is brittle on `master` too. At seeds 1 to
+16, `master` proves it at 14 and 13 of 16 seeds (failing at 10 and 14, and at 9, 14 and 15), and the
+PR at 13 and 11. The failing searches give up ("incomplete quantifiers") at about the cost of the
+passing ones (0.3M). In `manual`'s seed-1 log, the PR's VC differs from `master`'s only in the
+equality axioms of two datatypes. Restoring `master`'s axiom for either one proves it. So does
+`master`'s meaning written as the PR's two implications, but only at seed 1, not at seed 4.
 
-```dafny
-forall hostId | hostId in v'.GetCoordinator(c).yesVotes
-  ensures 0 <= hostId < |c.participants| {
-  ...
-}
-```
+Where the cost per program comes from: 3,068 of the 3,182 proofs move by less than 5%. The small VCs
+that move most gain a nearly fixed amount, for instance +1,567, +1,578 and +1,579 resource units
+for `git-issue-1180b.dfy`'s three `Datatype` VCs. Most of it is Boogie's pruning, not the new
+antecedent: the axiom now mentions `Ctor?`, so a VC that uses the type's equality also receives
+`Ctor?`'s axioms (its definition, and the inversion axiom with its `exists`). In
+`git-issue-904.dfy`'s `FOO.f` (4,504 on `master`, 6,616 with the PR), the PR's log with `master`'s
+axiom swapped back in costs 6,434. Any guard on `Ctor?` pays this.
 
-So the solver gives up rather than running out. The guard is the only difference: equal fields
-now give equal values only once `Ctor?(a) && Ctor?(b)` is known. Which facts the failing searches
-miss, and whether another trigger or an extra axiom keeps this proof, I did not establish.
+No other shape does better. On `manual`'s VC at 16 seeds, with costs on `git-issue-904`'s `FOO.f`:
+
+| axiom, written into the PR's log | `InvNextLeaderVotesValid` proved | `FOO.f` RU |
+|---|---:|---:|
+| `master`'s (unsound) | 14/16 | 6,434 |
+| the PR's | 13/16 | 6,616 |
+| the PR's, with `a != b` added to the antecedent (no reflexive instances) | 13/16 | 6,564 |
+| `Ctor?(a) && Ctor?(b) ==> (Dt#Equal(a, b) <==> fields)`, trigger `{Dt#Equal(a, b)}` | 11/16 | 6,538 |
 
 ## Suggested title, commit message and description
 

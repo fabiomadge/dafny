@@ -70,6 +70,7 @@ resample programs, not VCs.
 | std/Actions/Producers.dfy | Std.Producers.ConcatenatedProducer.Invoke (correctness) (assertion batch 277) | 100M | 1 | 2 | 81.19M | 72.97M |
 | std/Actions/Producers.dfy | Std.Producers.FilteredProducer.Invoke (correctness) | 50M | 4 | 3 | 10.84M | 9.04M |
 | std/Actions/Producers.dfy | Std.Producers.MappedProducer.Invoke (correctness) | 10M | 3 | 4 | 9.05M | 7.50M |
+| std/Actions/Producers.dfy | Std.Producers.ProducerState.ValidChangeTransitive (correctness) (assertion batch 90) | none | 3 | 4 | 1.24M | 0.17M |
 | std/Arithmetic/DivMod.dfy | Std.Arithmetic.DivMod.LemmaFundamentalDivModConverse (correctness) | 50M | 4 | 3 | 12.30M | 71.29M |
 | std/Base64.dfy | Std.Base64.DecodeValidEncode1Padding (correctness) (assertion batch 56) | 12M | 3 | 2 | 4.36M | 7.53M |
 | std/Base64.dfy | Std.Base64.DecodeValidEncode2Padding (correctness) | 5M | 2 | 3 | 4.11M | 3.28M |
@@ -128,8 +129,8 @@ Flaky: some seeds pass at the job's limit and others do not. Spread: the coeffic
 
 | prelude | flaky VCs | flaky, not under master | no longer flaky | median spread | 90th-percentile spread |
 |---|---:|---:|---:|---:|---:|
-| master | 9 | 0 | 0 | 0.21 | 0.99 |
-| pr | 13 | 7 | 3 | 0.15 | 0.96 |
+| master | 10 | 0 | 0 | 0.21 | 0.99 |
+| pr | 13 | 7 | 4 | 0.15 | 0.96 |
 
 Flaky under the PR but not under master (seeds passing out of the run):
 

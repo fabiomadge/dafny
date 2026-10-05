@@ -1,4 +1,4 @@
-# #6541 A/B benchmark (public corpora)
+# #6541 A/B benchmark (public corpora, seed 1)
 
 Seeds per (VC, prelude): 1 (1; 0 is Dafny's default). VCs: 27063 in 2077 jobs; **151 affected** (master and PR counts differ), 26912 unaffected (identical counts under master and PR for every seed).
 
