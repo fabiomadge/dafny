@@ -1345,8 +1345,6 @@ module Std.Arithmetic.DivMod {
   }
 
   /* proves the validity of the quotient and remainder */
-  @ResourceLimit("5e7")
-  @TimeLimitMultiplier(10)
   lemma LemmaFundamentalDivModConverse(x: int, d: int, q: int, r: int)
     requires d != 0
     requires 0 <= r < d
@@ -1354,9 +1352,16 @@ module Std.Arithmetic.DivMod {
     ensures q == x / d
     ensures r == x % d
   {
-    LemmaDivAuto(d);
-    LemmaMulInductionAuto(q, u => u == (u * d + r) / d);
-    LemmaMulInductionAuto(q, u => r == (u * d + r) % d);
+    ModINL.LemmaFundamentalDivMod(x, d);         // x == d * (x / d) + x % d
+    ModINL.LemmaModRange(x, d);                  // 0 <= x % d < d
+    LemmaMulIsCommutative(q, d);                 // q * d == d * q
+    LemmaMulIsDistributiveSub(d, q, x / d);      // d * (q - x / d) == d * q - d * (x / d), which is x % d - r
+    LemmaMulIsCommutative(q - x / d, d);
+    if q - x / d >= 1 {
+      LemmaMulInequality(1, q - x / d, d);       // d <= (q - x / d) * d
+    } else if q - x / d <= -1 {
+      LemmaMulInequality(q - x / d, -1, d);      // (q - x / d) * d <= -d
+    }
   }
 
   @TimeLimitMultiplier(5)

@@ -1468,6 +1468,7 @@ module Std.Producers {
 
       if result.Some? {
         assert Seq.Last(source.Outputs()) == result;
+        assert IsSome(Seq.Last(source.Outputs()));
         Seq.PartitionedLastTrueImpliesAll(source.Outputs(), IsSome);
         var sourceNewOutputs := source.Outputs()[|old(source.Outputs())|..];
 

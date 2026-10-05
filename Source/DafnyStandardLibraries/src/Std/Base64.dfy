@@ -290,6 +290,9 @@ module Std.Base64 {
     ensures |DecodeRecursively(s)| % 3 == 0
     ensures |DecodeRecursively(s)| == 0 ==> |s| == 0
   {
+    if |s| != 0 {
+      DecodeRecursivelyBounds(s[4..]);
+    }
   }
 
   lemma DecodeRecursivelyBlock(s: seq<index>)
@@ -410,7 +413,7 @@ module Std.Base64 {
         EncodeRecursively(DecodeRecursively(s));
       ==
         EncodeRecursively(b);
-      == { reveal EncodeRecursively; assert |b[3..]| % 3 == 0; }
+      == { assert |b[3..]| % 3 == 0; reveal EncodeRecursively; }
         EncodeBlock(b[..3]) + EncodeRecursively(b[3..]);
       == { DecodeRecursivelyBlock(s); }
         s[..4] + EncodeRecursively(b[3..]);
@@ -897,34 +900,30 @@ module Std.Base64 {
   lemma EncodeBVLengthCongruentToZeroMod4(b: seq<bv8>)
     ensures |EncodeBV(b)| % 4 == 0
   {
-    if |b| % 3 == 0 {
-      EncodeUnpaddedBounds(b);
-    } else if |b| % 3 == 1 {
-      EncodeUnpaddedBounds(b[..(|b| - 1)]);
-    } else {
-      EncodeUnpaddedBounds(b[..(|b| - 2)]);
-    }
+    hide *;
+    EncodeBVLengthExact(b);
   }
 
   @IsolateAssertions
-  @ResourceLimit("5e7")
   lemma EncodeBVIsBase64(b: seq<bv8>)
     ensures IsBase64String(EncodeBV(b))
   {
+    hide *;
+    reveal IsBase64String, IsUnpaddedBase64String;
     EncodeBVLengthExact(b);
     if |EncodeBV(b)| < 4 {
     } else if |b| % 3 == 0 {
+      EncodeBVIsUnpadded(b);
       EncodeUnpaddedBase64(b);
     } else if |b| % 3 == 1 {
       var bStart := b[..(|b| - 1)];
-      var bEnd := b[(|b| - 1)..];
       EncodeUnpaddedBase64(bStart);
-      Encode2PaddingIs2Padding(bEnd);
+      EncodeUnpaddedBounds(bStart);
+      EncodeDecodeValid2Padded(b);
+      var s := EncodeBV(b);
+      assert s[..(|s| - 4)] == EncodeUnpadded(bStart);
     } else {
-      var bStart := b[..(|b| - 2)];
-      var bEnd := b[(|b| - 2)..];
-      EncodeUnpaddedBase64(bStart);
-      Encode1PaddingIs1Padding(bEnd);
+      EncodeDecodeValid1Padded(b);
     }
   }
 
@@ -1085,7 +1084,8 @@ module Std.Base64 {
     requires IsBase64String(s)
     requires |s| >= 4
     requires Is1Padding(s[(|s| - 4)..])
-    ensures    DecodeValid(s)[..(|DecodeValid(s)| - 2)] == DecodeUnpadded(s[..(|s| - 4)])
+    ensures (DecodeValid1PaddingLengthMod3(s); UnpaddedBase64Prefix(s);
+             DecodeValid(s)[..(|DecodeValid(s)| - 2)] == DecodeUnpadded(s[..(|s| - 4)]))
   {
   }
 
@@ -1118,6 +1118,7 @@ module Std.Base64 {
     ensures EncodeBV(DecodeValid(s)) == s
   {
     assert |DecodeValid(s)| % 3 == 2 by { DecodeValid1PaddingLengthMod3(s); }
+    UnpaddedBase64Prefix(s);
     calc {
       EncodeBV(DecodeValid(s));
     ==
@@ -1181,6 +1182,7 @@ module Std.Base64 {
     AboutDecodeValid(s, DecodeValid(s));
   }
 
+  @IsolateAssertions
   lemma DecodeValidEncode2Padding(s: seq<char>)
     requires IsBase64String(s)
     requires |s| >= 4
@@ -1188,6 +1190,7 @@ module Std.Base64 {
     ensures EncodeBV(DecodeValid(s)) == s
   {
     assert |DecodeValid(s)| % 3 == 1 by { DecodeValid2PaddingLengthMod3(s); }
+    UnpaddedBase64Prefix(s);
     calc {
       EncodeBV(DecodeValid(s));
     ==
