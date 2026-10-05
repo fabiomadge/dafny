@@ -168,19 +168,27 @@ lemma SMN_Correct(xs: List<nat>, n: nat, len: nat)
     var (L, R) := Split(xs, n + len/2);
     Split_Correct(xs, n + len/2);
     var llen := Length(L);
-    Elements_Property(L);  // this is where we need the NoDuplicates property
-    var bound := IntRange(n, len/2);
-    Cardinality(Elements(L), bound);
+    Elements_Range(L, n, len/2);  // this is where we need the NoDuplicates property
     if llen < len/2 {
+      var s := SMN(L, n, llen);
       SMN_Correct(L, n, llen);
+      assert s !in Elements(R);
+      forall x | n <= x < s
+        ensures x in Elements(xs)
+      {
+        assert x in Elements(L);
+      }
     } else {
       var s := SMN(R, n + llen, len - llen);
       SMN_Correct(R, n + llen, len - llen);
+      assert s !in Elements(L);
       forall x | n <= x < s
         ensures x in Elements(xs)
       {
         if x < n + llen {
-          SetEquality(Elements(L), bound);
+          assert x in Elements(L);
+        } else {
+          assert x in Elements(R);
         }
       }
     }
@@ -210,6 +218,22 @@ lemma Split_Correct(xs: List<nat>, b: nat)
     }
 }
 
+// The elements of xs are distinct and lie in [lo, lo + len), so there are at most len of them,
+// and if there are len, they are all of [lo, lo + len).
+lemma Elements_Range(xs: List<nat>, lo: nat, len: nat)
+  requires NoDuplicates(xs)
+  requires forall x :: x in Elements(xs) ==> lo <= x < lo + len
+  ensures Length(xs) <= len
+  ensures Length(xs) == len ==> forall x :: lo <= x < lo + len ==> x in Elements(xs)
+{
+  Elements_Property(xs);
+  var bound := IntRange(lo, len);
+  Cardinality(Elements(xs), bound);
+  if Length(xs) == len {
+    SetEquality(Elements(xs), bound);
+  }
+}
+
 lemma Elements_Property(xs: List)
   requires NoDuplicates(xs)
   ensures |Elements(xs)| == Length(xs)
@@ -227,7 +251,7 @@ opaque ghost function IntRange(lo: nat, len: nat): (s: set<nat>)
 
 // ----- Proofs of alternative versions
 
-lemma {:induction false} {:resource_limit "200e6"} SMN'_Correct(xs: List<nat>, n: nat, len: nat)
+lemma {:induction false} SMN'_Correct(xs: List<nat>, n: nat, len: nat)
   requires NoDuplicates(xs)
   requires forall x :: x in Elements(xs) ==> n <= x
   requires len == Length(xs)
@@ -243,26 +267,27 @@ lemma {:induction false} {:resource_limit "200e6"} SMN'_Correct(xs: List<nat>, n
     var (L, R) := Split(xs, n + half);
     Split_Correct(xs, n + half);
     var llen := Length(L);
-    Elements_Property(L);  // use the NoDuplicates property
-    var bound := IntRange(n, half);
-    Cardinality(Elements(L), bound);
+    Elements_Range(L, n, half);  // use the NoDuplicates property
     if llen < half {
+      var s := SMN'(L, n, llen);
       SMN'_Correct(L, n, llen);
+      assert s !in Elements(R);
+      forall x | n <= x < s
+        ensures x in Elements(xs)
+      {
+        assert x in Elements(L);
+      }
     } else {
-      var s := SMN'(xs, n, len);
+      var s := SMN'(R, n + llen, len - llen);
       SMN'_Correct(R, n + llen, len - llen);
-      assert n <= s <= n + len by {
-      }
-      assert s !in Elements(xs) by {
-      }
-      assert forall x :: n <= x < s ==> x in Elements(xs) by {
-        var t := SMN'(R, n + llen, len - llen);
-        forall x | n <= x < t
-          ensures x in Elements(xs)
-        {
-          if x < n + llen {
-            SetEquality(Elements(L), bound);
-          }
+      assert s !in Elements(L);
+      forall x | n <= x < s
+        ensures x in Elements(xs)
+      {
+        if x < n + llen {
+          assert x in Elements(L);
+        } else {
+          assert x in Elements(R);
         }
       }
     }
@@ -286,13 +311,28 @@ lemma {:induction false} SMN''_Correct(xs: List<nat>, n: nat, len: nat)
     Split_Correct(xs, n + half);
     var llen := Length(L);
     if llen < half {
+      var s := SMN''(L, n, llen);
       SMN''_Correct(L, n, llen);
+      assert s !in Elements(R);
+      forall x | n <= x < s
+        ensures x in Elements(xs)
+      {
+        assert x in Elements(L);
+      }
     } else {
-      Elements_Property(L);  // use the NoDuplicates property
-      var bound := IntRange(n, half);
-      Cardinality(Elements(L), bound);
-      SetEquality(Elements(L), bound);
+      Elements_Range(L, n, half);  // use the NoDuplicates property
+      var s := SMN''(R, n + llen, len - llen);
       SMN''_Correct(R, n + llen, len - llen);
+      assert s !in Elements(L);
+      forall x | n <= x < s
+        ensures x in Elements(xs)
+      {
+        if x < n + llen {
+          assert x in Elements(L);
+        } else {
+          assert x in Elements(R);
+        }
+      }
     }
   }
 }
