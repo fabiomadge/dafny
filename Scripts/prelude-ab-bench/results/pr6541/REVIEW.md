@@ -90,9 +90,11 @@ way, and the only outcome change is the new test. Possibly empty also covers com
 (non-null classes, type parameters), but across the whole corpus the change reaches little (see
 the benchmark below).
 
-A small inefficiency, not worth a revision: the existential binds every left-out variable. That
-includes nonempty ones, such as a lambda's heap: `exists x: int, heap: Heap :: 0 < x &&
-$IsGoodHeap(heap)`. Only the possibly empty ones need it.
+The existential binds every left-out variable, including nonempty ones such as a lambda's heap:
+`exists x: int, heap: Heap :: 0 < x && $IsGoodHeap(heap)`. Only the possibly empty ones need it,
+but binding only those is no improvement. Built and run at seed 1 on the 39 jobs the PR changes, that
+variant differs from the PR in 20 VCs and costs +0.2% per program more than it
+(`dafny4/ExpandedGuardedness.dfy` +5.9% against master, where the PR costs +0.4%).
 
 **The second change** is needed by the first, and also fixes a bug of its own. A constant field's
 right-hand side is stated in terms of its enclosing type's type parameters. Its CanCall was not

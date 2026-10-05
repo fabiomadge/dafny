@@ -127,9 +127,10 @@ proofs, in 15 programs, it costs +2.8% [-3.5, +11.0] per program (each program w
 95% bootstrap intervals that resample programs).
 
 One verdict changes at its limit: `Lifetime._ctor` in `concurrency/12-MutexLifetime-short.dfy`,
-41.5M on `master` and 65.9M with the PR, against the lit limit of 50M. At seeds 1 to 4 it passes
-4 times on `master` (32.1M on average) and 3 times with the PR (39.3M); two runs of `master`
-agree on all four.
+41.5M on `master` and 65.9M with the PR, against the lit limit of 50M. That seed is an outlier. At
+seeds 1 to 16 it passes 16 times on `master` (12.6M to 46.1M) and 15 times with the PR (13.2M to
+65.9M, the one failure being seed 1). At 6 of the 16 seeds the two differ by exactly 10 resource
+units: the same search.
 
 ## Suggested title, commit message and description
 
