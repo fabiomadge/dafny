@@ -1,38 +1,26 @@
-# Draft review: dafny-lang/dafny#6539 at `074e49a64`
+# Draft review: dafny-lang/dafny#6539 at `074e49a64` (Comment)
 
-**Event:** Comment
+## Body
 
-## Review body
+The fix is right. Suggestions inline. In the description:
 
-The fix is right. One change to the axiom, where this PR's cost comes from, a simpler test, and two
-corrections to the description.
+- The "about 17M (6M legacy)" are `M3.UnionFind.JoinMaintainsReaches1`'s costs: `--filter-symbol Main`
+  matches it too. `Main`'s own VCs then peak at 0.18M, and `Main` was already brittle on master
+  (11.8M–67.6M over 8 seeds, legacy resolver). So it needs `{:isolate_assertions}` regardless of
+  this change.
+- `Map#Build`'s frame does read elements outside the domain (harmlessly).
+- The `IMap#Glue` half is untested: I found no program that reaches it. Worth saying.
 
-Description:
-
-- "its largest VC is then about 17M (6M under the legacy resolver)": those are the costs of
-  `M3.UnionFind.JoinMaintainsReaches1`, which `--filter-symbol Main` also selects. `Main`'s own VCs
-  then peak at 0.18M. And `Main` was already brittle on master: over 8 random seeds it costs
-  11.8M to 67.6M under the legacy resolver. So `{:isolate_assertions}` is right, but not because
-  this axiom is weaker.
-- "The other axioms that read the elements of a map ... read them only inside the domain":
-  `Map#Build`'s frame reads them outside the domain too (harmlessly: it only carries them over).
-- The `IMap#Glue` half has no test. I found no program that reaches its axiom; worth a sentence.
-
-## Inline comments
+## Inline
 
 ### `Source/DafnyCore/Prelude/PreludeCore.bpl`, lines 910–914
 
-Guarding with `Map#Domain(Map#Glue(a, b, t))` means the same as guarding with `a` (by the axiom
-just above), and it is cheaper. The guard is where this PR's cost comes from, and its largest
-regressions go away with the other spelling: `dafny0/Maps.dfy`'s `GeneralMaps4` costs 0.17M on
-master, 2.96M with this guard, and 0.18M with the suggested one; `dafny4/UnionFind.dfy`'s `Join`
-postcondition (legacy resolver) costs 6.2M, 22.1M and 7.7M. Over the 63 programs whose proofs this
-changes, the suggestion costs 0.6% less per program than this PR (8 seeds, Z3 4.16.0; benchmark and
-data in
-https://github.com/fabiomadge/dafny/tree/review-pr6539-bench/Scripts/prelude-ab-bench/results/pr6539/v2).
-In `GeneralMaps4`, the guard on `a` (the comprehension's `Set#FromBoogieMap(lambda)`) takes Z3 from
-about 3,000 quantifier instantiations to 57,000, nearly all in the key comprehension's projection
-axioms. The comment also names `b'`, which nothing binds.
+Suggest guarding with `Map#Domain(Map#Glue(a, b, t))`, which equals `a` by the axiom above. The
+guard is where this PR's cost comes from, and this spelling removes its worst regressions:
+`GeneralMaps4` (`dafny0/Maps.dfy`) costs 0.17M on master, 2.96M here and 0.18M suggested;
+`UnionFind.dfy`'s `Join` (legacy resolver) costs 6.2M, 22.1M and 7.7M. It is -0.6% per program
+against this PR over the 63 affected programs
+([data](https://github.com/fabiomadge/dafny/tree/review-pr6539-bench/Scripts/prelude-ab-bench/results/pr6539/v2)).
 
 ```suggestion
 // Inside the domain only: Map#Equal ignores elements outside it, so taking them from b there would be unsound.
@@ -42,11 +30,9 @@ axiom (forall a: Set, b: [Box]Box, t: Ty, bx: Box ::
   Set#IsMember(Map#Domain(Map#Glue(a, b, t)), bx) ==> Map#Elements(Map#Glue(a, b, t))[bx] == b[bx]);
 ```
 
-(and `DafnyPrelude.bpl` regenerated).
-
 ### `Source/DafnyCore/Prelude/PreludeCore.bpl`, line 1048
 
-The same for `IMap#Glue`:
+Same for `IMap#Glue`:
 
 ```suggestion
   IMap#Domain(IMap#Glue(a, b, t))[bx] ==> IMap#Elements(IMap#Glue(a, b, t))[bx] == b[bx]);
@@ -54,9 +40,8 @@ The same for `IMap#Glue`:
 
 ### `Source/IntegrationTests/TestFiles/LitTests/LitTest/git-issues/git-issue-6535.dfy`, lines 4–22
 
-The test needs neither the precondition nor `Contradiction`. `Contradiction` verifies from `Bad`'s
-specification whatever the prelude says, and with a local empty set master still proves `Bad` (12
-of 12 seeds). The header retells history, which the `// error:` marker already covers.
+Simpler. `Contradiction` follows from `Bad`'s specification under any prelude, and master still
+proves this version (update the `.expect`):
 
 ```suggestion
 lemma Bad(k: int)
@@ -69,5 +54,3 @@ lemma Bad(k: int)
   var e := if k in m1 then m1[k] else 1; // a lookup outside the domain, never executed
 }
 ```
-
-(The expected output changes to the new positions and `0 verified, 1 error`.)
