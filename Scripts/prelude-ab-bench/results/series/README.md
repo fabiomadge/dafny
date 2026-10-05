@@ -10,7 +10,7 @@ compares them.
 | PR | fixes | a program proves `false` on `master` | verdict | before merging | cost per program |
 |---|---|---|---|---|---|
 | #6539 `Map#Glue` elements | #6535 | yes | merge after changes | guard via `Map#Domain`; correct two `UnionFind.dfy` claims; trim the description and the test | +0.6% [-0.6, +1.9]; Z3 5.1.0: +1.6% [+0.4, +2.9] |
-| #6540 single-constructor equality | #6531 | yes | merge (approved) | say what it costs (a fixed few hundred to 2,000 RU per VC); correct the scope sentence | +2.0% [+1.0, +3.2] |
+| #6540 single-constructor equality | #6531 | yes | merge (approved) | correct the scope sentence; one `Count == 1` test (its cost, a fixed few hundred to 2,000 RU per VC, is inherent) | +2.0% [+1.0, +3.2] |
 | #6541 `BplForallTrim` | #6532 | yes | merge after changes | test the lambda half and the constant-field change, which also fixes a crash on `master`; state the cost | +1.5% [+1.2, +1.8] |
 | #6542 heap-update `forall` | #6533 | yes | merge | the test's comment | +2.8% [-3.5, +11.0] |
 | #6543 `Map#Items` pairs | #6537 | not known | merge | shorter comments | +0.5% [+0.1, +1.2] |

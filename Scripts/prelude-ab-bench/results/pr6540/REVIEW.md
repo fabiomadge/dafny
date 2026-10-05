@@ -10,9 +10,9 @@ upstream checks pass. Evidence below comes from this checkout's Dafny built at `
 Merge it; the approval stands. The fix is right, needed, minimal and self-contained, and the
 author's reason for guarding only one direction is measured to the digit. Its cost is small:
 +2.0% per program over the 97 programs it reaches, nearly all of it a fixed few hundred to 2,000
-resource units on small VCs (see the benchmark). Suggested before merging, none blocking:
+resource units on small VCs, and inherent to any sound guard (see the benchmark). Suggested before
+merging, none blocking:
 
-- **Say what it costs.**
 - **Correct the scope sentence.** The axiom was false for every single-constructor datatype, not
   only "whenever the constructor takes every value of its fields' types".
 - **Make one `Count == 1` test, and say why one direction stays unguarded.** Prototyped.
