@@ -46,8 +46,12 @@ lemma's postcondition, in its correctness VC and in its callers; nothing folds i
 on 4.11.0, the correctness VC is proved, by this axiom. Only the separate well-formedness error,
 "ORDINAL subtraction could not be proved to remain above limit ordinal", rejects the program. With
 this PR the postcondition is refused too. So no program is known to verify a proof of `false`
-through the old guard, because well-formedness catches every `o - m` with `m > o.Offset`. But the
-axiom's falsity is visible in a proof today.
+through the old guard, because well-formedness catches every `o - m` with `m > o.Offset`. Hiding
+the term from well-formedness does not help either. I put it in a branch that a function's
+precondition excludes (`if b then ((0 as ORDINAL) - 1) + 1 else 0` under `requires !b`), and also
+behind an opaque predicate. Then `ensures false` fails on `master` too, at seeds 0 to 3 and with
+either resolver, because the term reaches the solver only in that excluded branch. But the axiom's
+falsity is visible in a proof today.
 
 It should be done: the guard is wrong, the fix is one line, and the regression test shows it also
 makes the axiom more complete.
