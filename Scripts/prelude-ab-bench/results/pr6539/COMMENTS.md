@@ -2,26 +2,25 @@
 
 ## Body
 
-The fix is right. Suggestions inline. In the description:
+The fix is right; suggestions inline. Three claims in the description are off:
 
-- The "about 17M (6M legacy)" are `M3.UnionFind.JoinMaintainsReaches1`'s costs: `--filter-symbol Main`
-  matches it too. `Main`'s own VCs then peak at 0.18M, and `Main` was already brittle on master
-  (11.8M–67.6M over 8 seeds, legacy resolver). So it needs `{:isolate_assertions}` regardless of
-  this change.
-- `Map#Build`'s frame does read elements outside the domain (harmlessly).
-- The `IMap#Glue` half is untested: I found no program that reaches it. Worth saying.
+- The "about 17M (6M legacy)" after `{:isolate_assertions}` are `M3.UnionFind.JoinMaintainsReaches1`'s
+  costs, which `--filter-symbol Main` also selects. `Main`'s own VCs then peak at 0.18M.
+- `Main` was brittle before this change: on master it costs 11.8M–67.6M over 8 seeds (legacy
+  resolver). The attribute is right regardless.
+- Not every other axiom reads the elements only inside the domain: `Map#Build`'s frame reads them
+  outside it (harmlessly).
 
-Description and commit message: a minimal version with the example and the `Map#Domain` axiom is at https://github.com/fabiomadge/dafny/blob/review-pr6539-bench/Scripts/prelude-ab-bench/results/pr6539/REVIEW.md#suggested-title-commit-message-and-description.
+A minimal description and commit message, with the example and the `Map#Domain` axiom: https://github.com/fabiomadge/dafny/blob/review-pr6539-bench/Scripts/prelude-ab-bench/results/pr6539/REVIEW.md#suggested-title-commit-message-and-description.
 
 ## Inline
 
 ### `Source/DafnyCore/Prelude/PreludeCore.bpl`, lines 910–914
 
-Suggest guarding with `Map#Domain(Map#Glue(a, b, t))`, which equals `a` by the axiom above. The
-guard is where this PR's cost comes from, and this spelling removes its worst regressions:
-`GeneralMaps4` (`dafny0/Maps.dfy`) costs 0.17M on master, 2.96M here and 0.18M suggested;
-`UnionFind.dfy`'s `Join` (legacy resolver) costs 6.2M, 22.1M and 7.7M. It is -0.6% per program
-against this PR over the 63 affected programs
+Suggest guarding with `Map#Domain(Map#Glue(a, b, t))`, which equals `a` by the axiom above but is
+cheaper: `GeneralMaps4` (`dafny0/Maps.dfy`) costs 0.17M on master, 2.96M here and 0.18M with this;
+`UnionFind.dfy`'s `Join` (legacy resolver) 6.2M, 22.1M and 7.7M. Over the 63 programs this PR
+affects, it is -0.6% per program against the PR
 ([data](https://github.com/fabiomadge/dafny/tree/review-pr6539-bench/Scripts/prelude-ab-bench/results/pr6539/v2)).
 
 ```suggestion

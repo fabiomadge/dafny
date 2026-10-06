@@ -7,7 +7,7 @@ Boogie's constructor functions are total. For example, take `datatype S = S(n: n
 of another datatype. Master's axioms refute both `S#Equal(A, S(S.n(A)))` and its negation; with this
 PR, only the term itself.
 
-Description and commit message: a minimal version with the corrected scope is at https://github.com/fabiomadge/dafny/blob/review-pr6539-bench/Scripts/prelude-ab-bench/results/pr6540/REVIEW.md#suggested-title-commit-message-and-description.
+A minimal description and commit message, with the corrected scope: https://github.com/fabiomadge/dafny/blob/review-pr6539-bench/Scripts/prelude-ab-bench/results/pr6540/REVIEW.md#suggested-title-commit-message-and-description.
 
 ## Inline
 

@@ -12,9 +12,7 @@ lemma Undefined() ensures ((0 as ORDINAL) - 1) + 1 == 0 { }
 On master the old axiom proves this postcondition; only the well-formedness error for `0 - 1`
 rejects the program. With this PR the postcondition fails too.
 
-`dafny0/CoinductiveProofs.dfy.expect` conflicts with #6545; whichever lands second regenerates it.
-
-Description and commit message, without the folding claim: https://github.com/fabiomadge/dafny/blob/review-pr6539-bench/Scripts/prelude-ab-bench/results/pr6544/REVIEW.md#suggested-title-commit-message-and-description.
+A minimal description and commit message, without the folding claim: https://github.com/fabiomadge/dafny/blob/review-pr6539-bench/Scripts/prelude-ab-bench/results/pr6544/REVIEW.md#suggested-title-commit-message-and-description.
 
 ## Inline
 
