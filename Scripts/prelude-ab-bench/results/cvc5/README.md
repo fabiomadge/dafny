@@ -96,6 +96,31 @@ main replay's cvc5 times also include printing its statistics, which it needs to
 random queries both prove (0.92x geomean, 0.98x total, no proof lost). `--mbqi` proves 32 (median 1.4 s,
 1.15x total). Neither helps the limit cases: all options together prove 10 of 267 (`options.txt`).
 
+## Flags against proof changes
+
+**Flags.** Fourteen option sets, each on one miss from each of the 125 programs with misses and on 120
+random queries both prove, at 30 CPU-seconds:
+
+| options | misses proved | control proofs lost | work on controls |
+|---|---:|---:|---:|
+| `--enum-inst --inst-when=last-call` | 19 | 0 | 1.02x |
+| `--enum-inst --nl-cov` | 13 | 0 | 1.02x |
+| `--enum-inst` | 12 | 0 | 1.02x |
+| `--mbqi` | 10 | 0 | 1.03x |
+| `--user-pat=strict` | 9 | 0 | 0.93x |
+| `--simplification=none` | 5 | 1 | 0.95x |
+| `--term-db-mode=relevant`, `--relevant-triggers`, `--multi-trigger-when-single`, `--nl-ext-tplanes` | 0 | 0 to 1 | 1.00x |
+
+All fourteen together prove 28 (22%). None reaches the arithmetic libraries; `--nl-ext=none` and `light`
+do not help there either.
+
+**Proofs.** Of the 177 library declarations cvc5 misses, 53 prove arithmetic facts by induction over a
+lambda (`LemmaMulInductionAuto(m, u => ...)`). Rewritten as two to six calls of quantifier-free lemmas
+(`proof-fixes.patch`: five in `Mul.dfy`, two in `DivMod.dfy`), all seven verify under both solvers, and
+Z3 needs 5 to 46 times fewer resources for them (`LemmaMulEqualityConverse`: 134,242 -> 5,305). 51 more
+are `calc` chains over `/` and `%`, where cvc5 runs out even on a step that cancels `+ n - n`
+(`ModInternals.HelperAddDenom`); those were not rewritten.
+
 ## Method
 
 - **Not wall clock.** The shared host ran at load averages up to 364 on 64 cores, so durations and

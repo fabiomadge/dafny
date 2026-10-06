@@ -1,0 +1,98 @@
+--- a/Source/DafnyStandardLibraries/src/Std/Arithmetic/Mul.dfy
++++ b/Source/DafnyStandardLibraries/src/Std/Arithmetic/Mul.dfy
+@@ -179,7 +179,8 @@
+     requires z >= 0
+     ensures  x * z <= y * z
+   {
+-    LemmaMulInductionAuto(z, u => u >= 0 ==> x * u <= y * u);
++    LemmaMulNonnegative(y - x, z);
++    LemmaMulIsDistributive(z, y, x);
+   }
+ 
+   /* any two integers that are multiplied by a positive number will maintain their numerical order */
+@@ -294,10 +295,8 @@
+     requires m * x == m * y
+     ensures x == y
+   {
+-    LemmaMulInductionAuto(m, u => x > y && 0 < u ==> x * u > y * u);
+-    LemmaMulInductionAuto(m, u => x > y && 0 > u ==> x * u < y * u);
+-    LemmaMulInductionAuto(m, u => x < y && 0 < u ==> x * u < y * u);
+-    LemmaMulInductionAuto(m, u => x < y && 0 > u ==> x * u > y * u);
++    LemmaMulIsDistributiveSub(m, x, y);
++    LemmaMulNonzero(m, x - y);
+   }
+ 
+   /* if any two separate integers are each multiplied by a common integer and the products are equal, the 
+@@ -318,7 +317,9 @@
+     requires z > 0
+     ensures  x <= y
+   {
+-    LemmaMulInductionAuto(z, u => x * u <= y * u && u > 0 ==> x <= y);
++    if x > y {
++      LemmaMulStrictInequality(y, x, z);
++    }
+   }
+ 
+   /* when two integers, x and y, are each multiplied by a positive integer, z, if x <= z then the x*z <= y*z 
+@@ -339,7 +340,9 @@
+     requires z >= 0
+     ensures  x < y
+   {
+-    LemmaMulInductionAuto(z, u => x * u < y * u && u >= 0 ==> x < y);
++    if x >= y {
++      LemmaMulInequality(y, x, z);
++    }
+   }
+ 
+   /* when two integers, x and y, are each multiplied by a positive integer, z, if x < z then the x*z < y*z 
+@@ -519,7 +522,10 @@
+   lemma LemmaMulUnaryNegation(x: int, y: int)
+     ensures (-x) * y == -(x * y) == x * (-y)
+   {
+-    LemmaMulInductionAuto(x, u => (-u) * y == -(u * y) == u * (-y));
++    LemmaMulIsDistributive(y, 0, x);
++    LemmaMulIsDistributive(x, 0, y);
++    LemmaMulBasics(x);
++    LemmaMulBasics(y);
+   }
+ 
+   /* shows the equivalent forms of using the unary negation operator for any integers*/
+--- a/Source/DafnyStandardLibraries/src/Std/Arithmetic/DivMod.dfy
++++ b/Source/DafnyStandardLibraries/src/Std/Arithmetic/DivMod.dfy
+@@ -1352,16 +1352,11 @@
+     requires 0 < d
+     ensures x % d == (x * (1 - d)) % d
+   {
+-    assert (x - x * d) % d == x % d
+-    by {
+-      LemmaModAuto(d);
+-      var f := i => (x - i * d) % d == x % d;
+-      assert  MulAuto() ==> && f(0)
+-                            && (forall i {:trigger IsLe(0, i)} :: IsLe(0, i) && f(i) ==> f(i + 1))
+-                            && (forall i {:trigger IsLe(i, 0)} :: IsLe(i, 0) && f(i) ==> f(i - 1));
+-      LemmaMulInductionAuto(x, f);
+-    }
+-    LemmaMulAuto();
++    LemmaMulIsDistributive(x, 1, d);
++    LemmaMulBasics(x);
++    LemmaMulUnaryNegation(d, x);
++    LemmaMulIsCommutative(d, x);
++    LemmaModMultiplesVanish(-x, x, d);
+   }
+ 
+   /* proves the validity of the quotient and remainder */
+@@ -1436,8 +1431,12 @@
+     requires 0 < m
+     ensures x * (y % m) % m == (x * y) % m
+   {
+-    LemmaModAuto(m);
+-    LemmaMulInductionAuto(x, u => u * (y % m) % m == (u * y) % m);
++    LemmaFundamentalDivMod(y, m);
++    LemmaMulIsDistributive(x, m * (y / m), y % m);
++    LemmaMulIsAssociative(x, m, y / m);
++    LemmaMulIsCommutative(x, m);
++    LemmaMulIsAssociative(m, x, y / m);
++    LemmaModMultiplesVanish(x * (y / m), x * (y % m), m);
+   }
+ 
+   lemma LemmaMulModNoopRightAuto()
