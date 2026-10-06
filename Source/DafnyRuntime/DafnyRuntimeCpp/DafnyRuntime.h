@@ -45,6 +45,8 @@ inline void hash_combine(std::size_t& seed, T const& v)
 // The bounds of a range over a native type, wide enough for all of them: a range over a 64-bit type can end one
 // past the type's maximum.
 __extension__ typedef __int128 dafny_range_int;
+inline dafny_range_int dafny_range_max(dafny_range_int a, dafny_range_int b) { return a < b ? b : a; }
+inline dafny_range_int dafny_range_min(dafny_range_int a, dafny_range_int b) { return b < a ? b : a; }
 
 // From https://stackoverflow.com/a/7185723
 class IntegerRange {

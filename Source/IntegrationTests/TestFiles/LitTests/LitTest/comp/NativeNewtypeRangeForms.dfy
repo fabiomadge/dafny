@@ -6,6 +6,7 @@
 newtype u64 = x: int | 0 <= x < 0x1_0000_0000_0000_0000
 type Small = x: u64 | x < 10
 type Big = x: u64 | x < 0x1_0000_0000_0000
+type uint32 = x: int | 0 <= x < 0x1_0000_0000
 
 const TWO_TO_THE_64: int := 0x1_0000_0000_0000_0000
 newtype uint64 = x: int | 0 <= x < TWO_TO_THE_64
@@ -35,4 +36,9 @@ method Main() {
   var limit: Big := 4;
   var within := set i: Big {:nowarn} | i < limit;
   print |below|, " ", |within|, "\n";
+
+  // A subset type of int, bounded by the length of a sequence.
+  var s := [10, 20, 30, 40, 50];
+  var elements := set i: uint32 {:nowarn} | i < |s| :: s[i];
+  print |elements|, "\n";
 }

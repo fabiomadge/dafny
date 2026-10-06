@@ -2399,15 +2399,24 @@ namespace Microsoft.Dafny.Compilers {
 
     // C++ has no unbounded integers, so range bounds are computed in a 128-bit integer, which holds every bound of a
     // range over a 64-bit type, including the one past its maximum.
-    protected override void EmitIntegerRangeBound(Expression bound, bool inLetExprBody, ConcreteSyntaxTree wr, ConcreteSyntaxTree wStmts) {
-      var (e, offset) = SplitIntegerRangeBound(bound);
-      if (e == null) {
-        wr.Write(RangeIntLiteral(offset));
-        return;
+    protected override void EmitIntegerRangeBound(List<Expression> bounds, bool isLower, bool inLetExprBody, ConcreteSyntaxTree wr, ConcreteSyntaxTree wStmts) {
+      wr.Write(string.Concat(Enumerable.Repeat(isLower ? "dafny_range_max(" : "dafny_range_min(", bounds.Count - 1)));
+      for (var i = 0; i < bounds.Count; i++) {
+        if (i != 0) {
+          wr.Write(", ");
+        }
+        var (e, offset) = SplitIntegerRangeBound(bounds[i]);
+        if (e == null) {
+          wr.Write(RangeIntLiteral(offset));
+        } else {
+          wr.Write("((dafny_range_int) ");
+          TrParenExpr(e, wr, inLetExprBody, wStmts);
+          wr.Write(offset.IsZero ? ")" : $" + {RangeIntLiteral(offset)})");
+        }
+        if (i != 0) {
+          wr.Write(")");
+        }
       }
-      wr.Write("((dafny_range_int) ");
-      TrParenExpr(e, wr, inLetExprBody, wStmts);
-      wr.Write(offset.IsZero ? ")" : $" + {RangeIntLiteral(offset)})");
     }
 
     static string RangeIntLiteral(BigInteger n) {

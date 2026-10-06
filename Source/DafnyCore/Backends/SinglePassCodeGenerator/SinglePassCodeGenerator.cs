@@ -1519,22 +1519,27 @@ namespace Microsoft.Dafny.Compilers {
     }
 
     /// <summary>
-    /// Emits a bound of an integer range for "EmitIntegerRange". The range helpers take "int" bounds, so a bound of a
-    /// newtype is converted to "int", with its constant offset added in "int" (see "SplitIntegerRangeBound").
+    /// Emits a bound of an integer range for "EmitIntegerRange": the largest of "bounds" if "isLower", else the
+    /// smallest. The range helpers take "int" bounds, so a bound of a newtype is converted to "int", with its constant
+    /// offset added in "int" (see "SplitIntegerRangeBound").
     /// </summary>
-    protected virtual void EmitIntegerRangeBound(Expression bound, bool inLetExprBody, ConcreteSyntaxTree wr, ConcreteSyntaxTree wStmts) {
+    protected virtual void EmitIntegerRangeBound(List<Expression> bounds, bool isLower, bool inLetExprBody, ConcreteSyntaxTree wr, ConcreteSyntaxTree wStmts) {
+      var tightest = bounds.Select(AsIntegerRangeBound).Aggregate((a, b) =>
+        new ITEExpr(b.Origin, false, isLower ? Expression.CreateLess(a, b) : Expression.CreateLess(b, a), b, a) { Type = Type.Int });
+      EmitExpr(tightest, inLetExprBody, wr, wStmts);
+    }
+
+    private static Expression AsIntegerRangeBound(Expression bound) {
       if (bound.Type.IsIntegerType) {
-        EmitExpr(bound, inLetExprBody, wr, wStmts);
-        return;
+        return bound;
       }
       var (e, offset) = SplitIntegerRangeBound(bound);
       var constant = new LiteralExpr(bound.Origin, offset) { Type = Type.Int };
       if (e == null) {
-        EmitExpr(constant, inLetExprBody, wr, wStmts);
-      } else {
-        var asInt = new ConversionExpr(e.Origin, e, Type.Int) { Type = Type.Int };
-        EmitExpr(offset.IsZero ? asInt : Expression.CreateAdd(asInt, constant), inLetExprBody, wr, wStmts);
+        return constant;
       }
+      var asInt = new ConversionExpr(e.Origin, e, Type.Int) { Type = Type.Int };
+      return offset.IsZero ? asInt : Expression.CreateAdd(asInt, constant);
     }
 
     /// <summary>
@@ -3503,23 +3508,19 @@ namespace Microsoft.Dafny.Compilers {
         return new CharType();
       } else if (bound is IntBoundedPool) {
         var b = (IntBoundedPool)bound;
+        List<Expression> Substituted(IEnumerable<Expression> sideBounds, bool lowBound) => sideBounds.Select(e =>
+          su.Substitute(bounds != null ? SubstituteBound(e, bounds, boundVars, boundIndex, lowBound) : e)).ToList();
         var res = EmitIntegerRange(bv.Type, wLo => {
           if (b.LowerBound == null) {
             EmitNull(bv.Type, wLo);
-          } else if (bounds != null) {
-            var low = SubstituteBound(b, bounds, boundVars, boundIndex, true);
-            EmitIntegerRangeBound(su.Substitute(low), inLetExprBody, wLo, wStmts);
           } else {
-            EmitIntegerRangeBound(su.Substitute(b.LowerBound), inLetExprBody, wLo, wStmts);
+            EmitIntegerRangeBound(Substituted(b.LowerBounds, true), true, inLetExprBody, wLo, wStmts);
           }
         }, wHi => {
           if (b.UpperBound == null) {
             EmitNull(bv.Type, wHi);
-          } else if (bounds != null) {
-            var high = SubstituteBound(b, bounds, boundVars, boundIndex, false);
-            EmitIntegerRangeBound(su.Substitute(high), inLetExprBody, wHi, wStmts);
           } else {
-            EmitIntegerRangeBound(su.Substitute(b.UpperBound), inLetExprBody, wHi, wStmts);
+            EmitIntegerRangeBound(Substituted(b.UpperBounds, false), false, inLetExprBody, wHi, wStmts);
           }
         });
 
@@ -3615,16 +3616,14 @@ namespace Microsoft.Dafny.Compilers {
       wr.Write("{0}.AllSingletonConstructors{1}", TypeName_Companion(bv.Type, wr, bv.Origin, null), propertySuffix);
     }
 
-    private Expression SubstituteBound(IntBoundedPool b, List<BoundedPool> bounds, List<BoundVar> boundVars, int index, bool lowBound) {
-      Contract.Requires(b != null);
-      Contract.Requires((lowBound ? b.LowerBound : b.UpperBound) != null);
+    private Expression SubstituteBound(Expression bnd, List<BoundedPool> bounds, List<BoundVar> boundVars, int index, bool lowBound) {
+      Contract.Requires(bnd != null);
       Contract.Requires(bounds != null);
       Contract.Requires(boundVars != null);
       Contract.Requires(bounds.Count == boundVars.Count);
       Contract.Requires(0 <= index && index < boundVars.Count);
       // if the outer bound is dependent on the inner boundvar, we need to
       // substitute the inner boundvar with its bound.
-      var bnd = lowBound ? b.LowerBound : b.UpperBound;
       var sm = new Dictionary<IVariable, Expression>();
       for (int i = index + 1; i < boundVars.Count; i++) {
         var bound = bounds[i];

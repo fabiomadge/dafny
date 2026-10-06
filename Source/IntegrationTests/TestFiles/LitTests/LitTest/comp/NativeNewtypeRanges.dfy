@@ -34,8 +34,12 @@ method Main() {
   var pairs := set i: u64, j: u64 | i < n && i <= j < n :: (i, j);
   print |pairs|, "\n";
 
-  // A constant bound that is tighter than the type's stays in use.
+  // Bounds that cannot be compared statically are compared at run time.
   var large: u64 := 0x1_0000_0000;
   var small := set i: u64 {:nowarn} | i < 10 && i < large;
-  print |small|, "\n";
+  var three: u64 := 3;
+  var x := set i: u64 {:nowarn} | i < 0x1_0000_0000_0000 && i < three;
+  var y := set i: u64 {:nowarn} | i < large && i < three;
+  var z := set i: u64 {:nowarn} | 2 <= i && three <= i && i < three + 3;
+  print |small|, " ", |x|, " ", |y|, " ", |z|, "\n";
 }

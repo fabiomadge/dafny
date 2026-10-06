@@ -8,8 +8,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using System.Numerics;
-using JetBrains.Annotations;
 
 namespace Microsoft.Dafny;
 
@@ -68,9 +68,10 @@ public abstract class BoundedPool : ICloneable<BoundedPool> {
     BoundedPool best = null;
     foreach (var bound in bounds) {
       if (best is IntBoundedPool ibp0 && bound is IntBoundedPool ibp1) {
-        best = new IntBoundedPool(
-          ChooseBestIntegerBound(ibp0.LowerBound, ibp1.LowerBound, true),
-          ChooseBestIntegerBound(ibp0.UpperBound, ibp1.UpperBound, false));
+        var lowerBounds = ChooseIntegerBounds(ibp0.LowerBounds.Concat(ibp1.LowerBounds), true);
+        var upperBounds = ChooseIntegerBounds(ibp0.UpperBounds.Concat(ibp1.UpperBounds), false);
+        best = new IntBoundedPool(lowerBounds.FirstOrDefault(), upperBounds.FirstOrDefault(),
+          lowerBounds.Skip(1).ToList(), upperBounds.Skip(1).ToList());
       } else if (best == null || bound.Preference() > best.Preference()) {
         best = bound;
       }
@@ -78,31 +79,31 @@ public abstract class BoundedPool : ICloneable<BoundedPool> {
     return best;
   }
 
-  [CanBeNull]
-  static Expression ChooseBestIntegerBound([CanBeNull] Expression a, [CanBeNull] Expression b, bool pickMax) {
-    if (a == null || b == null) {
-      return a ?? b;
-    }
-
-    var aa = ConstantFolder.TryFoldInteger(a);
-    var bb = ConstantFolder.TryFoldInteger(b);
-    if (aa != null && bb != null) {
-      var x = pickMax ? BigInteger.Max(aa.Value, bb.Value) : BigInteger.Min(aa.Value, bb.Value);
-      return new LiteralExpr(a.Origin, x) { Type = a.Type };
-    }
-    if ((aa ?? bb) is { } constant) {
-      // The other bound lies in the range its own type implies. A constant that is no tighter than that range, such as
-      // the bound implied by the type of the bound variable, adds nothing to it, so the other bound is used. A tighter
-      // constant is kept, because the other bound may be looser.
-      var (constantBound, other) = aa != null ? (a, b) : (b, a);
-      var (lower, upper) = ModuleResolver.TypeImpliedIntegerBounds(other.Type);
-      if ((pickMax ? lower : upper) is { } typeBound) {
-        return (pickMax ? constant <= typeBound : typeBound <= constant) ? other : constantBound;
+  /// <summary>
+  /// Returns the bounds, all on one side of a variable, that its enumeration has to take the largest ("pickMax") or the
+  /// smallest of at run time. Of the constant bounds, only the tightest is kept, and only if it is tighter than what the
+  /// type of every other bound implies; those other bounds cannot be compared statically, so they are all kept.
+  /// </summary>
+  static List<Expression> ChooseIntegerBounds(IEnumerable<Expression> bounds, bool pickMax) {
+    Expression constantBound = null;
+    BigInteger constant = default;
+    var others = new List<Expression>();
+    foreach (var bound in bounds) {
+      if (ConstantFolder.TryFoldInteger(bound) is not { } value) {
+        others.Add(bound);
+      } else if (constantBound == null || (pickMax ? constant < value : value < constant)) {
+        constantBound = bound;
+        constant = value;
       }
     }
-    // we don't know how to determine which of "a" or "b" is better, so we'll just return "a"
-    // (better would be to return an expression that computes to the minimum of "a" and "b")
-    return a;
+    bool ImpliedByType(Expression other) {
+      var (lower, upper) = ModuleResolver.TypeImpliedIntegerBounds(other.Type);
+      return pickMax ? constant <= lower : upper <= constant;
+    }
+    if (constantBound != null && !others.Exists(ImpliedByType)) {
+      others.Insert(0, constantBound);
+    }
+    return others;
   }
 
   public static List<VT> MissingBounds<VT>(List<VT> vars, List<BoundedPool> bounds, PoolVirtues requiredVirtues) where VT : IVariable {
