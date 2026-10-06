@@ -41,8 +41,8 @@ Each query is replayed in its own solver process, under a 60-second CPU-time lim
 - Of the 917 programs whose every query Z3 proves, cvc5 proves every query of 830.
 - cvc5's misses are mostly the limit, on queries Z3 finds easy (median 0.09 CPU-seconds): nonlinear
   arithmetic (`DivMod`, `Mul`, `Power`, `ModInternals`, `LittleEndianNat`, in the standard library and in
-  dafny-lang/libraries), `Std/Actions/Producers.dfy`, a few lit tests. Re-run at low load with twice the
-  limit, none of the first 68 limit cases finishes within 60 CPU-seconds, and 6 within 120.
+  dafny-lang/libraries), `Std/Actions/Producers.dfy`, a few lit tests. Re-run at lower load with twice
+  the limit, 1 of the 293 limit cases finishes within 60 CPU-seconds and 27 within 120; 266 run out again.
 - Of the 38 queries only cvc5 proves, 33 are true facts that Z3 misses: the `wishlist` and trigger tests,
   `dafny0/IndexIntoUpdate.dfy` (marked "FIXME: This should verify"), assign-such-that witnesses that are in
   scope, and `dafny0/Fuel.dfy`'s fuel and opacity tests (cvc5 is not held back by fuel). The other five are
