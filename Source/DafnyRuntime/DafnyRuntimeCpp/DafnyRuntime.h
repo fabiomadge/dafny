@@ -47,6 +47,11 @@ inline void hash_combine(std::size_t& seed, T const& v)
 __extension__ typedef __int128 dafny_range_int;
 inline dafny_range_int dafny_range_max(dafny_range_int a, dafny_range_int b) { return a < b ? b : a; }
 inline dafny_range_int dafny_range_min(dafny_range_int a, dafny_range_int b) { return b < a ? b : a; }
+// Dafny's division leaves a nonnegative remainder, where C++'s rounds toward zero.
+inline dafny_range_int dafny_range_div(dafny_range_int a, dafny_range_int b) {
+  dafny_range_int q = a / b;
+  return a % b < 0 ? (b < 0 ? q + 1 : q - 1) : q;
+}
 
 // From https://stackoverflow.com/a/7185723
 class IntegerRange {

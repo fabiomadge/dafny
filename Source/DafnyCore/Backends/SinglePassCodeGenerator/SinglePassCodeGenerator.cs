@@ -1520,42 +1520,42 @@ namespace Microsoft.Dafny.Compilers {
 
     /// <summary>
     /// Emits a bound of an integer range for "EmitIntegerRange": the largest of "bounds" if "isLower", else the
-    /// smallest. The range helpers take "int" bounds, so a bound of a newtype is converted to "int", with its constant
-    /// offset added in "int" (see "SplitIntegerRangeBound").
+    /// smallest, each computed in "int" (see "ExactIntegerRangeBound").
     /// </summary>
     protected virtual void EmitIntegerRangeBound(List<Expression> bounds, bool isLower, bool inLetExprBody, ConcreteSyntaxTree wr, ConcreteSyntaxTree wStmts) {
-      var tightest = bounds.Select(AsIntegerRangeBound).Aggregate((a, b) =>
+      var tightest = bounds.Select(ExactIntegerRangeBound).Aggregate((a, b) =>
         new ITEExpr(b.Origin, false, isLower ? Expression.CreateLess(a, b) : Expression.CreateLess(b, a), b, a) { Type = Type.Int });
       EmitExpr(tightest, inLetExprBody, wr, wStmts);
     }
 
-    private static Expression AsIntegerRangeBound(Expression bound) {
-      if (bound.Type.IsIntegerType) {
-        return bound;
-      }
-      var (e, offset) = SplitIntegerRangeBound(bound);
-      var constant = new LiteralExpr(bound.Origin, offset) { Type = Type.Int };
-      if (e == null) {
-        return constant;
-      }
-      var asInt = new ConversionExpr(e.Origin, e, Type.Int) { Type = Type.Int };
-      return offset.IsZero ? asInt : Expression.CreateAdd(asInt, constant);
-    }
-
     /// <summary>
-    /// Splits a bound of an integer range into "e + offset", where "e" is null if the bound is a constant. Bounds
-    /// discovery turns "x <= e" into "x < e + 1", whose addition can overflow the type of "e", so the offset is to be
-    /// added in a wider type.
+    /// Returns a bound of an integer range as an expression of type "int" that computes the bound's additions and
+    /// subtractions, and its multiplications and divisions by constants, in "int". Bounds discovery adds 1 for "x <= e",
+    /// moves terms across an inequality, and substitutes for another bound variable a bound that the variable itself
+    /// never reaches, any of which can take the result out of the range of the bound's type. Every other subexpression
+    /// is computed in its own type and converted.
     /// </summary>
-    protected static (Expression, BigInteger) SplitIntegerRangeBound(Expression bound) {
+    protected static Expression ExactIntegerRangeBound(Expression bound) {
       if (ConstantFolder.TryFoldInteger(bound) is { } n) {
-        return (null, n);
+        return new LiteralExpr(bound.Origin, n) { Type = Type.Int };
       }
-      if (bound.Resolved is BinaryExpr { ResolvedOp: BinaryExpr.ResolvedOpcode.Add } add && ConstantFolder.TryFoldInteger(add.E1) is { } k) {
-        var (e, offset) = SplitIntegerRangeBound(add.E0);
-        return (e, offset + k);
+      bound = bound.Resolved;
+      if (bound is BinaryExpr bin && bound.Type.IsNumericBased(Type.NumericPersuasion.Int) && bin.ResolvedOp switch {
+            BinaryExpr.ResolvedOpcode.Add or BinaryExpr.ResolvedOpcode.Sub => true,
+            BinaryExpr.ResolvedOpcode.Mul => ConstantFolder.TryFoldInteger(bin.E0) != null || ConstantFolder.TryFoldInteger(bin.E1) != null,
+            BinaryExpr.ResolvedOpcode.Div => ConstantFolder.TryFoldInteger(bin.E1) is { IsZero: false },
+            _ => false
+          }) {
+        return new BinaryExpr(bin.Origin, bin.Op, ExactIntegerRangeBound(bin.E0), ExactIntegerRangeBound(bin.E1)) {
+          ResolvedOp = bin.ResolvedOp,
+          Type = Type.Int
+        };
       }
-      return (bound, BigInteger.Zero);
+      if (bound is ConversionExpr conversion && conversion.E.Type.IsNumericBased(Type.NumericPersuasion.Int) &&
+          bound.Type.IsNumericBased(Type.NumericPersuasion.Int)) {
+        return ExactIntegerRangeBound(conversion.E);
+      }
+      return bound.Type.IsIntegerType ? bound : new ConversionExpr(bound.Origin, bound, Type.Int) { Type = Type.Int };
     }
 
     protected abstract void EmitSingleValueGenerator(Expression e, bool inLetExprBody, string type,

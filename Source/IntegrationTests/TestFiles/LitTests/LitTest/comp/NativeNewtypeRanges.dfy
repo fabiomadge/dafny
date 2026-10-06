@@ -4,6 +4,7 @@
 // Comprehensions over native newtypes, bounded by variables rather than literals.
 // NativeNewtypeRangeForms.dfy has the forms that C++ does not support.
 
+newtype u8 = x: int | 0 <= x < 0x100
 newtype i32 = x: int | -0x8000_0000 <= x < 0x8000_0000
 newtype i64 = x: int | -0x8000_0000_0000_0000 <= x < 0x8000_0000_0000_0000
 newtype u64 = x: int | 0 <= x < 0x1_0000_0000_0000_0000
@@ -42,4 +43,15 @@ method Main() {
   var y := set i: u64 {:nowarn} | i < large && i < three;
   var z := set i: u64 {:nowarn} | 2 <= i && three <= i && i < three + 3;
   print |small|, " ", |x|, " ", |y|, " ", |z|, "\n";
+
+  // Bounds that leave the type: moving 50 across "<" gives j a lower bound of i - 49, and substituting j's bound
+  // 206 or 128 gives i the upper bounds 206 + 50, 2 * 128, and (206 + 50) / 2.
+  var shifted := set i: u8, j: u8 | 200 <= j < 206 && i < j + 50 :: (i, j);
+  var doubled := set i: u8, j: u8 | 120 <= j < 128 && i < 2 * j :: (i, j);
+  var halved := set i: u8, j: u8 | 200 <= j < 206 && i < (j + 50) / 2 :: (i, j);
+  print |shifted|, " ", |doubled|, " ", |halved|, "\n";
+
+  // Dafny's division rounds -1 / 2 down to -1, where C++'s rounds it to 0.
+  var rounded := set j: i32, i: i32 | -20 <= j < 0 && j / 2 <= i < 5 :: (j, i);
+  print |rounded|, "\n";
 }

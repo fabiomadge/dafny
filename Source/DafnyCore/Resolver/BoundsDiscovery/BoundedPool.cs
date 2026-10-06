@@ -81,8 +81,10 @@ public abstract class BoundedPool : ICloneable<BoundedPool> {
 
   /// <summary>
   /// Returns the bounds, all on one side of a variable, that its enumeration has to take the largest ("pickMax") or the
-  /// smallest of at run time. Of the constant bounds, only the tightest is kept, and only if it is tighter than what the
-  /// type of every other bound implies; those other bounds cannot be compared statically, so they are all kept.
+  /// smallest of at run time. Of the constant bounds, only the tightest is kept; the other bounds cannot be compared
+  /// statically, so they are all kept. The constant is kept even where the type of another bound seems to imply it,
+  /// since that bound need not lie in its type: bounds discovery moves terms across an inequality, and substitutes for
+  /// a bound variable a bound that the variable itself never reaches.
   /// </summary>
   static List<Expression> ChooseIntegerBounds(IEnumerable<Expression> bounds, bool pickMax) {
     Expression constantBound = null;
@@ -96,11 +98,7 @@ public abstract class BoundedPool : ICloneable<BoundedPool> {
         constant = value;
       }
     }
-    bool ImpliedByType(Expression other) {
-      var (lower, upper) = ModuleResolver.TypeImpliedIntegerBounds(other.Type);
-      return pickMax ? constant <= lower : upper <= constant;
-    }
-    if (constantBound != null && !others.Exists(ImpliedByType)) {
+    if (constantBound != null) {
       others.Insert(0, constantBound);
     }
     return others;

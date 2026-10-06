@@ -2405,17 +2405,42 @@ namespace Microsoft.Dafny.Compilers {
         if (i != 0) {
           wr.Write(", ");
         }
-        var (e, offset) = SplitIntegerRangeBound(bounds[i]);
-        if (e == null) {
-          wr.Write(RangeIntLiteral(offset));
-        } else {
-          wr.Write("((dafny_range_int) ");
-          TrParenExpr(e, wr, inLetExprBody, wStmts);
-          wr.Write(offset.IsZero ? ")" : $" + {RangeIntLiteral(offset)})");
-        }
+        EmitRangeInt(ExactIntegerRangeBound(bounds[i]), inLetExprBody, wr, wStmts);
         if (i != 0) {
           wr.Write(")");
         }
+      }
+    }
+
+    // Emits a bound from "ExactIntegerRangeBound", whose arithmetic is in "int", in "dafny_range_int" instead.
+    void EmitRangeInt(Expression bound, bool inLetExprBody, ConcreteSyntaxTree wr, ConcreteSyntaxTree wStmts) {
+      switch (bound) {
+        case LiteralExpr { Value: BigInteger n }:
+          wr.Write(RangeIntLiteral(n));
+          break;
+        case BinaryExpr { ResolvedOp: BinaryExpr.ResolvedOpcode.Add or BinaryExpr.ResolvedOpcode.Sub or BinaryExpr.ResolvedOpcode.Mul } bin:
+          wr.Write("(");
+          EmitRangeInt(bin.E0, inLetExprBody, wr, wStmts);
+          wr.Write(bin.ResolvedOp switch {
+            BinaryExpr.ResolvedOpcode.Add => " + ",
+            BinaryExpr.ResolvedOpcode.Sub => " - ",
+            _ => " * "
+          });
+          EmitRangeInt(bin.E1, inLetExprBody, wr, wStmts);
+          wr.Write(")");
+          break;
+        case BinaryExpr { ResolvedOp: BinaryExpr.ResolvedOpcode.Div } div:
+          wr.Write("dafny_range_div(");
+          EmitRangeInt(div.E0, inLetExprBody, wr, wStmts);
+          wr.Write(", ");
+          EmitRangeInt(div.E1, inLetExprBody, wr, wStmts);
+          wr.Write(")");
+          break;
+        default:
+          wr.Write("((dafny_range_int) ");
+          TrParenExpr(bound is ConversionExpr conversion ? conversion.E : bound, wr, inLetExprBody, wStmts);
+          wr.Write(")");
+          break;
       }
     }
 

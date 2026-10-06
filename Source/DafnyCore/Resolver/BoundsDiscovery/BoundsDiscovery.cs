@@ -7,7 +7,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics.Contracts;
-using System.Numerics;
 
 namespace Microsoft.Dafny {
   public partial class ModuleResolver {
@@ -320,25 +319,6 @@ namespace Microsoft.Dafny {
 #endif
       }
       return knownBounds;
-    }
-
-    /// <summary>
-    /// Returns the constant bounds that "type" implies by itself, or null on a side it does not bound.
-    /// </summary>
-    internal static (BigInteger?, BigInteger?) TypeImpliedIntegerBounds(Type type) {
-      BigInteger? lower = null, upper = null;
-      var value = new BoundVar(Token.NoToken, "_value", type);
-      foreach (var bound in DiscoverAllBounds_SingleVar(value, Expression.CreateBoolLiteral(Token.NoToken, true), out _)) {
-        if (bound is IntBoundedPool pool) {
-          if (pool.LowerBound != null && ConstantFolder.TryFoldInteger(pool.LowerBound) is { } lo && (lower == null || lower < lo)) {
-            lower = lo;
-          }
-          if (pool.UpperBound != null && ConstantFolder.TryFoldInteger(pool.UpperBound) is { } hi && (upper == null || hi < upper)) {
-            upper = hi;
-          }
-        }
-      }
-      return (lower, upper);
     }
 
     public static List<BoundedPool> DiscoverAllBounds_SingleVar<VT>(VT v, Expression expr,

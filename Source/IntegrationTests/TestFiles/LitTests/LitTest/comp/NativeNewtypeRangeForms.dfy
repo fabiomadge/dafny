@@ -30,7 +30,7 @@ method Main() {
   var u := set i: uint64 {:nowarn} | 0 <= i < count;
   print |u|, "\n";
 
-  // A subset type's bound stays in use next to a bound of its base type, and gives way to a bound of its own type.
+  // A subset type's own bound, next to a bound of its base type and next to one of its own type.
   var wide: u64 := 0x100_0000_0000;
   var below := set i: Small {:nowarn} | i < wide;
   var limit: Big := 4;
