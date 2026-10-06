@@ -76,5 +76,5 @@ One of the 28 is #6539's intended one: `git-issue-6535`'s false lemma is refused
 brittle VCs near their limits that move both ways, often under the placebo too. Kondo's two-phase-commit
 proof, which #6540 seemed to lose at 2 of 4 seeds, fails on `master` too at 5 of 32 seeds (the PR: 8 of
 32). The exception is in its review: #6545, as submitted, leaves several of the proofs it stabilizes
-flaky across seeds; the prototype `4571f1330` makes eleven proofs in its edited files hold at every
+flaky across seeds; the prototype `37b20df68` makes eleven proofs in its edited files hold at every
 seed tried.

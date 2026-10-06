@@ -150,8 +150,9 @@ In two other orders the same proofs fail as with this PR alone: `M0.SchorrWaite`
 
 All prototypes are on branch `review-pr6545` on fabiomadge/dafny. Commit `c4637e279` has the regression
 test with `Bad` and its expected output (fails on `master`: `Bad` verifies there), the shorter
-prelude, C# and test comments, the doc comment and the release note. Commit `4571f1330` has
-stabilizations that hold at every seed I tried (see the benchmark).
+prelude, C# and test comments, the doc comment and the release note. Commit `37b20df68` (branch
+`review-pr6545-stabilize`, on top of `c4637e279`) has stabilizations that hold at every seed I tried
+(see the benchmark).
 
 ## Fact-check of the description and commit messages
 
@@ -207,15 +208,16 @@ fail some with the PR include `SMN_Correct` (2 of 4; 14.8M to 40.4M on average) 
 stabilizations hold in the order CI uses (the library's CI run on the branch verifies everything),
 but not across orders.
 
-**Stabilizations that hold at every seed (prototyped, `4571f1330`).** At seeds 0 to 8, whole files,
-eleven proofs in the edited files fail at some seeds with the PR, on `master`, or both. Two of them,
-`EncodeBVIsBase64` (4 of 9 with the PR, 6 of 9 on `master`) and `DecodeValidEncode1Padding` (5 and
-6 of 9), are ones the PR stabilizes with attributes. The causes are few. The cardinality facts of
+**Stabilizations that hold at every seed (prototyped, `37b20df68`).** At seeds 0 to 8, whole files,
+fifteen proofs in the edited files fail at some seeds with the PR, on `master`, or both. Two of them,
+`EncodeBVIsBase64` (passing at 4 of 9 seeds with the PR, 6 of 9 on `master`) and
+`DecodeValidEncode1Padding` (5 and 6 of 9), are ones the PR stabilizes with attributes. The causes are few. The cardinality facts of
 `SmallestMissingNumber-functional.dfy` make the prelude's set axioms cascade (5.4M instances of the
 `Set#Difference` membership axiom in one VC). Trivial facts sit behind a costly context (a `% 3` fact
 after a sequence equality, a length fact after `reveal`). And proofs depend on an instance that Z3
 finds only sometimes. With one helper lemma, calls to existing lemmas, `hide *`, and two asserts,
-each of the eleven passes at seeds 0 to 8 (filtered runs: 0 to 11) with the PR and on `master`:
+eleven of the fifteen pass at seeds 0 to 8 (filtered runs: 0 to 11) with the PR and on `master`
+(with `SMN'_Correct`, which needed the PR's new 200M limit):
 
 | proof | before: PR, `master` (worst RU) | after: worst RU, both |
 |---|---|---|
@@ -236,7 +238,7 @@ No statement changes; `DecodeValidUnpaddedPartialFrom1PaddedSeq`'s postcondition
 before its unchanged expression, as `DecodeRecursivelyBlock`'s already does. The library verifies in
 its default order with the PR ("2313 verified, 0 errors", rebuilding `DafnyStandardLibraries.doo`,
 whose program differs only by these edits) and on `master`, and `dafny format --check` passes.
-Still flaky, on `master` as much as with the PR: `ConcatenatedProducer.Invoke` (a conjunct of
+The other four stay flaky, on `master` as much as with the PR: `ConcatenatedProducer.Invoke` (a conjunct of
 `old(State()).ValidChange(State())` passes at 4 of 9 seeds either way, despite the PR's
 `@IsolateAssertions`), `M0.SchorrWaite`'s loop invariant (8 of 9 either way), and, on `master` only,
 `MappedProducer.Invoke` and `ExtensibleArray.Set`.

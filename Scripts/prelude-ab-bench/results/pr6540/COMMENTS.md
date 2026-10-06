@@ -3,8 +3,9 @@
 ## Body
 
 The description's scope is too narrow. Every single-constructor datatype was affected, because
-Boogie's constructor functions are total. For example, with `datatype S = S(n: nat)`, master's
-axioms plus `S#Equal(X, S(S.n(X)))` are `unsat`.
+Boogie's constructor functions are total. For example, take `datatype S = S(n: nat)` and a value `A`
+of another datatype. Master's axioms refute both `S#Equal(A, S(S.n(A)))` and its negation; with this
+PR, only the term itself.
 
 ## Inline
 

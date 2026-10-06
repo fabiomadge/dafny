@@ -69,9 +69,10 @@ Self-contained. Nothing obvious is missing:
 - **Codatatypes are already guarded.** Their equality axioms sit under `$Is(d0, T) && $Is(d1, T)`,
   and they have no single-constructor case.
 - **The built-in tuples get the fix too.** They are single-constructor datatypes, and the same code
-  now emits their axioms. At the SMT level, the issue's method confirms the scope: master's
-  axioms (`--boogie /prune:0`, cut before the first VC) plus one term are `unsat`, and the PR's
-  `unknown`:
+  now emits their axioms. At the SMT level, the issue's method confirms the scope. Master's axioms
+  (`--boogie /prune:0`, cut before the first VC) refute both the term below and its negation, for
+  `X` a value of another datatype. The PR's axioms leave the negation `unknown` (both re-checked
+  2026-10-06 with `X = A` of `datatype R = A | B`):
   - for the pair, `Tuple2#Equal(X, #Make2(_0(X), _1(X)))`;
   - for `datatype S = S(n: nat)`, `S#Equal(X, S(S.n(X)))`.
 
