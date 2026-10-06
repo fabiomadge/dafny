@@ -62,15 +62,18 @@ public abstract class BoundedPool : ICloneable<BoundedPool> {
   /// </summary>
   public abstract int Preference(); // higher is better
 
-  public static BoundedPool GetBest(List<BoundedPool> bounds) {
+  /// <summary>
+  /// "typeLowerBound" and "typeUpperBound" are the constant bounds that the variable's type implies by itself, if any.
+  /// </summary>
+  public static BoundedPool GetBest(List<BoundedPool> bounds, BigInteger? typeLowerBound = null, BigInteger? typeUpperBound = null) {
     Contract.Requires(bounds != null);
     bounds = CombineIntegerBounds(bounds);
     BoundedPool best = null;
     foreach (var bound in bounds) {
       if (best is IntBoundedPool ibp0 && bound is IntBoundedPool ibp1) {
         best = new IntBoundedPool(
-          ChooseBestIntegerBound(ibp0.LowerBound, ibp1.LowerBound, true),
-          ChooseBestIntegerBound(ibp0.UpperBound, ibp1.UpperBound, false));
+          ChooseBestIntegerBound(ibp0.LowerBound, ibp1.LowerBound, true, typeLowerBound),
+          ChooseBestIntegerBound(ibp0.UpperBound, ibp1.UpperBound, false, typeUpperBound));
       } else if (best == null || bound.Preference() > best.Preference()) {
         best = bound;
       }
@@ -79,20 +82,25 @@ public abstract class BoundedPool : ICloneable<BoundedPool> {
   }
 
   [CanBeNull]
-  static Expression ChooseBestIntegerBound([CanBeNull] Expression a, [CanBeNull] Expression b, bool pickMax) {
+  static Expression ChooseBestIntegerBound([CanBeNull] Expression a, [CanBeNull] Expression b, bool pickMax, BigInteger? typeBound) {
     if (a == null || b == null) {
       return a ?? b;
     }
 
-    if (Expression.IsIntLiteral(a, out var aa) && Expression.IsIntLiteral(b, out var bb)) {
-      var x = pickMax ? BigInteger.Max(aa, bb) : BigInteger.Min(aa, bb);
+    var aa = ConstantFolder.TryFoldInteger(a);
+    var bb = ConstantFolder.TryFoldInteger(b);
+    if (aa != null && bb != null) {
+      var x = pickMax ? BigInteger.Max(aa.Value, bb.Value) : BigInteger.Min(aa.Value, bb.Value);
       return new LiteralExpr(a.Origin, x) { Type = a.Type };
     }
-    // A literal next to a non-literal is typically the bound implied by the variable's type, which any other bound on
-    // the variable is at least as tight as.
-    if (Expression.IsIntLiteral(a, out _)) {
-      return b;
+    if (typeBound != null && (aa ?? bb) is { } constant) {
+      // A constant that is no tighter than the bound the type implies adds nothing to the other bound, so the other
+      // bound is used. Any other constant is kept, because a bound that is not a constant may be looser.
+      var impliedByType = pickMax ? constant <= typeBound : typeBound <= constant;
+      return impliedByType == (aa != null) ? b : a;
     }
+    // we don't know how to determine which of "a" or "b" is better, so we'll just return "a"
+    // (better would be to return an expression that computes to the minimum of "a" and "b")
     return a;
   }
 

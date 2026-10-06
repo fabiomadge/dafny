@@ -1520,24 +1520,37 @@ namespace Microsoft.Dafny.Compilers {
 
     /// <summary>
     /// Emits a bound of an integer range for "EmitIntegerRange". The range helpers take "int" bounds, so a bound of a
-    /// newtype is converted to "int", and a literal added to it (bounds discovery turns "x <= e" into "x < e + 1") is
-    /// added in "int", where it cannot overflow the newtype.
+    /// newtype is converted to "int", with its constant offset added in "int" (see "SplitIntegerRangeBound").
     /// </summary>
     protected virtual void EmitIntegerRangeBound(Expression bound, bool inLetExprBody, ConcreteSyntaxTree wr, ConcreteSyntaxTree wStmts) {
-      EmitExpr(AsIntegerRangeBound(bound), inLetExprBody, wr, wStmts);
+      if (bound.Type.IsIntegerType) {
+        EmitExpr(bound, inLetExprBody, wr, wStmts);
+        return;
+      }
+      var (e, offset) = SplitIntegerRangeBound(bound);
+      var constant = new LiteralExpr(bound.Origin, offset) { Type = Type.Int };
+      if (e == null) {
+        EmitExpr(constant, inLetExprBody, wr, wStmts);
+      } else {
+        var asInt = new ConversionExpr(e.Origin, e, Type.Int) { Type = Type.Int };
+        EmitExpr(offset.IsZero ? asInt : Expression.CreateAdd(asInt, constant), inLetExprBody, wr, wStmts);
+      }
     }
 
-    private static Expression AsIntegerRangeBound(Expression bound) {
-      if (bound.Type.IsIntegerType) {
-        return bound;
+    /// <summary>
+    /// Splits a bound of an integer range into "e + offset", where "e" is null if the bound is a constant. Bounds
+    /// discovery turns "x <= e" into "x < e + 1", whose addition can overflow the type of "e", so the offset is to be
+    /// added in a wider type.
+    /// </summary>
+    protected static (Expression, BigInteger) SplitIntegerRangeBound(Expression bound) {
+      if (ConstantFolder.TryFoldInteger(bound) is { } n) {
+        return (null, n);
       }
-      if (Expression.IsIntLiteral(bound, out var n)) {
-        return new LiteralExpr(bound.Origin, n) { Type = Type.Int };
+      if (bound.Resolved is BinaryExpr { ResolvedOp: BinaryExpr.ResolvedOpcode.Add } add && ConstantFolder.TryFoldInteger(add.E1) is { } k) {
+        var (e, offset) = SplitIntegerRangeBound(add.E0);
+        return (e, offset + k);
       }
-      if (bound.Resolved is BinaryExpr { ResolvedOp: BinaryExpr.ResolvedOpcode.Add } add && Expression.IsIntLiteral(add.E1, out var k)) {
-        return Expression.CreateAdd(AsIntegerRangeBound(add.E0), new LiteralExpr(add.E1.Origin, k) { Type = Type.Int });
-      }
-      return new ConversionExpr(bound.Origin, bound, Type.Int) { Type = Type.Int };
+      return (bound, BigInteger.Zero);
     }
 
     protected abstract void EmitSingleValueGenerator(Expression e, bool inLetExprBody, string type,

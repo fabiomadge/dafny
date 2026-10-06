@@ -2400,17 +2400,14 @@ namespace Microsoft.Dafny.Compilers {
     // C++ has no unbounded integers, so range bounds are computed in a 128-bit integer, which holds every bound of a
     // range over a 64-bit type, including the one past its maximum.
     protected override void EmitIntegerRangeBound(Expression bound, bool inLetExprBody, ConcreteSyntaxTree wr, ConcreteSyntaxTree wStmts) {
-      if (Expression.IsIntLiteral(bound, out var n)) {
-        wr.Write(RangeIntLiteral(n));
-      } else if (bound.Resolved is BinaryExpr { ResolvedOp: BinaryExpr.ResolvedOpcode.Add } add && Expression.IsIntLiteral(add.E1, out var k)) {
-        wr.Write("(");
-        EmitIntegerRangeBound(add.E0, inLetExprBody, wr, wStmts);
-        wr.Write($" + {RangeIntLiteral(k)})");
-      } else {
-        wr.Write("((dafny_range_int) ");
-        TrParenExpr(bound, wr, inLetExprBody, wStmts);
-        wr.Write(")");
+      var (e, offset) = SplitIntegerRangeBound(bound);
+      if (e == null) {
+        wr.Write(RangeIntLiteral(offset));
+        return;
       }
+      wr.Write("((dafny_range_int) ");
+      TrParenExpr(e, wr, inLetExprBody, wStmts);
+      wr.Write(offset.IsZero ? ")" : $" + {RangeIntLiteral(offset)})");
     }
 
     static string RangeIntLiteral(BigInteger n) {
