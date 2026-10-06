@@ -1,0 +1,9 @@
+miss: 297 queries with all three option sets replayed
+  enum       proves   28; median CPU 0.10 s (Z3: 0.05 s)
+  mbqi       proves   32; median CPU 1.43 s (Z3: 0.05 s)
+  enum-mbqi  proves   32; median CPU 1.47 s (Z3: 0.05 s)
+  any of them proves 38; by how default cvc5 ended: {'cap': 10, 'unknown': 28} of {'cap': 267, 'unknown': 30}
+control: 217 queries with all three option sets replayed
+  enum       proves  217 (loses 0); CPU vs default cvc5: geomean 0.92x, total 0.98x
+  mbqi       proves  217 (loses 0); CPU vs default cvc5: geomean 0.95x, total 1.15x
+  enum-mbqi  proves  217 (loses 0); CPU vs default cvc5: geomean 0.95x, total 1.15x

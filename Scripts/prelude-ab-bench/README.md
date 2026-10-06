@@ -81,6 +81,30 @@ the whole path reaches 180 characters, and a shortened name no longer says which
   stress the change and are reported apart. External programs make the result less about
   Dafny's own tests: `corpora/` lists Kondo's protocol proofs and DafnyBench's programs.
 
+## Comparing solvers
+
+Two solvers' resource counts do not convert into each other, and wall-clock time is only as good as
+the machine is quiet, so solvers are compared by CPU time, per query, outside Dafny. CPU time moves with
+load as well, and not equally for two solvers (`results/cvc5`), so take time ratios from a replay at low
+load; verdicts away from the limit do not depend on it.
+
+```sh
+# 1. Log every query each variant sends; the time limit only shortens the run (the logged text does not depend on it).
+python3 run.py jobs.json work/log --variants variants.json --preludes z3,cvc5 --seeds 1 --resource-limit 0 \
+  --time-limit 2 --solver-log-root /short/root
+# 2. Replay each query in its own solver process, under a CPU-time limit; CPU time comes from wait4.
+python3 replay.py /short/root work/replay --cpu 60 --logged work/log \
+  --solver "z3=z3:/path/to/z3::z3" --solver "cvc5=cvc5:/path/to/cvc5::cvc5"
+# 3. Compare: verdicts within the limit, CPU time on what both prove.
+python3 solvers.py jobs.json work/replay z3 cvc5 work/report.md work/vcs.csv --cap 60
+```
+
+`variants.json` maps a variant to its Dafny build, solver and `--solver-option`s; cvc5 needs
+`SOLVER=cvc5` and a per-query limit, `C:--tlimit-per=<ms>`, because Boogie sends cvc5 no limits. A
+replay is the logged text up to the first `(check-sat)`: the VC's check, not the follow-up queries
+that Boogie sends after a failure. Replayed in Z3, it gives the logging run's verdicts, and, for most
+VCs, its exact resource counts.
+
 ## Results for #6539
 
 `results/series/README.md` compares the author's six sibling PRs, #6540 to #6545, which are
