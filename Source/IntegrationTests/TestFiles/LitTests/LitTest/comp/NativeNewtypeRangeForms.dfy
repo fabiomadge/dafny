@@ -1,8 +1,11 @@
 // RUN: %testDafnyForEachCompiler --refresh-exit-code=0 "%s"
 
-// Ranges over native newtypes, bounded by variables rather than literals, in the forms besides set comprehensions.
+// Ranges over native newtypes, bounded by variables rather than literals, in the forms that NativeNewtypeRanges.dfy
+// leaves out because C++ does not compile them, such as map comprehensions and comprehensions over subset types.
 
 newtype u64 = x: int | 0 <= x < 0x1_0000_0000_0000_0000
+type Small = x: u64 | x < 10
+type Big = x: u64 | x < 0x1_0000_0000_0000
 
 const TWO_TO_THE_64: int := 0x1_0000_0000_0000_0000
 newtype uint64 = x: int | 0 <= x < TWO_TO_THE_64
@@ -25,4 +28,11 @@ method Main() {
   var count: uint64 := 4;
   var u := set i: uint64 {:nowarn} | 0 <= i < count;
   print |u|, "\n";
+
+  // A subset type's bound stays in use next to a bound of its base type, and gives way to a bound of its own type.
+  var wide: u64 := 0x100_0000_0000;
+  var below := set i: Small {:nowarn} | i < wide;
+  var limit: Big := 4;
+  var within := set i: Big {:nowarn} | i < limit;
+  print |below|, " ", |within|, "\n";
 }

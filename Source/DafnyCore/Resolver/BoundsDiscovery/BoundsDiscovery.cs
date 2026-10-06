@@ -305,8 +305,7 @@ namespace Microsoft.Dafny {
       // filled in for higher-indexed variables.
       for (var j = bvars.Count; 0 <= --j;) {
         var bounds = DiscoverAllBounds_Aux_SingleVar(bvars, j, expr, polarity, knownBounds, out _);
-        var (typeLowerBound, typeUpperBound) = TypeImpliedIntegerBounds(bvars[j]);
-        knownBounds[j] = BoundedPool.GetBest(bounds, typeLowerBound, typeUpperBound);
+        knownBounds[j] = BoundedPool.GetBest(bounds);
 #if DEBUG_PRINT
         if (knownBounds[j] is IntBoundedPool) {
           var ib = (IntBoundedPool)knownBounds[j];
@@ -324,11 +323,12 @@ namespace Microsoft.Dafny {
     }
 
     /// <summary>
-    /// Returns the constant bounds that the type of "bv" implies by itself, or null on a side it does not bound.
+    /// Returns the constant bounds that "type" implies by itself, or null on a side it does not bound.
     /// </summary>
-    private static (BigInteger?, BigInteger?) TypeImpliedIntegerBounds<VT>(VT bv) where VT : IVariable {
+    internal static (BigInteger?, BigInteger?) TypeImpliedIntegerBounds(Type type) {
       BigInteger? lower = null, upper = null;
-      foreach (var bound in DiscoverAllBounds_SingleVar(bv, Expression.CreateBoolLiteral(Token.NoToken, true), out _)) {
+      var value = new BoundVar(Token.NoToken, "_value", type);
+      foreach (var bound in DiscoverAllBounds_SingleVar(value, Expression.CreateBoolLiteral(Token.NoToken, true), out _)) {
         if (bound is IntBoundedPool pool) {
           if (pool.LowerBound != null && ConstantFolder.TryFoldInteger(pool.LowerBound) is { } lo && (lower == null || lower < lo)) {
             lower = lo;

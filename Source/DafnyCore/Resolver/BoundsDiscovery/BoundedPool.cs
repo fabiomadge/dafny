@@ -62,18 +62,15 @@ public abstract class BoundedPool : ICloneable<BoundedPool> {
   /// </summary>
   public abstract int Preference(); // higher is better
 
-  /// <summary>
-  /// "typeLowerBound" and "typeUpperBound" are the constant bounds that the variable's type implies by itself, if any.
-  /// </summary>
-  public static BoundedPool GetBest(List<BoundedPool> bounds, BigInteger? typeLowerBound = null, BigInteger? typeUpperBound = null) {
+  public static BoundedPool GetBest(List<BoundedPool> bounds) {
     Contract.Requires(bounds != null);
     bounds = CombineIntegerBounds(bounds);
     BoundedPool best = null;
     foreach (var bound in bounds) {
       if (best is IntBoundedPool ibp0 && bound is IntBoundedPool ibp1) {
         best = new IntBoundedPool(
-          ChooseBestIntegerBound(ibp0.LowerBound, ibp1.LowerBound, true, typeLowerBound),
-          ChooseBestIntegerBound(ibp0.UpperBound, ibp1.UpperBound, false, typeUpperBound));
+          ChooseBestIntegerBound(ibp0.LowerBound, ibp1.LowerBound, true),
+          ChooseBestIntegerBound(ibp0.UpperBound, ibp1.UpperBound, false));
       } else if (best == null || bound.Preference() > best.Preference()) {
         best = bound;
       }
@@ -82,7 +79,7 @@ public abstract class BoundedPool : ICloneable<BoundedPool> {
   }
 
   [CanBeNull]
-  static Expression ChooseBestIntegerBound([CanBeNull] Expression a, [CanBeNull] Expression b, bool pickMax, BigInteger? typeBound) {
+  static Expression ChooseBestIntegerBound([CanBeNull] Expression a, [CanBeNull] Expression b, bool pickMax) {
     if (a == null || b == null) {
       return a ?? b;
     }
@@ -93,11 +90,15 @@ public abstract class BoundedPool : ICloneable<BoundedPool> {
       var x = pickMax ? BigInteger.Max(aa.Value, bb.Value) : BigInteger.Min(aa.Value, bb.Value);
       return new LiteralExpr(a.Origin, x) { Type = a.Type };
     }
-    if (typeBound != null && (aa ?? bb) is { } constant) {
-      // A constant that is no tighter than the bound the type implies adds nothing to the other bound, so the other
-      // bound is used. Any other constant is kept, because a bound that is not a constant may be looser.
-      var impliedByType = pickMax ? constant <= typeBound : typeBound <= constant;
-      return impliedByType == (aa != null) ? b : a;
+    if ((aa ?? bb) is { } constant) {
+      // The other bound lies in the range its own type implies. A constant that is no tighter than that range, such as
+      // the bound implied by the type of the bound variable, adds nothing to it, so the other bound is used. A tighter
+      // constant is kept, because the other bound may be looser.
+      var (constantBound, other) = aa != null ? (a, b) : (b, a);
+      var (lower, upper) = ModuleResolver.TypeImpliedIntegerBounds(other.Type);
+      if ((pickMax ? lower : upper) is { } typeBound) {
+        return (pickMax ? constant <= typeBound : typeBound <= constant) ? other : constantBound;
+      }
     }
     // we don't know how to determine which of "a" or "b" is better, so we'll just return "a"
     // (better would be to return an expression that computes to the minimum of "a" and "b")
