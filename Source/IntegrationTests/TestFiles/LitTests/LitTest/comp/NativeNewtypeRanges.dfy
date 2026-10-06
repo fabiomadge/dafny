@@ -50,6 +50,9 @@ method Main() {
   var doubled := set i: u8, j: u8 | 120 <= j < 128 && i < 2 * j :: (i, j);
   var halved := set i: u8, j: u8 | 200 <= j < 206 && i < (j + 50) / 2 :: (i, j);
   print |shifted|, " ", |doubled|, " ", |halved|, "\n";
+  // Only u8's own lower bound keeps j from starting at i - 49, below 0.
+  var clamped := set i: u8, j: u8 | i < 4 && j < 3 && i < j + 50 :: (i, j);
+  print |clamped|, "\n";
 
   // Dafny's division rounds -1 / 2 down to -1, where C++'s rounds it to 0.
   var rounded := set j: i32, i: i32 | -20 <= j < 0 && j / 2 <= i < 5 :: (j, i);

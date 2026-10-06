@@ -7,6 +7,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics.Contracts;
+using System.Numerics;
 
 namespace Microsoft.Dafny {
   public partial class ModuleResolver {
@@ -319,6 +320,25 @@ namespace Microsoft.Dafny {
 #endif
       }
       return knownBounds;
+    }
+
+    /// <summary>
+    /// Returns the constant bounds that "type" implies by itself, or null on a side it does not bound.
+    /// </summary>
+    internal static (BigInteger?, BigInteger?) TypeImpliedIntegerBounds(Type type) {
+      BigInteger? lower = null, upper = null;
+      var value = new BoundVar(Token.NoToken, "_value", type);
+      foreach (var bound in DiscoverAllBounds_SingleVar(value, Expression.CreateBoolLiteral(Token.NoToken, true), out _)) {
+        if (bound is IntBoundedPool pool) {
+          if (pool.LowerBound != null && ConstantFolder.TryFoldInteger(pool.LowerBound) is { } lo && (lower == null || lower < lo)) {
+            lower = lo;
+          }
+          if (pool.UpperBound != null && ConstantFolder.TryFoldInteger(pool.UpperBound) is { } hi && (upper == null || hi < upper)) {
+            upper = hi;
+          }
+        }
+      }
+      return (lower, upper);
     }
 
     public static List<BoundedPool> DiscoverAllBounds_SingleVar<VT>(VT v, Expression expr,
@@ -696,6 +716,7 @@ namespace Microsoft.Dafny {
       } else {
         return -1;
       }
+      var programSide = thatSide;
 
       // Next, clean up the side where bv is by adjusting both sides of the expression
       switch (op) {
@@ -820,6 +841,12 @@ namespace Microsoft.Dafny {
         // Each further bound is only a run-time comparison, but the substitutions multiply, so their number is capped.
         sides = next.Take(MaxSubstitutedBounds).ToList();
       }
+      if (op is BinaryExpr.ResolvedOpcode.Lt or BinaryExpr.ResolvedOpcode.Le
+          or BinaryExpr.ResolvedOpcode.Gt or BinaryExpr.ResolvedOpcode.Ge) {
+        // Unlike a bound that the program writes, and evaluates only where its guards hold, a bound computed here need
+        // not lie in the range of its type, so it is given type "int" (see "BoundedPool.ChooseIntegerBounds").
+        sides = sides.ConvertAll(side => side == programSide ? side : AsIntegerBound(side));
+      }
       thatSide = sides[0];
       otherSides = sides.Skip(1).ToList();
 
@@ -832,6 +859,17 @@ namespace Microsoft.Dafny {
         e1 = thisSide;
       }
       return whereIsBv;
+    }
+
+    /// <summary>
+    /// Returns "expr" converted to "int" if it is of an integer-based type other than "int" and is not a constant.
+    /// </summary>
+    static Expression AsIntegerBound(Expression expr) {
+      if (!expr.Type.IsNumericBased(Type.NumericPersuasion.Int) || expr.Type.NormalizeExpandKeepConstraints() is IntType ||
+          ConstantFolder.TryFoldInteger(expr) != null) {
+        return expr;
+      }
+      return new ConversionExpr(expr.Origin, expr, Type.Int) { Type = Type.Int };
     }
 
     /// <summary>
