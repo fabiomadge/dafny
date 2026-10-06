@@ -143,7 +143,8 @@ public abstract class BoundedPool : ICloneable<BoundedPool> {
     // pair up the bounds
     var n = Math.Min(lowerBounds.Count, upperBounds.Count);
     for (var i = 0; i < n; i++) {
-      others.Add(new IntBoundedPool(lowerBounds[i].LowerBound, upperBounds[i].UpperBound));
+      others.Add(new IntBoundedPool(lowerBounds[i].LowerBound, upperBounds[i].UpperBound,
+        lowerBounds[i].OtherLowerBounds, upperBounds[i].OtherUpperBounds));
     }
     for (var i = n; i < lowerBounds.Count; i++) {
       others.Add(lowerBounds[i]);

@@ -399,7 +399,7 @@ namespace Microsoft.Dafny {
         }
         var e0 = c.E0;
         var e1 = c.E1;
-        int whereIsBv = SanitizeForBoundDiscovery(bvars, j, c.ResolvedOp, knownBounds, ref e0, ref e1);
+        int whereIsBv = SanitizeForBoundDiscovery(bvars, j, c.ResolvedOp, knownBounds, ref e0, ref e1, out var otherSides);
         if (whereIsBv < 0) {
           continue;
         }
@@ -452,10 +452,11 @@ namespace Microsoft.Dafny {
               conjunctsQualifyingAsRangeConstraints++;
               if (whereIsBv == 0) {
                 // bv < E
-                bounds.Add(new IntBoundedPool(null, e1));
+                bounds.Add(new IntBoundedPool(null, e1, [], otherSides));
               } else {
                 // E < bv
-                bounds.Add(new IntBoundedPool(Expression.CreateIncrement(e0, 1), null));
+                bounds.Add(new IntBoundedPool(Expression.CreateIncrement(e0, 1), null,
+                  otherSides.ConvertAll(e => Expression.CreateIncrement(e, 1)), []));
               }
             }
             break;
@@ -464,10 +465,11 @@ namespace Microsoft.Dafny {
             if (e0.Type.IsNumericBased(Type.NumericPersuasion.Int)) {
               if (whereIsBv == 0) {
                 // bv <= E
-                bounds.Add(new IntBoundedPool(null, Expression.CreateIncrement(e1, 1)));
+                bounds.Add(new IntBoundedPool(null, Expression.CreateIncrement(e1, 1), [],
+                  otherSides.ConvertAll(e => Expression.CreateIncrement(e, 1))));
               } else {
                 // E <= bv
-                bounds.Add(new IntBoundedPool(e0, null));
+                bounds.Add(new IntBoundedPool(e0, null, otherSides, []));
               }
             }
             break;
@@ -644,6 +646,8 @@ namespace Microsoft.Dafny {
       }
     }
 
+    const int MaxSubstitutedBounds = 8;
+
     /// <summary>
     /// If the return value is negative, the resulting "e0" and "e1" should not be used.
     /// Otherwise, the following is true on return:
@@ -651,10 +655,12 @@ namespace Microsoft.Dafny {
     /// One of "e0" and "e1" is the identifier "boundVars[bvi]"; the return value is either 0 or 1, and indicates which.
     /// The other of "e0" and "e1" is an expression whose free variables are not among "boundVars[bvi..]".
     /// Ensures that the resulting "e0" and "e1" are not ConcreteSyntaxExpression's.
+    /// "otherSides" holds further expressions that can each take the place of that other one. It is empty unless "op"
+    /// is an inequality.
     /// </summary>
     static int SanitizeForBoundDiscovery<VT>(List<VT> boundVars, int bvi, BinaryExpr.ResolvedOpcode op,
       List<BoundedPool> knownBounds,
-      ref Expression e0, ref Expression e1) where VT : IVariable {
+      ref Expression e0, ref Expression e1, out List<Expression> otherSides) where VT : IVariable {
       Contract.Requires(boundVars != null);
       Contract.Requires(0 <= bvi && bvi < boundVars.Count);
       Contract.Requires(knownBounds != null);
@@ -665,6 +671,7 @@ namespace Microsoft.Dafny {
       Contract.Ensures(!(Contract.ValueAtReturn(out e0) is ConcreteSyntaxExpression));
       Contract.Ensures(!(Contract.ValueAtReturn(out e1) is ConcreteSyntaxExpression));
 
+      otherSides = [];
       IVariable bv = boundVars[bvi];
       e0 = e0.Resolved;
       e1 = e1.Resolved;
@@ -774,32 +781,47 @@ namespace Microsoft.Dafny {
       //      a integer lower bound),
       //   *  "thatSide" depends on "bj",
       //   *  "thatSide" is monotonic in "bj",
-      //   *  "bj" has a known integer upper bound "u",
+      //   *  "bj" has a known integer bound "u", which is an upper bound if "thatSide" grows with "bj" and a lower
+      //      bound if it shrinks (or the other way around, if "thatSide" is a lower bound on "bv"),
       //   *  "u" does not depend on "bv" or any bound variable listed after "bv"
       //      (from the way we're constructing bounds, we already know that "u"
       //      does not depend on "bj" or any bound variable listed after "bj")
-      // then we can substitute "u" for "bj" in "thatSide".
+      // then we can substitute "u" for "bj" in "thatSide". Each such bound of "bj" gives a bound on "bv", so all of
+      // them are substituted, and those after the first are returned in "otherSides".
       // By going from right to left, we can make the rule above slightly more
       // liberal by considering a cascade of substitutions.
-      var fvThatSide = FreeVariables(thatSide);
+      var sides = new List<Expression> { thatSide };
       for (int j = boundVars.Count; bvi + 1 <= --j;) {
-        if (fvThatSide.Contains(boundVars[j])) {
-          if (knownBounds[j] is IntBoundedPool jBounds) {
-            Expression u = null;
-            if (op is BinaryExpr.ResolvedOpcode.Lt or BinaryExpr.ResolvedOpcode.Le) {
-              u = whereIsBv == 0 ? jBounds.UpperBound : jBounds.LowerBound;
-            } else if (op == BinaryExpr.ResolvedOpcode.Gt || op == BinaryExpr.ResolvedOpcode.Ge) {
-              u = whereIsBv == 0 ? jBounds.LowerBound : jBounds.UpperBound;
-            }
-            if (u != null && !FreeVariables(u).Contains(bv) && IsMonotonic(u, boundVars[j], true)) {
-              thatSide = BoogieGenerator.Substitute(thatSide, boundVars[j], u);
-              fvThatSide = FreeVariables(thatSide);
-              continue;
-            }
-          }
+        var bj = boundVars[j];
+        if (!sides.Exists(side => FreeVariables(side).Contains(bj))) {
+          continue;
+        }
+        if (knownBounds[j] is not IntBoundedPool jBounds || op is not (BinaryExpr.ResolvedOpcode.Lt or BinaryExpr.ResolvedOpcode.Le
+              or BinaryExpr.ResolvedOpcode.Gt or BinaryExpr.ResolvedOpcode.Ge)) {
           return -1; // forget about "bv OP thatSide"
         }
+        var upperOnBv = op is BinaryExpr.ResolvedOpcode.Lt or BinaryExpr.ResolvedOpcode.Le ? whereIsBv == 0 : whereIsBv != 0;
+        var next = new List<Expression>();
+        foreach (var side in sides) {
+          if (!FreeVariables(side).Contains(bj)) {
+            next.Add(side);
+            continue;
+          }
+          var grows = IsMonotonic(side, bj, true);
+          if (grows || IsMonotonic(side, bj, false)) {
+            next.AddRange((grows == upperOnBv ? jBounds.UpperBounds : jBounds.LowerBounds)
+              .Where(u => !FreeVariables(u).Contains(bv))
+              .Select(u => BoogieGenerator.Substitute(side, bj, u)));
+          }
+        }
+        if (next.Count == 0) {
+          return -1; // forget about "bv OP thatSide"
+        }
+        // Each further bound is only a run-time comparison, but the substitutions multiply, so their number is capped.
+        sides = next.Take(MaxSubstitutedBounds).ToList();
       }
+      thatSide = sides[0];
+      otherSides = sides.Skip(1).ToList();
 
       // As we return, also return the adjusted sides
       if (whereIsBv == 0) {
@@ -815,21 +837,39 @@ namespace Microsoft.Dafny {
     /// <summary>
     /// If "position", then returns "true" if "x" occurs only positively in "expr".
     /// If "!position", then returns "true" if "x" occurs only negatively in "expr".
+    /// "x" may occur under additions, subtractions, multiplications and divisions by constants, and conversions between
+    /// integer-based types, the operations that "SinglePassCodeGenerator.ExactIntegerRangeBound" computes in "int".
     /// </summary>
     public static bool IsMonotonic(Expression expr, IVariable x, bool position) {
       Contract.Requires(expr != null && expr.Type != null);
       Contract.Requires(x != null);
 
-      if (expr is IdentifierExpr identifierExpr) {
-        return identifierExpr.Var != x || position;
-      } else if (expr is BinaryExpr binaryExpr) {
-        if (binaryExpr.ResolvedOp == BinaryExpr.ResolvedOpcode.Add) {
-          return IsMonotonic(binaryExpr.E0, x, position) && IsMonotonic(binaryExpr.E1, x, position);
-        } else if (binaryExpr.ResolvedOp == BinaryExpr.ResolvedOpcode.Sub) {
-          return IsMonotonic(binaryExpr.E0, x, position) && IsMonotonic(binaryExpr.E1, x, !position);
-        }
+      expr = expr.Resolved;
+      if (!FreeVariables(expr).Contains(x)) {
+        return true;
       }
-      return !FreeVariables(expr).Contains(x);
+      switch (expr) {
+        case IdentifierExpr:
+          return position;
+        case ConversionExpr conversionExpr when conversionExpr.E.Type.IsNumericBased(Type.NumericPersuasion.Int) &&
+                                                expr.Type.IsNumericBased(Type.NumericPersuasion.Int):
+          return IsMonotonic(conversionExpr.E, x, position);
+        case BinaryExpr { ResolvedOp: BinaryExpr.ResolvedOpcode.Add } binaryExpr:
+          return IsMonotonic(binaryExpr.E0, x, position) && IsMonotonic(binaryExpr.E1, x, position);
+        case BinaryExpr { ResolvedOp: BinaryExpr.ResolvedOpcode.Sub } binaryExpr:
+          return IsMonotonic(binaryExpr.E0, x, position) && IsMonotonic(binaryExpr.E1, x, !position);
+        case BinaryExpr { ResolvedOp: BinaryExpr.ResolvedOpcode.Mul } binaryExpr:
+          if (ConstantFolder.TryFoldInteger(binaryExpr.E0) is { } c0) {
+            return IsMonotonic(binaryExpr.E1, x, c0.Sign < 0 ? !position : position);
+          }
+          return ConstantFolder.TryFoldInteger(binaryExpr.E1) is { } c1 &&
+                 IsMonotonic(binaryExpr.E0, x, c1.Sign < 0 ? !position : position);
+        case BinaryExpr { ResolvedOp: BinaryExpr.ResolvedOpcode.Div } binaryExpr:
+          return ConstantFolder.TryFoldInteger(binaryExpr.E1) is { IsZero: false } d &&
+                 IsMonotonic(binaryExpr.E0, x, d.Sign < 0 ? !position : position);
+        default:
+          return false;
+      }
     }
   }
 }
