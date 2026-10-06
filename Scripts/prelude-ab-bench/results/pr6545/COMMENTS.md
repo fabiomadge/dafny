@@ -7,7 +7,7 @@ The fix is right, and it makes proofs cheaper: -4.3% per program over 1,249 prog
 1. **Lead the description and the test with a program that proves `false`.** The description says
    none is known, and `git-issue-6534.dfy` passes on master too. This one proves `false` on master
    (both resolvers) and on 4.11.0, and is refused here (as a test, with a header:
-   https://github.com/fabiomadge/dafny/commit/c4637e279):
+   [c4637e279](https://github.com/fabiomadge/dafny/commit/c4637e279)):
 
    ```dafny
    datatype Opt<T> = None | Some(v: T)
@@ -28,14 +28,15 @@ The fix is right, and it makes proofs cheaper: -4.3% per program over 1,249 prog
    `$Box(true)` or `$Box(false)`, so two of them are equal.
 
 2. **Land the 13 stabilizations first, as their own PR.** They help master too, would vanish into
-   this PR's squash commit, and hold only in CI's order: at seeds 0–8, fifteen proofs in the edited
-   files fail at some seeds, here or on master, among them the stabilized `EncodeBVIsBase64` and
-   `DecodeValidEncode1Padding` (4 and 5 of 9 seeds here).
-   https://github.com/fabiomadge/dafny/commit/37b20df68 makes eleven of the fifteen pass at every
-   seed tried, here and on master, without the new 200M (`SMN'_Correct`) and 50M
-   (`EncodeBVIsBase64`) limits. The other four fail at some seeds on master too.
+   this PR's squash commit, and hold only in CI's order.
+   - At seeds 0–8, fifteen proofs in the edited files fail at some seeds, here or on master. Among
+     them are the stabilized `EncodeBVIsBase64` and `DecodeValidEncode1Padding`, which pass at only
+     4 and 5 of 9 seeds here.
+   - [37b20df68](https://github.com/fabiomadge/dafny/commit/37b20df68) makes eleven of the fifteen
+     pass at every seed tried, here and on master, without the new 200M (`SMN'_Correct`) and 50M
+     (`EncodeBVIsBase64`) limits. The other four fail at some seeds on master too.
 
-A minimal description and squash-commit message, with `Bad` as the example: https://github.com/fabiomadge/dafny/blob/review-pr6539-bench/Scripts/prelude-ab-bench/results/pr6545/REVIEW.md#suggested-title-commit-message-and-description.
+A minimal description and squash-commit message, with `Bad` as the example: [link](https://github.com/fabiomadge/dafny/blob/review-pr6539-bench/Scripts/prelude-ab-bench/results/pr6545/REVIEW.md#suggested-title-commit-message-and-description).
 
 ## Inline
 

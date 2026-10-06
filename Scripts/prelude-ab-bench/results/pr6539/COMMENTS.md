@@ -11,17 +11,18 @@ The fix is right; suggestions inline. Three claims in the description are off:
 - Not every other axiom reads the elements only inside the domain: `Map#Build`'s frame reads them
   outside it (harmlessly).
 
-A minimal description and commit message, with the example and the `Map#Domain` axiom: https://github.com/fabiomadge/dafny/blob/review-pr6539-bench/Scripts/prelude-ab-bench/results/pr6539/REVIEW.md#suggested-title-commit-message-and-description.
+A minimal description and commit message, with the example and the `Map#Domain` axiom: [link](https://github.com/fabiomadge/dafny/blob/review-pr6539-bench/Scripts/prelude-ab-bench/results/pr6539/REVIEW.md#suggested-title-commit-message-and-description).
 
 ## Inline
 
 ### `Source/DafnyCore/Prelude/PreludeCore.bpl`, lines 910–914
 
 Suggest guarding with `Map#Domain(Map#Glue(a, b, t))`, which equals `a` by the axiom above but is
-cheaper: `GeneralMaps4` (`dafny0/Maps.dfy`) costs 0.17M on master, 2.96M here and 0.18M with this;
-`UnionFind.dfy`'s `Join` (legacy resolver) 6.2M, 22.1M and 7.7M. Over the 63 programs this PR
-affects, it is -0.6% per program against the PR
-([data](https://github.com/fabiomadge/dafny/tree/review-pr6539-bench/Scripts/prelude-ab-bench/results/pr6539/v2)).
+cheaper:
+- `GeneralMaps4` (`dafny0/Maps.dfy`) costs 0.17M on master, 2.96M here and 0.18M with this.
+- `UnionFind.dfy`'s `Join` (legacy resolver) costs 6.2M, 22.1M and 7.7M.
+- Over the 63 programs this PR affects, it is -0.6% per program against the PR
+  ([data](https://github.com/fabiomadge/dafny/tree/review-pr6539-bench/Scripts/prelude-ab-bench/results/pr6539/v2)).
 
 ```suggestion
 // Inside the domain only: Map#Equal ignores elements outside it, so taking them from b there would be unsound.

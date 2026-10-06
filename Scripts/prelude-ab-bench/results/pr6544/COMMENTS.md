@@ -12,7 +12,7 @@ lemma Undefined() ensures ((0 as ORDINAL) - 1) + 1 == 0 { }
 On master the old axiom proves this postcondition; only the well-formedness error for `0 - 1`
 rejects the program. With this PR the postcondition fails too.
 
-A minimal description and commit message, without the folding claim: https://github.com/fabiomadge/dafny/blob/review-pr6539-bench/Scripts/prelude-ab-bench/results/pr6544/REVIEW.md#suggested-title-commit-message-and-description.
+A minimal description and commit message, without the folding claim: [link](https://github.com/fabiomadge/dafny/blob/review-pr6539-bench/Scripts/prelude-ab-bench/results/pr6544/REVIEW.md#suggested-title-commit-message-and-description).
 
 ## Inline
 
@@ -20,7 +20,7 @@ A minimal description and commit message, without the folding claim: https://git
 
 Suggest adding `Undefined` as the test of the fix itself; the current lemmas test only where the
 axiom now applies. The RUN line then needs `%exits-with 4`
-(https://github.com/fabiomadge/dafny/commit/366398279):
+([366398279](https://github.com/fabiomadge/dafny/commit/366398279)):
 
 ```suggestion
 // RUN: %exits-with 4 %verify "%s" > "%t"

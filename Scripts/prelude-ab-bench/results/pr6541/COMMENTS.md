@@ -5,7 +5,7 @@
 The fix is right. Four requests:
 
 1. **Test the lambda half and the constant-field change.** Reverting the lambda half does not fail
-   the test. For example (both on https://github.com/fabiomadge/dafny/commit/126cd9b99, where the
+   the test. For example (both on [126cd9b99](https://github.com/fabiomadge/dafny/commit/126cd9b99), where the
    test's comments also explain the tests rather than their history):
 
    ```dafny
@@ -33,7 +33,7 @@ The fix is right. Four requests:
 4. **Retitle.** The variable is still dropped; what changes is that the body is guarded by
    `exists x :: A(x)`. Suggest `fix: don't drop a possibly empty bound variable's type from call permissions`.
 
-A minimal description and commit message: https://github.com/fabiomadge/dafny/blob/review-pr6539-bench/Scripts/prelude-ab-bench/results/pr6541/REVIEW.md#suggested-title-commit-message-and-description.
+A minimal description and commit message: [link](https://github.com/fabiomadge/dafny/blob/review-pr6539-bench/Scripts/prelude-ab-bench/results/pr6541/REVIEW.md#suggested-title-commit-message-and-description).
 
 ## Inline
 

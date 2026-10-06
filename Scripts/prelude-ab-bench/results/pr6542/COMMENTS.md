@@ -4,7 +4,7 @@
 
 LGTM: the same shape as #6367's fix of the call form.
 
-Optional: a shorter description and commit message: https://github.com/fabiomadge/dafny/blob/review-pr6539-bench/Scripts/prelude-ab-bench/results/pr6542/REVIEW.md#suggested-title-commit-message-and-description.
+Optional: a shorter description and commit message: [link](https://github.com/fabiomadge/dafny/blob/review-pr6539-bench/Scripts/prelude-ab-bench/results/pr6542/REVIEW.md#suggested-title-commit-message-and-description).
 
 ## Inline
 
