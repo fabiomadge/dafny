@@ -220,6 +220,8 @@ Description:
 
 > Fixes #6532
 >
+> ### What was changed?
+>
 > `BplForallTrim`, which builds the CanCall facts of lambdas and comprehensions (and so of
 > quantifiers and forall statements), dropped a bound variable that the body does not mention,
 > with its type antecedent. That is sound only for a nonempty type. On 4.11.0 and `master` this
@@ -243,5 +245,11 @@ Description:
 > arguments in its CanCall. `master` already crashed there ("undeclared identifier") for
 > `const k := G<T>()` used outside its class, and the first change added more such cases.
 >
-> Tests: `git-issues/git-issue-6532.dfy` (a forall statement, a lambda, a control) and
+> ### How has this been tested?
+>
+> `git-issues/git-issue-6532.dfy` (a forall statement, a lambda, a control) and
 > `git-issues/git-issue-6532b.dfy` (the constant).
+>
+> This change was prepared with an AI assistant (Claude Code).
+>
+> <small>By submitting this pull request, I confirm that my contribution is made under the terms of the [MIT license](https://github.com/dafny-lang/dafny/blob/master/LICENSE.txt).</small>

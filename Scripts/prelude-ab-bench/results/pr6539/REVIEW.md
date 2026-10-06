@@ -201,9 +201,10 @@ Map#Elements(Map#Glue(a, b, t)) == b everywhere, so two equal map
 comprehensions equated their value functions outside it too, and proved
 false. Give the elements only inside the domain, for Map#Glue and IMap#Glue.
 
-dafny4/UnionFind.dfy's Main, one VC whose cost already varies from 12M to
-68M across seeds, now needs 53M at the default seed, over the 50M limit;
-give it {:isolate_assertions}, as #6478 did for Join.
+dafny4/UnionFind.dfy's Main, a single VC, already exceeds the 50M limit at
+some seeds on master (legacy resolver), and with this change at the default
+seed (53M, refreshed resolver); give it {:isolate_assertions}, as #6478 did
+for Join.
 
 Fixes #6535
 ```
@@ -240,9 +241,9 @@ axiom (forall a: Set, b: [Box]Box, t: Ty, bx: Box ::
 ```
 
 and likewise for `IMap#Glue`, although I found no program that reaches its axiom.
-`dafny4/UnionFind.dfy`'s `Main` is one VC whose cost already varies from 12M to 68M across random
-seeds; with this change the default seed needs 53M, over the tests' 50M limit, so `Main` gets
-`{:isolate_assertions}`, as `Join` did in #6478.
+`dafny4/UnionFind.dfy`'s `Main`, a single VC, already exceeds the tests' 50M limit at some random
+seeds on `master` (legacy resolver), and with this change at the default seed (53M, refreshed
+resolver). So `Main` gets `{:isolate_assertions}`, as `Join` did in #6478.
 
 ### How has this been tested?
 

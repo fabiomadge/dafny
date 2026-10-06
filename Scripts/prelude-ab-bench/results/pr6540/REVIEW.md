@@ -104,6 +104,9 @@ conflicts that #6543, #6544 and #6545 have among themselves), the test still mat
     idiom already covers that.
   - **`Contradiction` tests nothing.** It verifies from `Bad`'s specification whatever the axiom
     says. Without it, master still proves `Bad` at 8 of 8 seeds and the PR refuses it at 8 of 8.
+  - **`Unit`'s axiom is the one that proves `Bad`.** On master, `Unit` has no fields, so its axiom
+    is `Unit#Equal(a, b)` for any two values. `Bad`'s VC contains no `S#Equal`, and deleting
+    `Unit`'s axiom from it turns Z3's `unsat` into `unknown` (both resolvers, checked 2026-10-06).
   - **The `forall` statement and `{:induction false}` are load-bearing.** Without either, master no
     longer proves `Bad` (seeds 0–3 and 0–7 checked). A comment should say so, or someone will
     remove them and the test will stop detecting the bug.
@@ -179,12 +182,13 @@ Commit message:
 fix: guard the equality axiom of single-constructor datatypes
 
 For a datatype with one constructor, the axiom that defines Dt#Equal field
-by field had no antecedent, so it spoke about the values of every datatype:
-with Dt#Equal(a, b) <==> a == b, a value X of another datatype equaled
-Ctor(Dtor(X)), and false followed. Its direction "equal fields imply
-Dt#Equal" now has the antecedent Ctor?(a) && Ctor?(b). The other direction
-holds of all values; guarding it too makes the standard library's
-LittleEndianNat.LemmaSeqAdd and LemmaSeqSub run out of resources.
+by field had no antecedent, so it held of the values of every datatype.
+With Dt#Equal(a, b) <==> a == b, a value v of another datatype equaled
+Ctor(Dtor(v)), and for a constructor without fields any two values were
+equal. Its direction "equal fields imply Dt#Equal" now has the antecedent
+Ctor?(a) && Ctor?(b). The other direction holds of all values; guarding it
+too makes the standard library's LittleEndianNat.LemmaSeqAdd and LemmaSeqSub
+run out of resources.
 
 Fixes #6531
 ```
@@ -197,15 +201,17 @@ Fixes #6531
 ### What was changed?
 
 For a datatype with one constructor, the axiom that defines its equality field by field had no
-antecedent, so it held for every value of `DatatypeType`, the sort all datatypes share:
+antecedent, so it held for every value of `DatatypeType`, the sort all datatypes share. For
+`datatype Unit = U`, which has no fields, it read
 
 ```boogie
-axiom (forall a: DatatypeType, b: DatatypeType :: { _module.W#Equal(a, b) }
-  _module.W#Equal(a, b) <==> _module.W.k(a) == _module.W.k(b));
+axiom (forall a: DatatypeType, b: DatatypeType :: { _module.Unit#Equal(a, b) }
+  _module.Unit#Equal(a, b));
 ```
 
-Since `W#Equal` is `==`, a value `X` of any other datatype equals `W(W.k(X))`. This verified
-(`5 verified, 0 errors`), with `ensures false`:
+and since `Unit#Equal` is `==`, any two datatype values were equal. (With fields, a value `v` of any
+other datatype equaled `Ctor(Dtor(v))`.) On `master` this verified (`4 verified, 0 errors`),
+although `Bad`'s postcondition is false:
 
 ```dafny
 datatype Unit = U
@@ -229,15 +235,10 @@ lemma {:induction false} Bad(us: seq<Unit>, s: S)
     ensures G(us', s') != []
   { }
 }
-
-lemma Contradiction() ensures false {
-  Bad([U], S(1));
-  assert G([U], S(1)) == [F(U, S(1))] + G([], S(1));
-}
 ```
 
-The direction "equal fields imply equal" now has the antecedent `W?(a) && W?(b)`, as with several
-constructors. The other direction holds of all values and stays unguarded: guarding it too makes
+The direction "equal fields imply equal" now has the antecedent `Ctor?(a) && Ctor?(b)`, as with
+several constructors. The other direction holds of all values and stays unguarded: guarding it too makes
 the standard library's `LittleEndianNat.LemmaSeqAdd` and `LemmaSeqSub` run out of resources.
 
 ### How has this been tested?

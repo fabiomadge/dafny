@@ -22,10 +22,12 @@ The fix is right. Three requests:
    method UseK(c: C<int>) { ghost var b := c.k; assert b; }
    ```
 
-2. **The constant-field change fixes a master bug of its own.** Master rejects `UseK` ("undeclared
-   identifier: _module.C$T"). Say so, rather than "exposed".
+2. **The constant-field change fixes a master bug of its own.** Master crashes on `UseK` (exit 134,
+   "undeclared identifier: _module.C$T"). Say so, rather than "exposed".
 3. **State the cost.** With `type Pos = x: int | 0 < x witness *` and `function F(): int { 7 }`,
    `var f := (x: Pos) => F(); assert f(5) == 7;` verifies on master but not here; `witness 1` fixes
    it.
 
 Title suggestion: `fix: don't drop a possibly empty bound variable's type from call permissions`.
+
+Description and commit message: a minimal version is at https://github.com/fabiomadge/dafny/blob/review-pr6539-bench/Scripts/prelude-ab-bench/results/pr6541/REVIEW.md#suggested-title-commit-message-and-description.

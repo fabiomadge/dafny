@@ -37,12 +37,26 @@ The fix is right, and it is cheaper overall: -4.3% per program over 1,249 progra
 
    https://github.com/fabiomadge/dafny/commit/37b20df68 makes eleven of the fifteen pass at every
    seed tried, here and on master, without the new 200M (`SMN'_Correct`) and 50M
-   (`EncodeBVIsBase64`) limits. The other four are flaky on master too.
+   (`EncodeBVIsBase64`) limits. The other four fail at some seeds on master too.
 
 The `.expect` files conflict with #6543 (`SubsetTypes`) and #6544 (`CoinductiveProofs`); whichever
 lands second regenerates them.
 
+Description and squash-commit message, with `Bad` as the example: https://github.com/fabiomadge/dafny/blob/review-pr6539-bench/Scripts/prelude-ab-bench/results/pr6545/REVIEW.md#suggested-title-commit-message-and-description.
+
 ## Inline
+
+### `Source/DafnyCore/Prelude/PreludeCore.bpl`, lines 239–241
+
+This inverse adds a proof, so it deserves a test. The following fails on master and verifies here
+(both resolvers), and fails again without this axiom:
+
+```dafny
+lemma Subset(s: set<ORDINAL>, t: set<ORDINAL>)
+  requires forall o :: o in s ==> o in t
+  ensures s <= t
+{ }
+```
 
 ### `Source/DafnyCore/Verifier/BoogieGenerator.Methods.cs`, lines 387–388
 

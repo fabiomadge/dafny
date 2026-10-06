@@ -173,4 +173,8 @@ assert map[1 := 2].Items == {(1, 2)}; // refused on master, verifies with this c
 
 `git-issues/git-issue-6537.dfy` checks that assertion for a `map` and an `imap`. The resource
 total that `dafny0/SubsetTypes.dfy` records moves (764300 to 761900); its verdicts do not.
+
+This change was prepared with an AI assistant (Claude Code).
+
+<small>By submitting this pull request, I confirm that my contribution is made under the terms of the [MIT license](https://github.com/dafny-lang/dafny/blob/master/LICENSE.txt).</small>
 ````

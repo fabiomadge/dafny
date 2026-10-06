@@ -11,6 +11,8 @@ The fix is right. Suggestions inline. In the description:
 - `Map#Build`'s frame does read elements outside the domain (harmlessly).
 - The `IMap#Glue` half is untested: I found no program that reaches it. Worth saying.
 
+Description and commit message: a minimal version with the example and the `Map#Domain` axiom is at https://github.com/fabiomadge/dafny/blob/review-pr6539-bench/Scripts/prelude-ab-bench/results/pr6539/REVIEW.md#suggested-title-commit-message-and-description.
+
 ## Inline
 
 ### `Source/DafnyCore/Prelude/PreludeCore.bpl`, lines 910–914

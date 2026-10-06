@@ -82,10 +82,21 @@ Boogie synonym of `Box` and its fields are read and written unboxed (`read($Heap
 
 Two small points:
 
-- The new `TORDINAL` inverse looks unreachable: `ORDINAL` cannot be a type argument ("an ORDINAL type
-  is not allowed to be used as a type argument"), and in the one program I checked the translator
-  emitted no `$Unbox(_): ORDINAL` and no `$IsBox(_, TORDINAL)`. Whether any path boxes a `Field` I did
-  not establish. Both inverses are true and harmless; keep them for uniformity or drop them.
+- The new `TORDINAL` inverse is needed, and it adds a proof. `ORDINAL` is rejected only as the type
+  argument of a generic call (`Id(o)`); `set<ORDINAL>` boxes ordinals. This lemma fails on `master`
+  and verifies with the PR, at seeds 0 to 2 with either resolver, and fails again with only that
+  axiom removed (checked 2026-10-06). It deserves a test:
+
+  ```dafny
+  lemma Subset(s: set<ORDINAL>, t: set<ORDINAL>)
+    requires forall o :: o in s ==> o in t
+    ensures s <= t
+  { }
+  ```
+
+  For the `TField` inverse I found no program that needs it. The analogous `set<field>` lemma (with
+  `--referrers`) crashes the translator on `master` and with the PR alike, because `TrType` has no case
+  for `FieldType`; that is a separate, pre-existing bug.
 - `AddInstanceFieldAllocationAxioms`'s doc comment still says the type axiom concludes
   `$Is(h[o, f], TT(PP))`; it should mention the new conjunct, and that is the place for the reason
   (prototyped).
@@ -267,6 +278,8 @@ Description:
 ```
 Fixes #6534
 
+### What was changed?
+
 This verifies on master and 4.11.0, and is refused with this change:
 
 <the program above>
@@ -278,9 +291,16 @@ boxes `$Box(true)` or `$Box(false)`, so two of them are equal.
 
 The change deletes that axiom. The inverse holds of a box that holds a value
 of the type, and the prelude and AddBoxUnboxAxiom state it per type, guarded
-by `$IsBox`; this adds it for `ORDINAL` and `Field`. `CondApplyBox` relied on
-the deleted axiom at heap reads, so a field's type axiom now also states
-`$IsBox(h[o, f], T)`.
+by `$IsBox`; this adds it for `ORDINAL` and `Field`. For `set<ORDINAL>`s,
+the `ORDINAL` one also proves `s <= t` from `forall o :: o in s ==> o in t`,
+which master refuses. `CondApplyBox` relied on the deleted axiom at heap reads, so a
+field's type axiom now also states `$IsBox(h[o, f], T)`.
+
+### How has this been tested?
 
 Regression test: git-issues/git-issue-6534.dfy.
+
+This change was prepared with an AI assistant (Claude Code).
+
+<small>By submitting this pull request, I confirm that my contribution is made under the terms of the [MIT license](https://github.com/dafny-lang/dafny/blob/master/LICENSE.txt).</small>
 ```

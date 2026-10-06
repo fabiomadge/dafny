@@ -210,4 +210,8 @@ and the axiom now also applies where `n` exceeds `ORD#Offset(o) + m`.
 `git-issues/git-issue-6536.dfy`: `Undefined`'s postcondition is now refused, and `(o - m) + n` is
 proved for `m <= o.Offset < n - m` and for `n <= m`. The resource counts that
 `dafny0/CoinductiveProofs.dfy` records move; its verdicts do not.
+
+This change was prepared with an AI assistant (Claude Code).
+
+<small>By submitting this pull request, I confirm that my contribution is made under the terms of the [MIT license](https://github.com/dafny-lang/dafny/blob/master/LICENSE.txt).</small>
 ````
