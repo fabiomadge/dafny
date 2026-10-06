@@ -65,11 +65,29 @@ with #6545's prelude too.
 
 ## Time
 
-On a random sample of 1,000 queries both prove, replayed at low load, cvc5 needs **2.43x** [2.29, 2.58]
-Z3's CPU time per program (each program weighs the same), and 2.88x as a geomean over queries. On the
-queries both need at least a second for, it needs 3.1x [2.0, 4.9] per program. A query's fixed cost (5th
-percentile, low load) is 0.016 s for Z3 and 0.025 s for cvc5. 1,152 queries take cvc5 at least a second
-where Z3 is 20 times faster; they make cvc5's total 5.1 times Z3's.
+Measured as work, user-space instructions (`perf stat`), which do not depend on the machine's load.
+Inside Dafny a solver process is reused and, after each `(reset)`, re-reads the prelude, so the work a VC
+costs is its whole query less the solver's startup.
+
+| queries both prove (stratum by Z3's CPU time) | queries | cvc5 / Z3 per program [95%] | 10th, 50th, 90th percentile over queries | cvc5 cheaper | by cycles |
+|---|---:|---|---|---:|---|
+| a random sample | 999 | **3.98x** [3.78, 4.19] | 2.7x, 3.5x, 7.2x | 0% | 4.0x |
+| Z3 0.1 to 0.3 s | 194 | 7.5x [5.2, 11.2] | 3.0x, 3.6x, 17x | 0% | 9.2x |
+| Z3 at least 0.3 s | 240 | 3.4x [2.1, 5.4] | 0.44x, 5.9x, 30x | 23% | 4.1x |
+
+On the random sample both solvers execute about 1.8 instructions per cycle, so its instruction ratio is
+a time ratio; on the larger queries cvc5's rate is lower, and the cycle ratios are the better guide.
+Counting only the VC beyond the prelude, the random sample's ratio is 6.0x [5.7, 6.4]. So on the small
+queries that make up most of a program, cvc5 always does more work, typically 3 to 7 times Z3's. On the
+heavy ones it varies most: cheaper on almost a quarter of them, at least 15 times costlier on a quarter,
+at least 30 times on a tenth. These ratios leave out the 1.3% of queries that cvc5 does not prove
+within the limit.
+
+Timing whole processes understates the difference: starting a solver costs either about 12.5 ms of CPU
+time, mostly in the kernel, about as much as a typical query's own work under Z3 (a median of 51 million
+instructions), and that shared cost pulls the ratio toward 1 (1.67x per program on the same sample). The
+main replay's cvc5 times also include printing its statistics, which it needs to report resource units
+(about 1.2 x 10^8 instructions per query).
 
 ## Options
 
@@ -84,13 +102,13 @@ random queries both prove (0.92x geomean, 0.98x total, no proof lost). `--mbqi` 
   wall-clock limits measured the machine. `run.py --solver-log-root` logs every query each solver gets,
   and `replay.py` replays each in its own process and reads its CPU time from `wait4`.
 - **Not resource counts across solvers.** Z3's rlimit and cvc5's resource units count different work.
-- **CPU time is load-sensitive too.** At the main replay's load averages, about 35 to 60, short queries
-  took 2.2 (Z3) and 1.45 (cvc5) times their CPU time at load 20, so the main replay understates cvc5's
-  cost by about 1.4x; the time
-  ratios above come from the low-load sample. `summary.md` and `report.md` are the main replay's.
+- **CPU time is load-sensitive too, and includes process startup.** At the main replay's load averages,
+  about 35 to 60, short queries took 2.2 (Z3) and 1.45 (cvc5) times their CPU time at load 20, and each
+  process's CPU time includes a startup that Dafny pays once per process. The time ratios above therefore
+  count instructions; the CPU times in `summary.md` and `report.md` (the main replay's) only rank queries.
 - **Verdicts are deterministic.** Replayed twice, 500 random queries give the same answers and the same
   resource counts under both solvers. Z3 replays give the Dafny runs' verdicts, and for most VCs the
   same resource counts.
 
-Files: `summary.md` and `report.md` (main replay), `options.txt`, `queries.csv.gz` (every query's answers,
+Files: `summary.md` and `report.md` (main replay), `options.txt`, `instructions.csv.gz` (the instruction counts), `queries.csv.gz` (every query's answers,
 CPU times, resource units and memory under both solvers), `soundness/` (the query and its cores).

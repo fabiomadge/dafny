@@ -84,9 +84,10 @@ the whole path reaches 180 characters, and a shortened name no longer says which
 ## Comparing solvers
 
 Two solvers' resource counts do not convert into each other, and wall-clock time is only as good as
-the machine is quiet, so solvers are compared by CPU time, per query, outside Dafny. CPU time moves with
-load as well, and not equally for two solvers (`results/cvc5`), so take time ratios from a replay at low
-load; verdicts away from the limit do not depend on it.
+the machine is quiet, so solvers are compared per query, outside Dafny. CPU time moves with load as
+well, not equally for two solvers, and includes a process's startup (`results/cvc5`), so compare their
+work with `replay.py --perf` (user-space instructions), less a `--part startup` replay; verdicts within
+the CPU limit do not depend on it.
 
 ```sh
 # 1. Log every query each variant sends; the time limit only shortens the run (the logged text does not depend on it).

@@ -2,9 +2,12 @@
 """replay.py <log-root> <outdir> --solver NAME=KIND:BINARY[:ARGS]:SOURCE ... [--cpu 60] [--mem-gb 8] [--workers 32]
 
 Replays the queries that run.py --solver-log-root logged, one solver process per query, and measures each
-process's CPU time (user + system, from wait4). CPU time is not free of the machine's load: on a host at
-load 35 to 60 of 64 cores, short queries took 2.2 (Z3) and 1.45 (cvc5) times their CPU time at load 20,
-so a ratio between solvers is only as good as a run at low load. A query is its log's text up to the first (check-sat): the VC's own check, without the
+process's CPU time (user + system, from wait4). CPU time is not free of the machine's load (on a host at
+load 35 to 60 of 64 cores, short queries took 2.2 (Z3) and 1.45 (cvc5) times their CPU time at load 20),
+and it includes the process's startup, which Dafny pays once per solver process. To compare solvers' work,
+pass --perf, which also records user-space instructions and cycles (perf stat) and, because cvc5's
+statistics cost it some 10^8 instructions, records no resource units; subtract a --part startup replay.
+A query is its log's text up to the first (check-sat): the VC's own check, without the
 follow-up queries Boogie sends after a failure. KIND is z3 or cvc5; ARGS are extra solver arguments, split
 on commas; SOURCE names the logged variant whose queries this solver gets. Each process runs under
 --cpu seconds of CPU time and --mem-gb of address space; a query killed by the CPU limit counts as timed out.
@@ -14,7 +17,7 @@ ResourceCount: Z3's rlimit count or cvc5's resource units, which do not compare 
 solvers.py compares the replays, and replays.jsonl with every replay's details. Only queries logged for
 every SOURCE are replayed, and each job's replays alternate between the solvers, query by query.
 """
-import argparse, collections, concurrent.futures as cf, json, os, re, resource, signal, subprocess, threading, time
+import argparse, collections, concurrent.futures as cf, json, os, re, resource, signal, subprocess, tempfile, threading, time
 
 ap = argparse.ArgumentParser()
 ap.add_argument("root"); ap.add_argument("outdir")
@@ -26,6 +29,9 @@ ap.add_argument("--jobs", default=None, help="only these job ids (a JSON job lis
 ap.add_argument("--only", default=None, help='only these queries: a JSON list of {"job": ..., "query": ...}')
 ap.add_argument("--logged", default=None,
                 help="run.py's output directory of the logging run: replay a job only once its runs there are done")
+ap.add_argument("--perf", action="store_true", help="also count user-space instructions and cycles (perf stat)")
+ap.add_argument("--part", choices=("full", "prelude", "startup"), default="full",
+                help="replay the query, only its prelude (the text before the VC's first push), or only (exit)")
 a = ap.parse_args()
 only_q = collections.defaultdict(set)
 for x in json.load(open(a.only)) if a.only else []:
@@ -57,10 +63,16 @@ def query(path, kind):
     i = text.find("(check-sat)")
     if i < 0:
         return None
+    if a.part == "startup":
+        return "(exit)\n"
+    if a.part == "prelude":
+        p = text.find("(push 1)")
+        return LIMIT_OPT.sub("", text[:p]) + "(exit)\n" if 0 <= p < i else None
     text = text[:i + len("(check-sat)")] + "\n"
     if kind == "z3":
         text = LIMIT_OPT.sub("", text)  # the logging run's limits; --cpu limits the replay
-    return text + TAIL[kind]
+    # cvc5 reports resource units only with all its statistics, which cost it some 10^8 instructions
+    return text + ("(exit)\n" if a.perf else TAIL[kind])
 
 
 def limits():
@@ -71,8 +83,11 @@ def limits():
 
 
 def replay(text, s):
-    p = subprocess.Popen([s["binary"]] + BASE[s["kind"]] + s["args"], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                         stderr=subprocess.PIPE, preexec_fn=limits)
+    cmd = [s["binary"]] + BASE[s["kind"]] + s["args"]
+    if a.perf:
+        fd, stat = tempfile.mkstemp(dir=a.outdir, suffix=".perf"); os.close(fd)
+        cmd = ["perf", "stat", "-x,", "-o", stat, "-e", "instructions:u,cycles:u", "--"] + cmd
+    p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, preexec_fn=limits)
     t0 = time.time()
     err = []
     def feed():
@@ -96,8 +111,15 @@ def replay(text, s):
     elif answer is None:
         answer = f"error: {out.strip()[:100]}" if os.WIFEXITED(status) else f"signal {os.WTERMSIG(status)}"
     m = RU[s["kind"]].search(out)
+    counts = {}
+    if a.perf:
+        for line in open(stat):
+            f = line.strip().split(",")
+            if len(f) > 2 and f[2] in ("instructions:u", "cycles:u"):
+                counts[f[2].split(":")[0]] = int(f[0]) if f[0].isdigit() else None
+        os.remove(stat)
     return {"answer": answer, "cpu": round(cpu, 4), "wall": round(wall, 3), "ru": int(m.group(1)) if m else 0,
-            "maxrss_mb": ru.ru_maxrss // 1024}
+            "maxrss_mb": ru.ru_maxrss // 1024, **counts}
 
 
 def dur(sec):
