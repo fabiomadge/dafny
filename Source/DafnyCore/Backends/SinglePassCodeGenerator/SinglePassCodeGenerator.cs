@@ -1523,9 +1523,16 @@ namespace Microsoft.Dafny.Compilers {
     /// smallest, each computed in "int" (see "ExactIntegerRangeBound").
     /// </summary>
     protected virtual void EmitIntegerRangeBound(List<Expression> bounds, bool isLower, bool inLetExprBody, ConcreteSyntaxTree wr, ConcreteSyntaxTree wStmts) {
-      var tightest = bounds.Select(ExactIntegerRangeBound).Aggregate((a, b) =>
-        new ITEExpr(b.Origin, false, isLower ? Expression.CreateLess(a, b) : Expression.CreateLess(b, a), b, a) { Type = Type.Int });
-      EmitExpr(tightest, inLetExprBody, wr, wStmts);
+      // Each comparison repeats both of its operands, so the comparisons form a balanced tree.
+      Expression Tightest(List<Expression> exact) {
+        if (exact.Count == 1) {
+          return exact[0];
+        }
+        var a = Tightest(exact.GetRange(0, exact.Count / 2));
+        var b = Tightest(exact.GetRange(exact.Count / 2, exact.Count - exact.Count / 2));
+        return new ITEExpr(b.Origin, false, isLower ? Expression.CreateLess(a, b) : Expression.CreateLess(b, a), b, a) { Type = Type.Int };
+      }
+      EmitExpr(Tightest(bounds.ConvertAll(ExactIntegerRangeBound)), inLetExprBody, wr, wStmts);
     }
 
     /// <summary>
