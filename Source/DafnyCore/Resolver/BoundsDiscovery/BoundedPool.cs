@@ -88,8 +88,11 @@ public abstract class BoundedPool : ICloneable<BoundedPool> {
       var x = pickMax ? BigInteger.Max(aa, bb) : BigInteger.Min(aa, bb);
       return new LiteralExpr(a.Origin, x) { Type = a.Type };
     }
-    // we don't know how to determine which of "a" or "b" is better, so we'll just return "a"
-    // (better would be to return an expression that computes to the minimum of "a" and "b")
+    // A literal next to a non-literal is typically the bound implied by the variable's type, which any other bound on
+    // the variable is at least as tight as.
+    if (Expression.IsIntLiteral(a, out _)) {
+      return b;
+    }
     return a;
   }
 

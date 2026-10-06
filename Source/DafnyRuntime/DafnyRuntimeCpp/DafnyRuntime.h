@@ -42,13 +42,17 @@ inline void hash_combine(std::size_t& seed, T const& v)
     seed ^= std::hash<T>()(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
 
+// The bounds of a range over a native type, wide enough for all of them: a range over a 64-bit type can end one
+// past the type's maximum.
+__extension__ typedef __int128 dafny_range_int;
+
 // From https://stackoverflow.com/a/7185723
 class IntegerRange {
  public:
    class iterator {
       friend class IntegerRange;
     public:
-      long int operator *() const { return i_; }
+      dafny_range_int operator *() const { return i_; }
       const iterator &operator ++() { ++i_; return *this; }
       iterator operator ++(int) { iterator copy(*this); ++i_; return copy; }
 
@@ -56,15 +60,15 @@ class IntegerRange {
       bool operator !=(const iterator &other) const { return i_ != other.i_; }
 
     protected:
-      iterator(long int start) : i_ (start) { }
+      iterator(dafny_range_int start) : i_ (start) { }
 
     private:
-      unsigned long i_;
+      dafny_range_int i_;
    };
 
    iterator begin() const { return begin_; }
    iterator end() const { return end_; }
-   IntegerRange(long int  begin, long int end) : begin_(begin), end_(end) {}
+   IntegerRange(dafny_range_int begin, dafny_range_int end) : begin_(begin), end_(end < begin ? begin : end) {}
 private:
    iterator begin_;
    iterator end_;

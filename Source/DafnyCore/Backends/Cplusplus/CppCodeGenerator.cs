@@ -2397,6 +2397,31 @@ namespace Microsoft.Dafny.Compilers {
       throw new UnsupportedFeatureException(source.Origin, Feature.TypeTests);
     }
 
+    // C++ has no unbounded integers, so range bounds are computed in a 128-bit integer, which holds every bound of a
+    // range over a 64-bit type, including the one past its maximum.
+    protected override void EmitIntegerRangeBound(Expression bound, bool inLetExprBody, ConcreteSyntaxTree wr, ConcreteSyntaxTree wStmts) {
+      if (Expression.IsIntLiteral(bound, out var n)) {
+        wr.Write(RangeIntLiteral(n));
+      } else if (bound.Resolved is BinaryExpr { ResolvedOp: BinaryExpr.ResolvedOpcode.Add } add && Expression.IsIntLiteral(add.E1, out var k)) {
+        wr.Write("(");
+        EmitIntegerRangeBound(add.E0, inLetExprBody, wr, wStmts);
+        wr.Write($" + {RangeIntLiteral(k)})");
+      } else {
+        wr.Write("((dafny_range_int) ");
+        TrParenExpr(bound, wr, inLetExprBody, wStmts);
+        wr.Write(")");
+      }
+    }
+
+    static string RangeIntLiteral(BigInteger n) {
+      if (n.Sign < 0) {
+        return $"(-{RangeIntLiteral(-n)})";
+      }
+      return n <= ulong.MaxValue
+        ? $"((dafny_range_int) {n}ULL)"
+        : $"(((dafny_range_int) {n >> 64}ULL << 64) | {n & ulong.MaxValue}ULL)";
+    }
+
     protected override void EmitIsInIntegerRange(Expression source, BigInteger lo, BigInteger hi, ConcreteSyntaxTree wr, ConcreteSyntaxTree wStmts) {
       throw new UnsupportedFeatureException(source.Origin, Feature.TypeTests);
     }

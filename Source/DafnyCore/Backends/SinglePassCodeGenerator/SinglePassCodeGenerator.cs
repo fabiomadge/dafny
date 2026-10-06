@@ -1517,6 +1517,29 @@ namespace Microsoft.Dafny.Compilers {
       }
       );
     }
+
+    /// <summary>
+    /// Emits a bound of an integer range for "EmitIntegerRange". The range helpers take "int" bounds, so a bound of a
+    /// newtype is converted to "int", and a literal added to it (bounds discovery turns "x <= e" into "x < e + 1") is
+    /// added in "int", where it cannot overflow the newtype.
+    /// </summary>
+    protected virtual void EmitIntegerRangeBound(Expression bound, bool inLetExprBody, ConcreteSyntaxTree wr, ConcreteSyntaxTree wStmts) {
+      EmitExpr(AsIntegerRangeBound(bound), inLetExprBody, wr, wStmts);
+    }
+
+    private static Expression AsIntegerRangeBound(Expression bound) {
+      if (bound.Type.IsIntegerType) {
+        return bound;
+      }
+      if (Expression.IsIntLiteral(bound, out var n)) {
+        return new LiteralExpr(bound.Origin, n) { Type = Type.Int };
+      }
+      if (bound.Resolved is BinaryExpr { ResolvedOp: BinaryExpr.ResolvedOpcode.Add } add && Expression.IsIntLiteral(add.E1, out var k)) {
+        return Expression.CreateAdd(AsIntegerRangeBound(add.E0), new LiteralExpr(add.E1.Origin, k) { Type = Type.Int });
+      }
+      return new ConversionExpr(bound.Origin, bound, Type.Int) { Type = Type.Int };
+    }
+
     protected abstract void EmitSingleValueGenerator(Expression e, bool inLetExprBody, string type,
       ConcreteSyntaxTree wr, ConcreteSyntaxTree wStmts);
     protected virtual void FinishModule() { }
@@ -3472,18 +3495,18 @@ namespace Microsoft.Dafny.Compilers {
             EmitNull(bv.Type, wLo);
           } else if (bounds != null) {
             var low = SubstituteBound(b, bounds, boundVars, boundIndex, true);
-            EmitExpr(su.Substitute(low), inLetExprBody, wLo, wStmts);
+            EmitIntegerRangeBound(su.Substitute(low), inLetExprBody, wLo, wStmts);
           } else {
-            EmitExpr(su.Substitute(b.LowerBound), inLetExprBody, wLo, wStmts);
+            EmitIntegerRangeBound(su.Substitute(b.LowerBound), inLetExprBody, wLo, wStmts);
           }
         }, wHi => {
           if (b.UpperBound == null) {
             EmitNull(bv.Type, wHi);
           } else if (bounds != null) {
             var high = SubstituteBound(b, bounds, boundVars, boundIndex, false);
-            EmitExpr(su.Substitute(high), inLetExprBody, wHi, wStmts);
+            EmitIntegerRangeBound(su.Substitute(high), inLetExprBody, wHi, wStmts);
           } else {
-            EmitExpr(su.Substitute(b.UpperBound), inLetExprBody, wHi, wStmts);
+            EmitIntegerRangeBound(su.Substitute(b.UpperBound), inLetExprBody, wHi, wStmts);
           }
         });
 
