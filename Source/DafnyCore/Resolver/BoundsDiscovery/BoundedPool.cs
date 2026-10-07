@@ -84,8 +84,9 @@ public abstract class BoundedPool : ICloneable<BoundedPool> {
   /// smallest of at run time, in the order given. Of the constant bounds, only the tightest is kept, in the place of the
   /// first, and only if no other bound kept implies it (see "Implies"). The other bounds cannot be compared statically,
   /// so they are kept, except that one whose evaluation can fail is kept only if it comes first. A range is computed
-  /// before the compiled code checks the conjuncts that such a bound may rely on, like the "0 < k" of "i < 100 / k", and
-  /// the first bound is the one that a range used to be computed from alone.
+  /// before the compiled code checks the conjuncts that such a bound may rely on, like the "0 < k" of "i < 100 / k", so
+  /// a further one could fail where no element is in the range anyway, while the first is the bound that the program
+  /// states first.
   /// </summary>
   static List<Expression> ChooseIntegerBounds(IEnumerable<Expression> bounds, bool pickMax) {
     Expression constantBound = null;
