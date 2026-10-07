@@ -112,14 +112,56 @@ random queries both prove, at 30 CPU-seconds:
 | `--term-db-mode=relevant`, `--relevant-triggers`, `--multi-trigger-when-single`, `--nl-ext-tplanes` | 0 | 0 to 1 | 1.00x |
 
 All fourteen together prove 28 (22%). None reaches the arithmetic libraries; `--nl-ext=none` and `light`
-do not help there either.
+do not help there either. On the 53 lambda-induction queries below, `--user-pat=use` (match patterns that
+contain arithmetic, as Z3 does) proves none, and the best set, `--user-pat=use --enum-inst
+--inst-when=last-call`, proves 6. Dafny's patterns use its arithmetic synonyms (`INTERNAL_add_boogie`),
+so that cvc5 by default does not match `+` inside a pattern is not what stops it.
 
 **Proofs.** Of the 177 library declarations cvc5 misses, 53 prove arithmetic facts by induction over a
-lambda (`LemmaMulInductionAuto(m, u => ...)`). Rewritten as two to six calls of quantifier-free lemmas
-(`proof-fixes.patch`: five in `Mul.dfy`, two in `DivMod.dfy`), all seven verify under both solvers, and
-Z3 needs 5 to 46 times fewer resources for them (`LemmaMulEqualityConverse`: 134,242 -> 5,305). 51 more
-are `calc` chains over `/` and `%`, where cvc5 runs out even on a step that cancels `+ n - n`
-(`ModInternals.HelperAddDenom`); those were not rewritten.
+lambda (`LemmaMulInductionAuto(m, u => ...)`): 17 in the standard library and 36 in dafny-lang/libraries,
+its predecessor, left alone here. `proof-fixes.patch` rewrites every such proof in the standard library
+outside the induction lemmas themselves, 36 lemmas in `Mul.dfy`, `DivMod.dfy`, `Power.dfy` and
+`Power2.dfy`, and the induction in `MulInternals.LemmaMulDistributes`. Each becomes one to nine calls of
+quantifier-free lemmas (`LemmaFundamentalDivMod`, `LemmaFundamentalDivModConverse`, `LemmaMulInequality`,
+...), or a recursion where the fact is inductive (a new `LemmaDivPosIsDiv`). The whole library, before
+and after (one build, seed 1; every VC in `stdlib-vcs.csv.gz`):
+
+| | Z3, the library's limits | cvc5, 60 s per VC |
+|---|---|---|
+| VCs that fail | 4 -> 3 | 76 -> 57 |
+| fixed | `LemmaFundamentalDivModConverse` (fails at seed 1 after 31.8M RU; now 16,925) | all 19 lambda inductions |
+| broken | none | none |
+| resources | 1,326M -> 1,283M RU (-3.3%); of the VCs that change by more than 10,000 RU, 43 are at least 10% cheaper and none 10% costlier | |
+
+Four VCs elsewhere flipped between the cvc5 runs, two each way; both libraries give each of them the same
+queries (Boogie's solver log differs only in its resets), so the flips are timing at the 60-second limit.
+Of the rewritten lemmas' 41 VCs that Z3 proves in both libraries, 40 cost at least 2 times less, up to
+407 times (`LemmaDivByMultipleIsStronglyOrdered`: 3,829,641 -> 9,410); one split of `LemmaModNegNeg`
+costs 1,449 RU more. 51 more misses are `calc` chains over `/` and `%`, where cvc5 runs out even on a
+step that cancels `+ n - n` (`ModInternals.HelperAddDenom`); those were not rewritten. An upstream
+change would also need the library's `.doo` rebuilt.
+
+**Translator.** `beta-reduce-lambda-args.patch` tries the implementation side, behind
+`DAFNY_BETA_LAMBDA_ARGS=1`. Without it, Boogie substitutes a lambda argument's encoding into the callee's
+specification, and the solver has to reduce `Apply1(..., Lit(AtLayer((lambda ly :: Handle1(...)), ...)),
+$Box(e))` before the lambda's body takes part in the proof. With it, for a call to a lemma that passes a
+lambda literal without `requires` or `reads`, Dafny checks the callee's preconditions itself, with each
+application of the lambda replaced by its body, makes the Boogie call `free`, and assumes the
+postconditions in the same form. It drops the triggers that mention the lambda's formal, whose reduced
+form need not be a trigger (`LemmaMulInduction(i => x * i == i * x)` would get `x * i == i * x`). On the
+original library:
+
+- cvc5 proves 9 of the 19 lambda inductions (`Mul` 4 of 5, `DivMod` 5 of 10, `Power` and `Power2` 0 of
+  3, `LemmaMulDistributes`, which passes a variable rather than a literal, 0 of 1), each confirmed alone:
+  76 -> 67 failing VCs, with two timing flips.
+- Z3 needs 1.3% fewer resources, and 18 VCs at least 10% fewer, and proves `LemmaFundamentalDivModConverse`
+  at seed 1, but loses `LemmaRemainder`, a division induction: it fails at 4 of 5 seeds, where without the
+  prototype it passes at all 5 (about 150,000 RU).
+
+So the lambda's encoding is one obstacle; the other is the induction's arithmetic over the `MulAuto` and
+`DivAuto` quantifiers, and putting the reduced terms into the query from the start changes Z3's search
+enough to lose a proof. The rewrites fix both solvers; the prototype would need its Z3 regression
+understood before it could be proposed.
 
 ## Method
 
@@ -136,4 +178,7 @@ are `calc` chains over `/` and `%`, where cvc5 runs out even on a step that canc
   same resource counts.
 
 Files: `summary.md` and `report.md` (main replay), `options.txt`, `instructions.csv.gz` (the instruction counts), `queries.csv.gz` (every query's answers,
-CPU times, resource units and memory under both solvers), `soundness/` (the query and its cores).
+CPU times, resource units and memory under both solvers), `soundness/` (the query and its cores),
+`proof-fixes.patch` and `beta-reduce-lambda-args.patch` (both against `master`), `stdlib-vcs.csv.gz`
+(every standard-library VC's outcome, and Z3's resource count, for the original library, the rewritten
+one and the original under the prototype, under both solvers).

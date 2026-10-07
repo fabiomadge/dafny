@@ -1,0 +1,172 @@
+--- a/Source/DafnyCore/Verifier/ProofObligationDescription.cs
++++ b/Source/DafnyCore/Verifier/ProofObligationDescription.cs
+@@ -826,6 +826,30 @@
+   }
+ }
+ 
++/// <summary>
++/// A method call's precondition, when Dafny checks it before the call rather than Boogie at the call.
++/// </summary>
++public class CallPreconditionSatisfied : ProofObligationDescriptionCustomMessages {
++  public override string DefaultSuccessDescription =>
++    "the precondition always holds";
++
++  public override string DefaultFailureDescription =>
++    "a precondition for this call could not be proved";
++
++  public override string ShortDescription => "call precondition";
++
++  private readonly Expression expr;
++
++  public CallPreconditionSatisfied(Expression expr, [CanBeNull] string customErrMsg, [CanBeNull] string customSuccessMsg)
++    : base(customErrMsg, customSuccessMsg) {
++    this.expr = expr;
++  }
++
++  public override Expression GetAssertedExpr(DafnyOptions options) {
++    return expr;
++  }
++}
++
+ // The Boogie version does not support custom error messages yet
+ public class EnsuresDescription : ProofObligationDescriptionCustomMessages {
+   public override string DefaultSuccessDescription =>
+--- a/Source/DafnyCore/Verifier/Statements/BoogieGenerator.TrCall.cs
++++ b/Source/DafnyCore/Verifier/Statements/BoogieGenerator.TrCall.cs
+@@ -350,6 +350,28 @@
+       }
+     }
+ 
++    // Prototype (DAFNY_BETA_LAMBDA_ARGS=1): if an argument is a lambda literal without a precondition or a reads clause,
++    // check the callee's preconditions here, with each application of that lambda replaced by its body, and make the
++    // call free; after the call, assume the callee's postconditions in the same form. Otherwise Boogie substitutes the
++    // lambda's encoding into the callee's specification, and the solver has to reduce Apply1(Handle1(...), ...) itself
++    // before the lambda's body takes part in the proof.
++    var betaSub = BetaReducingCallSubstituter(callee, isCoCall, atLabel, tySubst, directSubstMap, substMap,
++      method.IsStatic ? null : receiver);
++    if (betaSub != null) {
++      foreach (var p in ConjunctsOf(callee.Req)) {
++        var directPrecond = directSub.Substitute(p.E);
++        var precond = betaSub.Substitute(p.E);
++        builder.Add(TrAssumeCmd(tok, etran.CanCallAssumption(precond)));
++        var (errorMessage, successMessage) = CustomErrorMessage(p.Attributes);
++        foreach (var ss in TrSplitExpr(builder.Context, precond, etran, false, out _)) {
++          if (ss.IsChecked) {
++            var assertTok = new NestedOrigin(tok, ss.Tok, "this is the precondition that could not be proved");
++            builder.Add(Assert(assertTok, ss.E, new CallPreconditionSatisfied(directPrecond, errorMessage, successMessage), builder.Context));
++          }
++        }
++      }
++    }
++
+     AddReferencedMember(callee);
+     var calleeName = MethodName(callee, isCoCall ? MethodTranslationKind.CoCall : MethodTranslationKind.Call);
+     var call = Call(builder.Context, tok, calleeName, ins, outs);
+@@ -364,7 +386,20 @@
+       // of the predicate.
+       call.IsFree = true;
+     }
++    if (betaSub != null) {
++      // the preconditions were checked above
++      call.IsFree = true;
++    }
+     builder.Add(call);
++    if (betaSub != null) {
++      foreach (var p in ConjunctsOf(callee.Ens)) {
++        if (!MentionsTwoStates(p.E)) {
++          var postcond = betaSub.Substitute(p.E);
++          builder.Add(TrAssumeCmd(tok, etran.CanCallAssumption(postcond)));
++          builder.Add(TrAssumeCmd(tok, etran.TrExpr(postcond)));
++        }
++      }
++    }
+ 
+     // Unbox results as needed
+     for (int i = 0; i < Lhss.Count; i++) {
+@@ -384,4 +419,85 @@
+       }
+     }
+   }
++
++  /// <summary>
++  /// For a call to a non-generic lemma without out-parameters that passes a lambda literal without a precondition or a
++  /// reads clause, returns a substituter that replaces each such formal by its lambda and every other formal by
++  /// "substMap"'s local, and that beta-reduces the lambda's applications. Otherwise, returns null.
++  /// </summary>
++  Substituter BetaReducingCallSubstituter(MethodOrConstructor callee, bool isCoCall, Label atLabel, Dictionary<TypeParameter, Type> tySubst,
++    Dictionary<IVariable, Expression> directSubstMap, Dictionary<IVariable, Expression> substMap, Expression receiver) {
++    if (Environment.GetEnvironmentVariable("DAFNY_BETA_LAMBDA_ARGS") != "1" ||
++        callee is not Lemma || isCoCall || atLabel != null || callee.Outs.Count != 0 || tySubst.Count != 0) {
++      return null;
++    }
++    var map = new Dictionary<IVariable, Expression>();
++    var anyLambda = false;
++    foreach (var formal in callee.Ins) {
++      if (directSubstMap[formal].Resolved is LambdaExpr lambda && IsBetaReducible(lambda)) {
++        map.Add(formal, lambda);
++        anyLambda = true;
++      } else {
++        map.Add(formal, substMap[formal]);
++      }
++    }
++    return anyLambda ? new BetaReducingSubstituter(receiver, map) : null;
++  }
++
++  static bool IsBetaReducible(LambdaExpr lambda) {
++    return lambda.Range == null && lambda.Reads.Expressions is not { Count: > 0 };
++  }
++
++  static bool MentionsTwoStates(Expression expr) {
++    return expr is OldExpr or UnchangedExpr or FreshExpr || expr.SubExpressions.Any(MentionsTwoStates);
++  }
++
++  /// <summary>
++  /// A substituter that also replaces each application of a lambda without a precondition or a reads clause by the
++  /// lambda's body, with the arguments substituted for its parameters. A trigger that mentions a formal replaced by
++  /// a lambda is dropped, since its reduced form need not be a trigger.
++  /// </summary>
++  class BetaReducingSubstituter : Substituter {
++    private readonly HashSet<IVariable> lambdaFormals;
++
++    public BetaReducingSubstituter(Expression receiverReplacement, Dictionary<IVariable, Expression> substMap)
++      : base(receiverReplacement, substMap, new Dictionary<TypeParameter, Type>()) {
++      lambdaFormals = substMap.Where(kv => kv.Value is LambdaExpr).Select(kv => kv.Key).ToHashSet();
++    }
++
++    public override Expression Substitute(Expression expr) {
++      var e = base.Substitute(expr);
++      if (e is ApplyExpr app && app.Function.Resolved is LambdaExpr lambda && IsBetaReducible(lambda) &&
++          lambda.BoundVars.Count == app.Args.Count) {
++        var map = new Dictionary<IVariable, Expression>();
++        for (var i = 0; i < app.Args.Count; i++) {
++          map.Add(lambda.BoundVars[i], app.Args[i]);
++        }
++        return new Substituter(null, map, new Dictionary<TypeParameter, Type>()).Substitute(lambda.Body);
++      }
++      if (expr is QuantifierExpr { SplitQuantifier: null } original && e is QuantifierExpr result && result != original) {
++        result.Attributes = DropLambdaTriggers(original.Attributes, result.Attributes);
++      }
++      return e;
++    }
++
++    /// <summary>
++    /// "substituted" is "original" after substitution, node for node; drop the triggers whose original terms
++    /// mention a formal that is replaced by a lambda.
++    /// </summary>
++    private Attributes DropLambdaTriggers(Attributes original, Attributes substituted) {
++      if (original == null) {
++        return null;
++      }
++      var prev = DropLambdaTriggers(original.Prev, substituted.Prev);
++      if (original.Name == "trigger" && original.Args.Any(MentionsLambdaFormal)) {
++        return prev;
++      }
++      return prev == substituted.Prev ? substituted : new Attributes(substituted.Name, substituted.Args, prev);
++    }
++
++    private bool MentionsLambdaFormal(Expression expr) {
++      return expr is IdentifierExpr { Var: var v } && lambdaFormals.Contains(v) || expr.SubExpressions.Any(MentionsLambdaFormal);
++    }
++  }
+ }
+\ No newline at end of file
