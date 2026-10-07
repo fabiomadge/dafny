@@ -44,7 +44,7 @@ method Main() {
     }
   }
   var x: int, y: int :| 0 <= y < 1 && 0 <= x < 10 - y && x * x == 81;
-  print count, " ", x, " ", y, "\n";
+  print count, " ", x, " ", y, " ", Root(), "\n";
 
   // 9 - j at j's bound 10 is -1, which u8 and u64 do not hold.
   var lowered := set i: u8, j: u8 {:nowarn} | j <= 9 && 9 - j <= i < 20 :: (i, j);
@@ -58,4 +58,8 @@ method Main() {
   var s := [10, 20, 30, 40, 50];
   var indexPairs := set i: uint32, j: uint32 {:nowarn} | j < |s| && i < j :: (i, j);
   print |belowTen|, " ", |belowVariable|, " ", |indexPairs|, "\n";
+}
+
+function Root(): int {
+  var i: int, j: int :| 0 <= j < 1 && 0 <= i < 10 - j && i * i == 81; i
 }
