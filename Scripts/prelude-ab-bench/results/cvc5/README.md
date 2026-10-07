@@ -163,6 +163,64 @@ So the lambda's encoding is one obstacle; the other is the induction's arithmeti
 enough to lose a proof. The rewrites fix both solvers; the prototype would need its Z3 regression
 understood before it could be proposed.
 
+## Why cvc5 fails the lambda inductions
+
+A lambda induction (`LemmaMulInductionAuto(x, u => P(u))`) leaves the induction step to the solver: to prove
+`P(i) ==> P(i + 1)` it has to instantiate the quantifiers of `MulAuto` or `DivAuto` (commutativity,
+distributivity, the facts about `/` and `%`) at terms that only appear after earlier instances. Z3 finds that chain;
+cvc5 does not. The rewrites work for both solvers because every lemma call is an instance with explicit arguments.
+Three measurements, on beta-reduced queries of lemmas the prototype does not fix:
+
+- **The instances.** Z3 refutes `LemmaRoundDown` with 97 instances of 33 quantifiers, out of the 2,357 it makes;
+  49 of them only connect Dafny's arithmetic synonyms to their operators (`INTERNAL_add_boogie(x, y) == x + y`).
+  cvc5 instantiates about as often, 1,783 times in 20 s, and gives up. Given Z3's instances as ground facts it
+  proves the query in 4.7 s; with any one family of them withheld (synonyms, library facts, prelude), not within
+  60 s. The gap is in finding the instances, not in the reasoning about them.
+- **The schedule.** `LemmaMulEqualityConverse` runs out after 120 s under cvc5's default
+  `--inst-when=full-last-call` (34,569 decisions and 64 conflicts in 30 s), but is proved in 5.6 s with
+  `--inst-when=full` and in 0.3 s with instantiation capped at 10 rounds: the instances it needs come early, and
+  later rounds bury the conflict.
+- **The synonyms.** Dafny's prelude declares the synonyms as functions with bodies, which Boogie turns into
+  quantified definition axioms, so that triggers can mention arithmetic. cvc5 reaches an operator only by
+  instantiating that axiom. With the synonyms as definitions instead, it proves `LemmaMulEqualityConverse` in
+  0.1 s and `LemmaRoundDown` in 14 s; its arithmetic rewriter, which puts products into a normal form, can then
+  settle `MulAuto`'s commutativity and distributivity by itself.
+
+## Changing the encoding instead
+
+Each change with the original proofs, on the screens' 53 lambda-induction queries, 118 other misses and 120
+controls, and on 200 random queries both solvers prove that contain synonyms (30 CPU-seconds each); and on the whole
+standard library (60 s per VC, seed 1; each group of runs next to its own baseline, all columns in
+`stdlib-vcs.csv.gz`):
+
+| cvc5 | lambda misses (53) | other misses (118) | controls lost (120 / 200) | library: lambda inductions proved (19) | library: other VCs failing |
+|---|---:|---:|---:|---:|---:|
+| default | 0 | 0 | 0 / 0 | 0 | 57 to 58 |
+| beta-reduction of lambda arguments (`beta-reduce-lambda-args.patch`) | | | | 9 | 57 |
+| `--inst-when=full` | 23 | 15 | 1 / - | 8 | 162 [a] |
+| every synonym inlined | 39 | 16 | 4 / 7 | 13 | 107 |
+| every synonym inlined, with beta-reduction | | | | 14 | 107 |
+| comparisons inlined (`cvc5-comparison-synonyms.patch`) | 20 | 2 | 0 / 0 | 9 | 61 |
+| comparisons inlined, with beta-reduction | | | | 11 | 61 |
+| rewritten proofs (`proof-fixes.patch`) | | | | 19 | 57 |
+| rewritten proofs, comparisons inlined | | | | 17 | 59 |
+
+[a] At a higher machine load than the other runs.
+
+Inlining every synonym breaks 62 VCs that pass today, all in the arithmetic library, where triggers mention
+arithmetic: `{:trigger (x + y) / n}` becomes `(div (+ x y) n)`, a pattern over interpreted operators, and cvc5
+now gives up outright on 24 more VCs. The comparisons (`<`, `<=`, `>`, `>=`) never occur in patterns, and
+inlining only them loses none of the 320 replayed controls; still, in the whole library six lemmas of `DivMod` and `ModInternals` that pass today
+(`LemmaModOrdering`, `LemmaMulModNoopLeft`, ...) then time out, and so do two of the rewritten lemmas, each
+confirmed alone. `cvc5-comparison-synonyms.patch` makes the change for solvers other than Z3 only, through a
+prelude `#if` that Dafny defines when the solver is not Z3; Z3's queries stay as they are (identical resource
+counts). For Z3, inlining every synonym breaks `LemmaRoundDown`.
+
+So the encoding is a large part of why cvc5 fails, and changing it recovers up to 14 of the 19 lambda inductions
+without touching a proof. But every change measured also costs proofs elsewhere: under cvc5 from 6 VCs
+(comparisons) to about 100 (`--inst-when=full`); beta-reduction costs cvc5 nothing but costs Z3 `LemmaRemainder`.
+Only the rewrites fix all 19 with nothing lost under either solver.
+
 ## Method
 
 - **Not wall clock.** The shared host ran at load averages up to 364 on 64 cores, so durations and
@@ -179,6 +237,7 @@ understood before it could be proposed.
 
 Files: `summary.md` and `report.md` (main replay), `options.txt`, `instructions.csv.gz` (the instruction counts), `queries.csv.gz` (every query's answers,
 CPU times, resource units and memory under both solvers), `soundness/` (the query and its cores),
-`proof-fixes.patch` and `beta-reduce-lambda-args.patch` (both against `master`), `stdlib-vcs.csv.gz`
+`proof-fixes.patch`, `beta-reduce-lambda-args.patch` and `cvc5-comparison-synonyms.patch` (all against `master`),
+`stdlib-vcs.csv.gz`
 (every standard-library VC's outcome, and Z3's resource count, for the original library, the rewritten
-one and the original under the prototype, under both solvers).
+one and the original under the prototype, under both solvers, and the cvc5 runs of the encoding table).
