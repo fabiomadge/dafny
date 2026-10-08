@@ -174,6 +174,12 @@ public class ForallStmt : Statement, ICloneable<ForallStmt>, ICanFormat {
       // Since we've determined this is a non-ghost forall statement, we now check that the bound variables have compilable bounds.
       var uncompilableBoundVars = UncompilableBoundVars();
       if (uncompilableBoundVars.Count != 0) {
+        // Like a comprehension, try the bound variables in the reverse order, which the compiled code cannot observe.
+        // Only a compiled forall statement whose declared order fails is reordered, so the verifier sees all others as written.
+        Bounds = ModuleResolver.DiscoverBestBounds_MultipleVars_AllowReordering(BoundVars, Range, true);
+        uncompilableBoundVars = UncompilableBoundVars();
+      }
+      if (uncompilableBoundVars.Count != 0) {
         foreach (var bv in uncompilableBoundVars) {
           reporter.Error(MessageSource.Resolver, ResolutionErrors.ErrorId.r_unknown_bounds_for_forall, this, "forall statements in non-ghost contexts must be compilable, but Dafny's heuristics can't figure out how to produce or compile a bounded set of values for '{0}'", bv.Name);
         }

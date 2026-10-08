@@ -37,6 +37,10 @@ method Main() {
   forall i, j | 0 <= j < 5 && 0 <= i < 10 - j {
     a[i, j] := 1;
   }
+  // No substitution can tell that 10 - j * j shrinks as j grows, so this enumerates j first.
+  forall i, j | 0 <= j < 5 && 0 <= i < 10 - j * j {
+    a[i, j] := a[i, j] + 1;
+  }
   var count := 0;
   for i := 0 to 10 {
     for j := 0 to 5 {
