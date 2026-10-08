@@ -138,7 +138,8 @@ queries (Boogie's solver log differs only in its resets), so the flips are timin
 Of the rewritten lemmas' 41 VCs that Z3 proves in both libraries, 40 cost at least 2 times less, up to
 407 times (`LemmaDivByMultipleIsStronglyOrdered`: 3,829,641 -> 9,410); one split of `LemmaModNegNeg`
 costs 1,449 RU more. 51 more misses are `calc` chains over `/` and `%`, where cvc5 runs out even on a
-step that cancels `+ n - n` (`ModInternals.HelperAddDenom`); those were not rewritten. An upstream
+step that cancels `+ n - n` (`ModInternals.HelperAddDenom`); those were not rewritten (the eager definitions below
+prove it and eight more). An upstream
 change would also need the library's `.doo` rebuilt.
 
 **Translator.** `beta-reduce-lambda-args.patch` tries the implementation side, behind
@@ -175,7 +176,10 @@ Three measurements, on beta-reduced queries of lemmas the prototype does not fix
   49 of them only connect Dafny's arithmetic synonyms to their operators (`INTERNAL_add_boogie(x, y) == x + y`).
   cvc5 instantiates about as often, 1,783 times in 20 s, and gives up. Given Z3's instances as ground facts it
   proves the query in 4.7 s; with any one family of them withheld (synonyms, library facts, prelude), not within
-  60 s. The gap is in finding the instances, not in the reasoning about them.
+  60 s. The gap is in finding the instances, not in the reasoning about them. Withholding one quantifier's
+  instances at a time, cvc5 finds the instances of 28 of the 33 itself, `MulAuto`'s and `DivAuto`'s facts among them;
+  what it cannot find are the instances of four synonym definition axioms (`+`, `mod`, `div`, `<`) and of
+  `DivPlus#canCall`, whose trigger is a synonym term.
 - **The schedule.** `LemmaMulEqualityConverse` runs out after 120 s under cvc5's default
   `--inst-when=full-last-call` (34,569 decisions and 64 conflicts in 30 s), but is proved in 5.6 s with
   `--inst-when=full` and in 0.3 s with instantiation capped at 10 rounds: the instances it needs come early, and
@@ -191,35 +195,62 @@ Three measurements, on beta-reduced queries of lemmas the prototype does not fix
 Each change with the original proofs, on the screens' 53 lambda-induction queries, 118 other misses and 120
 controls, and on 200 random queries both solvers prove that contain synonyms (30 CPU-seconds each); and on the whole
 standard library (60 s per VC, seed 1; each group of runs next to its own baseline, all columns in
-`stdlib-vcs.csv.gz`):
+`stdlib-vcs.csv.gz`). A placebo (the same queries with the background assertions in reverse order) shows the noise:
 
 | cvc5 | lambda misses (53) | other misses (118) | controls lost (120 / 200) | library: lambda inductions proved (19) | library: other VCs failing |
 |---|---:|---:|---:|---:|---:|
 | default | 0 | 0 | 0 / 0 | 0 | 57 to 58 |
+| placebo | 2 | 1 | 1 / 0 | | |
 | beta-reduction of lambda arguments (`beta-reduce-lambda-args.patch`) | | | | 9 | 57 |
 | `--inst-when=full` | 23 | 15 | 1 / - | 8 | 162 [a] |
 | every synonym inlined | 39 | 16 | 4 / 7 | 13 | 107 |
-| every synonym inlined, with beta-reduction | | | | 14 | 107 |
 | comparisons inlined (`cvc5-comparison-synonyms.patch`) | 20 | 2 | 0 / 0 | 9 | 61 |
-| comparisons inlined, with beta-reduction | | | | 11 | 61 |
+| eager definitions (`../../cvc5enc/`) | 21 | 15 | 0 / 0 | 8 | 49 |
+| portfolio: default and eager definitions | 21 | 15 | 0 / 0 | 8 | 44 |
 | rewritten proofs (`proof-fixes.patch`) | | | | 19 | 57 |
-| rewritten proofs, comparisons inlined | | | | 17 | 59 |
+| rewritten proofs, eager definitions | | | | 19 | 47 |
+| rewritten proofs, portfolio | | | | 19 | 41 [b] |
 
-[a] At a higher machine load than the other runs.
+[a] At a higher machine load than the other runs. [b] From two runs at different loads.
 
-Inlining every synonym breaks 62 VCs that pass today, all in the arithmetic library, where triggers mention
-arithmetic: `{:trigger (x + y) / n}` becomes `(div (+ x y) n)`, a pattern over interpreted operators, and cvc5
-now gives up outright on 24 more VCs. The comparisons (`<`, `<=`, `>`, `>=`) never occur in patterns, and
-inlining only them loses none of the 320 replayed controls; still, in the whole library six lemmas of `DivMod` and `ModInternals` that pass today
-(`LemmaModOrdering`, `LemmaMulModNoopLeft`, ...) then time out, and so do two of the rewritten lemmas, each
-confirmed alone. `cvc5-comparison-synonyms.patch` makes the change for solvers other than Z3 only, through a
-prelude `#if` that Dafny defines when the solver is not Z3; Z3's queries stay as they are (identical resource
-counts). For Z3, inlining every synonym breaks `LemmaRoundDown`.
+**Inlining** Dafny's synonyms (`{:inline}`) gives cvc5 the operators directly, but every trigger that mentions
+arithmetic then becomes a pattern over interpreted operators (`{:trigger (x + y) / n}` becomes `(div (+ x y) n)`):
+62 VCs of the arithmetic library that pass today fail, 24 more of them as give-ups. The comparisons never occur in
+patterns, and inlining only them loses none of the 320 replayed controls; still, in the whole library six lemmas of
+`DivMod` and `ModInternals` then time out, and so do two of the rewritten lemmas, each confirmed alone. Variants that
+inline the synonyms inside formulas while keeping the triggers (with the synonym terms kept alive by equalities) lose
+4 to 14 of the 320 controls, and `--inst-when=full` on top of them is the strongest single change on the screens
+(40 of the 53) but loses 8.
 
-So the encoding is a large part of why cvc5 fails, and changing it recovers up to 14 of the 19 lambda inductions
-without touching a proof. But every change measured also costs proofs elsewhere: under cvc5 from 6 VCs
-(comparisons) to about 100 (`--inst-when=full`); beta-reduction costs cvc5 nothing but costs Z3 `LemmaRemainder`.
-Only the rewrites fix all 19 with nothing lost under either solver.
+**Eager definitions** keep Dafny's encoding as it is - the synonyms stay in every term and trigger - and give every
+Boolean atom that mentions a synonym the synonym's definition (`INTERNAL_add_boogie(a, b) == a + b`) in the atom's
+own scope: `(and P D)` where it is asserted or in mixed polarity, `(=> D P)` where it is refuted. Each definition
+follows from the definition axioms, which stay, so the query means the same; but cvc5 no longer has to instantiate
+those axioms to connect a synonym to its operator, which is where the leave-one-out above found it stuck. It is the
+only change measured that loses none of the 320 replayed controls and gains more than it loses in the whole library:
+16 declarations, each confirmed alone, 7 lambda inductions and 9 other arithmetic proofs that cvc5 could not do
+before, mostly `calc` chains (`ModInternals.HelperAddDenom`, `LemmaDivDenominator`, `LittleEndianNat.LemmaSeqAdd`), against 4 lost
+(`LemmaPowAuto`, `LemmaPowModNoopAuto`, `LemmaModMulEquivalent`, `LemmaMulModNoopLeft`), and 2 lost in the rewritten
+library. With the definitions in the VCs only, 11 of the 16 gains remain and 1 of the 4 losses. Combined with
+beta-reduction it does worse in the whole-library run (6 of 19, 12 lost). For Z3 the same change breaks `LemmaRoundDown`, so it is for cvc5
+only. It is measured through a proxy between Dafny and cvc5 (`cvc5enc/cvc5proxy.py`, `HYBRID_MODE=eager
+HYBRID_SCOPE=all`); in Dafny it would be a pass over the Boogie program, or over the SMT text, for solvers other
+than Z3.
+
+**A portfolio** - the default and the eager encoding run side by side, the first proof wins - keeps every proof
+either one finds, so nothing is lost by construction: in the whole library 76 failing VCs become 55 without touching
+a proof, and 41 with the rewritten proofs, at up to twice the solver time. On the screens, pairing the eager
+definitions with every synonym inlined proves 41 of the 53 lambda-induction misses and 27 of the 118 other misses,
+again keeping all 320 controls.
+
+Extending beta-reduction to lambdas bound to a variable (`var f := u => ...`, the form the Power lemmas use) fixes
+one more lemma under cvc5 (`LemmaModNegNeg`) and breaks two under Z3 (`LemmaPowIncreases`, `LemmaMulDistributes`).
+
+So the encoding is a large part of why cvc5 fails these proofs: the synonyms, related to their operators only by
+quantified axioms, need instances that cvc5 does not find. The eager definitions supply part of them without changing
+a trigger, and a portfolio makes the change free of regressions. The rewrites remain the only single change that
+fixes all 19 lambda inductions with nothing lost under either solver; the eager definitions and the portfolio add to
+them.
 
 ## Method
 
@@ -238,6 +269,7 @@ Only the rewrites fix all 19 with nothing lost under either solver.
 Files: `summary.md` and `report.md` (main replay), `options.txt`, `instructions.csv.gz` (the instruction counts), `queries.csv.gz` (every query's answers,
 CPU times, resource units and memory under both solvers), `soundness/` (the query and its cores),
 `proof-fixes.patch`, `beta-reduce-lambda-args.patch` and `cvc5-comparison-synonyms.patch` (all against `master`),
+`../../cvc5enc/` (the proxy and the query rewrites),
 `stdlib-vcs.csv.gz`
 (every standard-library VC's outcome, and Z3's resource count, for the original library, the rewritten
 one and the original under the prototype, under both solvers, and the cvc5 runs of the encoding table).
