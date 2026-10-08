@@ -89,6 +89,30 @@ instructions), and that shared cost pulls the ratio toward 1 (1.67x per program 
 main replay's cvc5 times also include printing its statistics, which it needs to report resource units
 (about 1.2 x 10^8 instructions per query).
 
+## Where cvc5's work goes
+
+Not in the mode Boogie runs it in, and not in one part of cvc5 that an option turns off. Summed over 200 queries of the
+random sample, cvc5's own timers (`--stats-internal`) put 45% of its time in quantifier instantiation (30% in
+conflict-based instantiation, `--cbqi`, and 7% in e-matching), 12% in the UF solver, 6% in preprocessing, 6% in the
+decision heuristic and 4% in CNF conversion. The instruction sample, replayed under other modes (user instructions less
+each mode's startup; `modes.csv.gz`):
+
+| cvc5 | vs Z3 per query, random sample (geometric mean) | random sample, total | proofs lost of 1,434 |
+|---|---:|---:|---:|
+| as Boogie runs it (`--incremental --produce-models`) | 4.05x | 7.1x | |
+| `--no-produce-models`, or `--no-cegqi` | 4.05x | 7.1x | 0 |
+| `(set-logic AUFBVDTNIRA)` instead of `ALL` | 4.02x | 7.1x | 11 (floating-point tests no longer parse) |
+| without `--incremental` (the VC's `push` dropped) | 3.83x | 6.6x | 1 |
+| `--cbqi-mode=conflict` | 3.97x | 5.4x | 3 |
+| `--no-cbqi` | 3.78x | 3.8x | 10 |
+| `--no-cbqi --user-pat=strict --simplification=none` | 3.49x | 4.3x | 14 |
+| the same without `--incremental` | 3.43x | 3.7x | 9 |
+
+A proof lost is one the default mode finds within 60 CPU-seconds and the mode does not, in both of two replays; a few
+are queries near the limit in every mode. Conflict-based instantiation is the one large part: without it the total
+falls by about 40%, mostly on heavy queries, but a typical query by 7%, and proofs are lost. With every option that
+saves work, a typical query still costs cvc5 3.4 to 3.5 times Z3's work.
+
 ## Options
 
 `--enum-inst` proves 26 of the 30 queries cvc5 gives up on and 2 of those at the limit, in a median
@@ -306,6 +330,7 @@ Files: `summary.md` and `report.md` (main replay), `options.txt`, `instructions.
 CPU times, resource units and memory under both solvers), `soundness/` (the query and its cores),
 `proof-fixes.patch`, `beta-reduce-lambda-args.patch` and `cvc5-comparison-synonyms.patch` (all against `master`),
 `../../cvc5enc/` (the proxy and the query rewrites),
-`portfolio-members.csv.gz` (the portfolio members' replays on the public corpus), `stdlib-vcs.csv.gz`
+`portfolio-members.csv.gz` (the portfolio members' replays on the public corpus), `modes.csv.gz` (the instruction
+sample under cvc5's other modes), `stdlib-vcs.csv.gz`
 (every standard-library VC's outcome, and Z3's resource count, for the original library, the rewritten
 one and the original under the prototype, under both solvers, and the cvc5 runs of the encoding table).
