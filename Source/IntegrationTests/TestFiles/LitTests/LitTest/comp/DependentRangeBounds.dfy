@@ -58,6 +58,11 @@ method Main() {
   var x: int, y: int :| 0 <= y < 1 && 0 <= x < 10 - y && x * x == 81;
   print count, " ", x, " ", y, " ", Root(), "\n";
 
+  // The trigger generator rewrites the matching loop of this guard, which enumerates j first, with a variable for j - 1.
+  if i: int, j: int :| 0 <= j < 5 && 0 <= i < (j - 1) * (j - 1) + 1 && i * j == 2 {
+    print i, " ", j, "\n";
+  }
+
   // 9 - j at j's bound 10 is -1, which u8 and u64 do not hold, and j's bound e + 1 is 256.
   var lowered := set i: u8, j: u8 {:nowarn} | j <= 9 && 9 - j <= i < 20 :: (i, j);
   var lowered64 := set i: u64, j: u64 {:nowarn} | j <= 9 && 9 - j <= i < 20 :: (i, j);
