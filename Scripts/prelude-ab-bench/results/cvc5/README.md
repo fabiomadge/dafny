@@ -251,7 +251,8 @@ gains sampled alone (9 of 37, in the configuration that claimed them) all hold. 
 per open VC.
 
 **The portfolio on the public corpus.** Its other three members, replayed on the 323 queries Z3 proves and plain cvc5
-misses, on the instruction sample, and on 296 queries neither solver proves (60 CPU-seconds each; every replay in
+misses, on the instruction sample, and on queries neither solver proves (all 96 on which plain cvc5 runs out of time,
+and 200 random ones of the 2,073 on which it gives up; 60 CPU-seconds each; every replay in
 `portfolio-members.csv.gz`):
 
 | | plain cvc5 | portfolio |
@@ -261,8 +262,9 @@ misses, on the instruction sample, and on 296 queries neither solver proves (60 
 
 The members rescue 103 of the 323 misses (the eager definitions 61, every synonym inlined 76, the comparisons inlined
 35), and prove five queries of library lemmas that Z3 does not prove in the replay (`Lemma2To64` in all three copies,
-`LemmaModAddDenominator`, `LemmaMultiplyDivideLt`). Where a member proves a query plain cvc5 proves, its work is
-plain cvc5's (0.99x to 1.01x). Work against Z3 (user instructions less startup):
+`LemmaModAddDenominator`, `LemmaMultiplyDivideLt`), all five among plain cvc5's time-outs; they prove none of the
+sampled give-ups. Where a member proves a query plain cvc5 proves, its work is plain cvc5's (0.99x to 1.01x). Work
+against Z3 (user instructions less startup):
 
 | design | per query, random sample (geometric mean) | random sample, total |
 |---|---:|---:|
@@ -273,9 +275,9 @@ plain cvc5's (0.99x to 1.01x). Work against Z3 (user instructions less startup):
 The fallback costs extra only where plain cvc5 does not prove the query. Plain cvc5 spends 9.9 CPU-hours on the corpus
 (Z3 1.1 in the same replay), 6.5 of them on the 389 queries that reach the 60-second limit; giving up takes it a median
 0.07 s. With the other members capped at 60, 20 or 10 seconds each, the fallback adds 148%, 53% or 28% to plain
-cvc5's CPU time and rescues 103, 92 or 88 of the 323 misses; triggering it only on time-outs saves almost nothing
-more. The parallel portfolio's wall time per VC in the whole library equals the plain run's (0.97x), and the eager
-encoding's Python rewrite costs a median 24 ms per query.
+cvc5's CPU time (the sampled give-ups scaled up to all 2,073) and rescues 103, 92 or 88 of the 323 misses; triggering
+it only on time-outs saves almost nothing more. The parallel portfolio's wall time per VC in the whole library equals
+the plain run's (0.97x), and the eager encoding's Python rewrite costs a median 24 ms per query.
 
 Extending beta-reduction to lambdas bound to a variable (`var f := u => ...`, the form the Power lemmas use) fixes
 one more lemma under cvc5 (`LemmaModNegNeg`) and breaks two under Z3 (`LemmaPowIncreases`, `LemmaMulDistributes`).
