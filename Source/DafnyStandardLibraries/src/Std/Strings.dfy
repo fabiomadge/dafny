@@ -118,7 +118,7 @@ module Std.Strings {
     }
 
     lemma LemmaIntRoundTrip(n: int, minus: Char)
-      requires minus !in charToDigit
+      requires !IsDigitChar(minus)
       ensures OfInt(n, minus) != [minus]
       ensures ToInt(OfInt(n, minus), minus) == n
     {
