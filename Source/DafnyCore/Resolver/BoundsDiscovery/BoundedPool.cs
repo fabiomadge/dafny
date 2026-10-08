@@ -141,6 +141,8 @@ public abstract class BoundedPool : ICloneable<BoundedPool> {
 
   /// <summary>
   /// Returns whether evaluating "expr" cannot fail, as a division by a variable, a precondition, or an index can.
+  /// A call is left out: a constrained parameter type makes its argument's membership a precondition that the
+  /// function's "Req" does not list.
   /// </summary>
   static bool CannotFail(Expression expr) {
     expr = expr.Resolved;
@@ -158,7 +160,6 @@ public abstract class BoundedPool : ICloneable<BoundedPool> {
         CannotFail(binary.E0) && CannotFail(binary.E1),
       BinaryExpr { ResolvedOp: BinaryExpr.ResolvedOpcode.Div or BinaryExpr.ResolvedOpcode.Mod } binary =>
         ConstantFolder.TryFoldInteger(binary.E1) is { IsZero: false } && CannotFail(binary.E0),
-      FunctionCallExpr call => call.Function.Req.Count == 0 && NonNull(call.Receiver) && call.Args.TrueForAll(CannotFail),
       _ => false
     };
   }
