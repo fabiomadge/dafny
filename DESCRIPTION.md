@@ -52,11 +52,15 @@ of the variable's own type.
 bound whether the dependent bound grows or shrinks with it: the monotonicity check ran on the substituted
 bound, which no longer mentions the variable, so it always passed. The check now runs on the dependent bound,
 an upper bound is substituted where it grows and a lower bound where it shrinks, and the bound is not used
-where it does neither. A product of nonnegative `int` factors grows with them. Every bound on the needed side is
-substituted, so the tightest is taken at run time. Where that leaves a variable of a compiled `forall` statement
-unbounded, as `i` in `0 <= j < 5 && 0 <= i < 10 - j * j`, the statement is tried with its bound variables in the
-reverse order, as comprehensions already are, so that `j` is enumerated first and no substitution is needed.
-Master compiled that statement too, but substituted `j`'s upper bound and assigned none of its 26 elements.
+where it does neither. Every bound on the needed side is substituted, so the tightest is taken at run time.
+
+**The order of the bound variables.** Discovery tried a comprehension's bound variables in their declared order
+and in reverse, and recorded a reversal by reversing them in the AST, which the verifier translates. Bounds now
+stay with the declared order, and a separate order that only the compiler follows records the choice. `forall`
+statements get the same choice, and where neither order bounds every variable, each variable is enumerated after
+the ones its bounds mention, which needs no substitution: `0 <= j < 3 && 0 <= k < (j - 1) * (j - 1) + 1 &&
+0 <= i < k * k` enumerates `j`, `k`, `i`. Master compiled `forall i, j | 0 <= j < 5 && 0 <= i < 10 - j * j`
+too, but substituted `j`'s upper bound and assigned none of its 26 elements.
 
 ## Scope
 
@@ -64,15 +68,12 @@ Master compiled that statement too, but substituted `j`'s upper bound and assign
   and `NativeNewtypeRanges.dfy` leaves `cpp` out. #6550 needs that part in turn: on its own it makes the
   program above print `0`, and `set x: i32 | 5 <= x < 3` count up until it wraps around, where master compiles
   neither. So #6550 is best merged after this PR, adding `cpp` to that test's list.
-- The verifier reads only whether a bound depends on allocation, which no integer bound does, but it sees the order
-  that bounds discovery leaves the bound variables in. Where a substitution that master made is now refused, a
-  comprehension or quantifier can come out reversed where master kept its order, as in
-  `forall i, j | 0 <= j < 5 && 0 <= i < (j - 2) * (j - 2) :: P(i, j)`. Apart from `DependentRangeBounds.dfy`, no file
-  of the test suite or the standard libraries translates to different Boogie.
-- A comprehension, quantifier or `forall` statement over three or more variables whose bounds neither order
-  resolves, because one of them does not grow or shrink with a later variable, like `0 <= j < 3 &&
-  0 <= k < (j - 1) * (j - 1) + 1 && 0 <= i < k * k`, is now rejected, where master compiled it by substituting a
-  bound that happened to be right. No file of the test suite or the standard libraries is affected.
+- The verifier now sees every quantifier's bound variables in their declared order. Where master had reversed
+  them, 7 files of the test suite and the standard libraries translate to Boogie with the bound variables of
+  some quantifier in a different order, and all 7 verify as before. Printed programs show them as declared
+  too, where master printed the `set X,Y` of `dafny4/Regression15.dfy` as `set Y, X`.
+- Bound variables whose bounds depend on each other in a cycle still need a substitution, which is used only
+  where it is sound.
 - A side with no bound of its own, and a bound whose computation can fail next to another bound, still iterate
   up to the type's limit, as before. So does a `forall` statement or quantifier over `int` whose bound divides
   by zero outside its guard, like `forall i | 0 < k && 0 <= i < 100 / k`, which master already gets wrong.

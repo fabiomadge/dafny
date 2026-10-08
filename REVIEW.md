@@ -280,6 +280,36 @@ PRs touch the same files; all nine trial-merge cleanly (`git merge-tree --write-
   reordering verifier-neutral, needs no substitution wherever such an order exists, gives exact rather than
   substituted bounds, and subsumes the reversal heuristic, commit 2, most of commit 4 and the residual.
 
+## 9c. Root-cause prototype (branch `review-6563-root`, `a747a6e35`)
+
+Three commits on `1509ab981`: the call fix, the cleanup, and the redesign, which replaces the earlier forall-reorder
+hook and the product rule (+185/−126 on the PR in total).
+
+- `DiscoverBestBounds_MultipleVars_AllowReordering` no longer reverses `BoundVars`. Bounds stay aligned with the
+  declared variables; an `EnumerationOrder` (indices) is recorded on comprehensions and forall statements and
+  followed only by the compiler: the quantifier, set and map loops, `CompileGuardedLoops` (also Java's
+  `EmitIngredients`), and `TrAssignSuchThat` for `if … :|` guards. The `Substituter`, `ExistsExpr.AlphaRename` and
+  the trigger splitter's copies carry it; `ExprSubstituter` extends it for the variables it appends.
+- The legacy declared-vs-reversed choice is kept exactly, so any program that one of the two orders bounds compiles
+  as before. Forall statements now get that choice too. Only where neither order bounds every variable,
+  `DependencyOrder` enumerates each variable after those its best bounds mention, if that order is acyclic.
+- Measured:
+  - every residual shape compiles and prints the right answer on cs/java/js/py/go, including
+    `k < (j - 1) * (j - 1) + 1` (2), which every earlier fix rejected; 54 probes + 16 shapes, all correct;
+  - the four lit tests pass the harness on six backends; resolving the corpus gives the same output as the PR,
+    apart from `DependentRangeBounds.dfy`'s new lines; executable C# is identical for every corpus program;
+  - the verifier sees declared order: Boogie differs from master for 7 pre-existing files (DivInternalsNonlinear,
+    Maps, UltraFilter, Bug118, Bug91, Leq, git-issue-1207), only in bound-variable order; all 7 pass their lit
+    tests, and the two ghost probes now match master where the PR reversed them;
+  - printed programs show declared order (`Regression15.dfy`'s `set X,Y`, which master printed as `set Y, X`); the
+    84 printing and trigger lit tests pass;
+  - full IntegrationTests (1914 tests on master, 1918 on the prototype): no test that passes on master fails; the
+    differences are the 4 new tests and `dafnydoc/doc1/TestDafnyDoc.dfy`, which fails only in the git-archived
+    master tree (an HTML diff).
+- Not changed: `:|` and let-such-that keep their declared order, since it decides which value is chosen. A policy
+  that prefers the dependency order even where the declared order works would give exact bounds everywhere, but
+  would change compiled code (and possibly set print order) for accepted programs.
+
 ## 10. Prototype
 
 Branch `review-6563-commits-v2`, four commits on `1509ab981`, +123/−116 in total:
