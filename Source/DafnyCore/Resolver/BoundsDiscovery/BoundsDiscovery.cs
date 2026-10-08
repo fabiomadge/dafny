@@ -419,7 +419,7 @@ namespace Microsoft.Dafny {
         }
         var e0 = c.E0;
         var e1 = c.E1;
-        int whereIsBv = SanitizeForBoundDiscovery(bvars, j, c.ResolvedOp, knownBounds, ref e0, ref e1, out var otherSides);
+        int whereIsBv = SanitizeForBoundDiscovery(bvars, j, c.ResolvedOp, knownBounds, ref e0, ref e1, out var thatSides);
         if (whereIsBv < 0) {
           continue;
         }
@@ -472,11 +472,10 @@ namespace Microsoft.Dafny {
               conjunctsQualifyingAsRangeConstraints++;
               if (whereIsBv == 0) {
                 // bv < E
-                bounds.Add(new IntBoundedPool(null, e1, [], otherSides));
+                bounds.Add(new IntBoundedPool([], thatSides));
               } else {
                 // E < bv
-                bounds.Add(new IntBoundedPool(Expression.CreateIncrement(e0, 1), null,
-                  otherSides.ConvertAll(e => Expression.CreateIncrement(e, 1)), []));
+                bounds.Add(new IntBoundedPool(thatSides.ConvertAll(e => Expression.CreateIncrement(e, 1)), []));
               }
             }
             break;
@@ -485,11 +484,10 @@ namespace Microsoft.Dafny {
             if (e0.Type.IsNumericBased(Type.NumericPersuasion.Int)) {
               if (whereIsBv == 0) {
                 // bv <= E
-                bounds.Add(new IntBoundedPool(null, Expression.CreateIncrement(e1, 1), [],
-                  otherSides.ConvertAll(e => Expression.CreateIncrement(e, 1))));
+                bounds.Add(new IntBoundedPool([], thatSides.ConvertAll(e => Expression.CreateIncrement(e, 1))));
               } else {
                 // E <= bv
-                bounds.Add(new IntBoundedPool(e0, null, otherSides, []));
+                bounds.Add(new IntBoundedPool(thatSides, []));
               }
             }
             break;
@@ -675,12 +673,12 @@ namespace Microsoft.Dafny {
     /// One of "e0" and "e1" is the identifier "boundVars[bvi]"; the return value is either 0 or 1, and indicates which.
     /// The other of "e0" and "e1" is an expression whose free variables are not among "boundVars[bvi..]".
     /// Ensures that the resulting "e0" and "e1" are not ConcreteSyntaxExpression's.
-    /// "otherSides" holds further expressions that can each take the place of that other one. It is empty unless "op"
-    /// is an inequality.
+    /// "thatSides" holds every expression that can take the place of that other one, starting with it. It holds more
+    /// than one only for an inequality.
     /// </summary>
     static int SanitizeForBoundDiscovery<VT>(List<VT> boundVars, int bvi, BinaryExpr.ResolvedOpcode op,
       List<BoundedPool> knownBounds,
-      ref Expression e0, ref Expression e1, out List<Expression> otherSides) where VT : IVariable {
+      ref Expression e0, ref Expression e1, out List<Expression> thatSides) where VT : IVariable {
       Contract.Requires(boundVars != null);
       Contract.Requires(0 <= bvi && bvi < boundVars.Count);
       Contract.Requires(knownBounds != null);
@@ -691,7 +689,7 @@ namespace Microsoft.Dafny {
       Contract.Ensures(!(Contract.ValueAtReturn(out e0) is ConcreteSyntaxExpression));
       Contract.Ensures(!(Contract.ValueAtReturn(out e1) is ConcreteSyntaxExpression));
 
-      otherSides = [];
+      thatSides = [];
       IVariable bv = boundVars[bvi];
       e0 = e0.Resolved;
       e1 = e1.Resolved;
@@ -807,7 +805,7 @@ namespace Microsoft.Dafny {
       //      (from the way we're constructing bounds, we already know that "u"
       //      does not depend on "bj" or any bound variable listed after "bj")
       // then we can substitute "u" for "bj" in "thatSide". Each such bound of "bj" gives a bound on "bv", so all of
-      // them are substituted, and those after the first are returned in "otherSides".
+      // them are substituted, and all of them are returned in "thatSides".
       // By going from right to left, we can make the rule above slightly more
       // liberal by considering a cascade of substitutions.
       var sides = new List<Expression> { thatSide };
@@ -840,8 +838,8 @@ namespace Microsoft.Dafny {
         // Each further bound is only a run-time comparison, but the substitutions multiply, so their number is capped.
         sides = next.Take(MaxSubstitutedBounds).ToList();
       }
+      thatSides = sides;
       thatSide = sides[0];
-      otherSides = sides.Skip(1).ToList();
 
       // As we return, also return the adjusted sides
       if (whereIsBv == 0) {
