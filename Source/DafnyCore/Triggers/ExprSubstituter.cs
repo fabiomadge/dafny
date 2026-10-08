@@ -40,18 +40,13 @@ namespace Microsoft.Dafny {
         var newAttrs = SubstAttributes(e.Attributes);
         var newRange = e.Range == null ? null : Substitute(e.Range);
         var newTerm = Substitute(e.Term);
-        var newBounds = SubstituteBoundedPoolList(e.Bounds);
-        if (newAttrs == e.Attributes && newRange == e.Range && newTerm == e.Term && newBounds == e.Bounds) {
+        if (newAttrs == e.Attributes && newRange == e.Range && newTerm == e.Term) {
           return e;
         }
 
         var newBoundVars = new List<BoundVar>(e.BoundVars);
-        if (newBounds == null) {
-          newBounds = [];
-        } else if (newBounds == e.Bounds) {
-          // create a new list with the same elements, since the .Add operations below would otherwise add elements to the original e.Bounds
-          newBounds = [.. newBounds];
-        }
+        // The bounds keep the expressions that the added variables stand for, so that they do not mention those variables.
+        List<BoundedPool> newBounds = e.Bounds == null ? [] : [.. e.Bounds];
 
         // conjoin all the new equalities to the range of the quantifier
         foreach (var entry in usedSubstMap) {
