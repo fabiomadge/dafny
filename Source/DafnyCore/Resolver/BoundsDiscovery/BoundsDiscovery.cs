@@ -245,30 +245,33 @@ namespace Microsoft.Dafny {
       Contract.Requires(bvars != null);
       Contract.Requires(expr != null);
       Contract.Ensures(Contract.Result<List<BoundedPool>>() != null);
+      return DiscoverAllBounds_Aux_MultipleVars(bvars, WithTypeConstraints(bvars, expr, polarity), polarity);
+    }
+
+    static Expression WithTypeConstraints<VT>(List<VT> bvars, Expression expr, bool polarity) where VT : IVariable {
       foreach (var bv in bvars) {
         var c = GetImpliedTypeConstraint(bv, bv.Type);
         expr = polarity ? Expression.CreateAnd(c, expr, false) : Expression.CreateImplies(c, expr, false);
       }
-      var bests = DiscoverAllBounds_Aux_MultipleVars(bvars, expr, polarity);
-      return bests;
+      return expr;
     }
 
     /// <summary>
     /// Like "DiscoverBestBounds_MultipleVars", but also returns in "order" the order in which to enumerate "bvars", as
-    /// indices into it, which may differ from the order given. The returned bounds are those of "bvars" in the order
-    /// given, but each may mention the variables enumerated before it. Only the compiler follows "order".
+    /// indices into it, or null to enumerate them in the order given. The returned bounds are those of "bvars" in the
+    /// order given, but each may mention the variables enumerated before it. Only the compiler follows "order".
     /// </summary>
     public static List<BoundedPool> DiscoverBestBounds_MultipleVars_AllowReordering<VT>(List<VT> bvars, Expression expr,
       bool polarity, out List<int> order) where VT : IVariable {
       Contract.Requires(bvars != null);
       Contract.Requires(expr != null);
       Contract.Ensures(Contract.Result<List<BoundedPool>>() != null);
-      order = Enumerable.Range(0, bvars.Count).ToList();
+      order = null;
       var bounds = DiscoverBestBounds_MultipleVars(bvars, expr, polarity);
       if (bvars.Count > 1) {
         // First try just one other permutation, namely the reversal "bvars". This covers the important case where there
         // are two bound variables that work out in the opposite order.
-        var orderMissyElliott = Enumerable.Reverse(order).ToList(); // flip it and reverse it, Ti esrever dna ti pilf nwod gnaht ym tup I
+        var orderMissyElliott = Enumerable.Range(0, bvars.Count).Reverse().ToList(); // flip it and reverse it, Ti esrever dna ti pilf nwod gnaht ym tup I
         var boundsMissyElliott = DiscoverBestBounds_MultipleVars(orderMissyElliott.ConvertAll(i => bvars[i]), expr, polarity);
         // Figure out which one seems best
         var meBetter = 0;
@@ -292,12 +295,10 @@ namespace Microsoft.Dafny {
           bounds = Unpermuted(order, boundsMissyElliott);
         }
         // Where neither order bounds every variable, enumerate each after the variables that its bounds mention.
-        const BoundedPool.PoolVirtues compilable = BoundedPool.PoolVirtues.Finite | BoundedPool.PoolVirtues.Enumerable;
-        bool Complete(List<BoundedPool> pools) => pools.TrueForAll(pool => pool != null && (pool.Virtues & compilable) == compilable);
-        if (bvars.Count > 2 && !Complete(bounds) && DependencyOrder(bvars, expr, polarity) is { } dependencyOrder) {
+        if (bvars.Count > 2 && !bounds.TrueForAll(FiniteAndEnumerable) && DependencyOrder(bvars, expr, polarity) is { } dependencyOrder) {
           var dependencyBounds = Unpermuted(dependencyOrder,
             DiscoverBestBounds_MultipleVars(dependencyOrder.ConvertAll(i => bvars[i]), expr, polarity));
-          if (Complete(dependencyBounds)) {
+          if (dependencyBounds.TrueForAll(FiniteAndEnumerable)) {
             order = dependencyOrder;
             bounds = dependencyBounds;
           }
@@ -317,17 +318,28 @@ namespace Microsoft.Dafny {
       return bounds.ToList();
     }
 
+    static bool FiniteAndEnumerable(BoundedPool pool) =>
+      pool != null && pool.Virtues.HasFlag(BoundedPool.PoolVirtues.Finite | BoundedPool.PoolVirtues.Enumerable);
+
     /// <summary>
     /// Returns an order of "bvars", as indices, in which each one comes after the variables that its best bounds mention
-    /// when all the others come before it, keeping the given order where possible, or null if there is a cycle.
+    /// when all the others come before it, keeping the given order where possible. Returns null if there is a cycle, or
+    /// if some variable has no finite and enumerable bound even then.
     /// </summary>
     static List<int> DependencyOrder<VT>(List<VT> bvars, Expression expr, bool polarity) where VT : IVariable {
-      var dependencies = Enumerable.Range(0, bvars.Count).Select(i => {
+      expr = WithTypeConstraints(bvars, expr, polarity);
+      var noKnownBounds = bvars.ConvertAll(_ => (BoundedPool)null);
+      var dependencies = new List<List<int>>();
+      for (var i = 0; i < bvars.Count; i++) {
         var others = Enumerable.Range(0, bvars.Count).Where(k => k != i).ToList();
-        var pool = DiscoverBestBounds_MultipleVars(others.Append(i).Select(k => bvars[k]).ToList(), expr, polarity)[^1];
-        var mentioned = new HashSet<IVariable>((pool == null ? [] : PoolExpressions(pool)).SelectMany(FreeVariables));
-        return others.Where(k => mentioned.Contains(bvars[k])).ToList();
-      }).ToList();
+        var pool = BoundedPool.GetBest(DiscoverAllBounds_Aux_SingleVar(others.Append(i).Select(k => bvars[k]).ToList(),
+          bvars.Count - 1, expr, polarity, noKnownBounds, out _));
+        if (!FiniteAndEnumerable(pool)) {
+          return null;
+        }
+        var mentioned = new HashSet<IVariable>(PoolExpressions(pool).SelectMany(FreeVariables));
+        dependencies.Add(others.Where(k => mentioned.Contains(bvars[k])).ToList());
+      }
       var order = new List<int>();
       while (order.Count < bvars.Count) {
         var next = Enumerable.Range(0, bvars.Count).FirstOrDefault(i => !order.Contains(i) && dependencies[i].All(order.Contains), -1);

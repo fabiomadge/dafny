@@ -29,6 +29,14 @@ method Main() {
   var dips := set i: int, j: int, k: int {:nowarn} | 0 <= j < 3 && 0 <= k < (j - 1) * (j - 1) + 1 && 0 <= i < k * k :: (i, j, k);
   print |squares|, " ", |dips|, "\n";
 
+  // The compiler gets copies of quantifiers that the trigger generator splits, and of a binding guard, which have to
+  // enumerate j first too.
+  var splitForall := set x: int {:nowarn} | 0 <= x < 2 && forall i: int, j: int | 0 <= j < 3 && 0 <= i < j * j :: Small(i) && Low(j);
+  var splitExists := set x: int {:nowarn} | 0 <= x < 2 && exists i: int, j: int | 0 <= j < 3 && 0 <= i < j * j :: Small(i) || Low(j);
+  if i: int, j: int :| 0 <= j < 5 && 0 <= i < j * j && i * j == 2 {
+    print |splitForall|, " ", |splitExists|, " ", i, " ", j, "\n";
+  }
+
   // Bounds under multiplications and divisions by constants, parentheses, and conversions.
   var doubled := set i: int, j: int, k: int {:nowarn} | 0 <= j < 5 && 0 <= i < 2 * j && 0 <= k < i :: (i, j, k);
   var halved := set i: int, j: int, k: int {:nowarn} | 0 <= j < 10 && 0 <= i < j / 2 && 0 <= k < i :: (i, j, k);
@@ -68,6 +76,9 @@ method Main() {
   var indexPairs := set i: uint32, j: uint32 {:nowarn} | j < |s| && i < j :: (i, j);
   print |belowTen|, " ", |belowVariable|, " ", |indexPairs|, "\n";
 }
+
+predicate Small(i: int) { i < 5 }
+predicate Low(j: int) { j < 3 }
 
 function Root(): int {
   var i: int, j: int :| 0 <= j < 1 && 0 <= i < 10 - j && i * i == 81; i
