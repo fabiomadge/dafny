@@ -1,0 +1,1 @@
+In refinements of `Std.Strings.ParametricConversion`, `CharsConsistent` must now also prove `charToDigit[chars[d]] == d` for every digit `d`, which rules out alphabets whose `chars` repeat a character.

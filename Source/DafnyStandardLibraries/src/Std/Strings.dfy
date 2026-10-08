@@ -31,12 +31,7 @@ module Std.Strings {
 
     lemma CharsConsistent()
       ensures forall c <- chars :: c in charToDigit && chars[charToDigit[c]] == c
-
-    // Unlike CharsConsistent, this law distinguishes every digit index.
-    // It is an explicit premise so refinements with repeated chars remain valid.
-    ghost predicate DigitCharsConsistent() {
-      forall d: nat | d < |chars| :: chars[d] in charToDigit && charToDigit[chars[d]] == d
-    }
+      ensures forall d: nat | d < |chars| :: chars[d] in charToDigit && charToDigit[chars[d]] == d
 
     function BASE(): nat {
       base
@@ -102,48 +97,36 @@ module Std.Strings {
     }
 
     lemma {:induction false} LemmaOfDigitsToNat(digits: seq<digit>)
-      requires DigitCharsConsistent()
       ensures forall c <- OfDigits(digits) :: IsDigitChar(c)
       ensures ToNat(OfDigits(digits)) == ToNatRight(digits)
     {
+      CharsConsistent();
       if digits != [] {
         LemmaOfDigitsToNat(digits[1..]);
-        assert OfDigits(digits) == OfDigits(digits[1..]) + [chars[digits[0]]];
-        assert OfDigits(digits)[..|OfDigits(digits)| - 1] == OfDigits(digits[1..]);
-        assert OfDigits(digits)[|OfDigits(digits)| - 1] == chars[digits[0]];
       }
     }
 
-    lemma LemmaOfNatToNat(n: nat)
-      requires DigitCharsConsistent()
+    lemma LemmaNatRoundTrip(n: nat)
       ensures forall c <- OfNat(n) :: IsDigitChar(c)
       ensures ToNat(OfNat(n)) == n
     {
-      if n == 0 {
-        assert chars[0] in charToDigit;
-        assert charToDigit[chars[0]] == 0;
-      } else {
+      CharsConsistent();
+      if n != 0 {
         LemmaOfDigitsToNat(FromNat(n));
         LemmaNatSeqNat(n);
       }
     }
 
-    lemma LemmaOfIntToInt(n: int, minus: Char)
-      requires DigitCharsConsistent()
+    lemma LemmaIntRoundTrip(n: int, minus: Char)
       requires minus !in charToDigit
       ensures OfInt(n, minus) != [minus]
       ensures ToInt(OfInt(n, minus), minus) == n
     {
       if n >= 0 {
-        LemmaOfNatToNat(n);
-        assert OfInt(n, minus) == OfNat(n);
-        assert |OfNat(n)| > 0;
+        LemmaNatRoundTrip(n);
         assert OfNat(n)[0] in OfNat(n);
-        assert OfNat(n)[0] in charToDigit;
-        assert !([minus] <= OfNat(n));
       } else {
-        LemmaOfNatToNat(-n);
-        assert OfInt(n, minus) == [minus] + OfNat(-n);
+        LemmaNatRoundTrip(-n);
       }
     }
 
@@ -234,36 +217,12 @@ module Std.Strings {
         'A' := 0xA, 'B' := 0xB, 'C' := 0xC, 'D' := 0xD, 'E' := 0xE, 'F' := 0xF
       ]
     @IsolateAssertions
-    lemma DigitsConsistent()
-      ensures DigitCharsConsistent()
+    lemma CharsConsistent()
+      ensures forall c <- chars :: c in charToDigit && chars[charToDigit[c]] == c
     {
       forall d: nat | d < |chars|
         ensures chars[d] in charToDigit && charToDigit[chars[d]] == d
       {}
-    }
-
-    @IsolateAssertions
-    lemma CharsConsistent()
-      ensures forall c <- chars :: c in charToDigit && chars[charToDigit[c]] == c
-    {
-      DigitsConsistent();
-    }
-
-    lemma LemmaNatRoundTrip(n: nat)
-      ensures forall c <- OfNat(n) :: IsDigitChar(c)
-      ensures ToNat(OfNat(n)) == n
-    {
-      DigitsConsistent();
-      LemmaOfNatToNat(n);
-    }
-
-    lemma LemmaIntRoundTrip(n: int, minus: Char)
-      requires minus !in charToDigit
-      ensures OfInt(n, minus) != [minus]
-      ensures ToInt(OfInt(n, minus), minus) == n
-    {
-      DigitsConsistent();
-      LemmaOfIntToInt(n, minus);
     }
   }
 
@@ -279,31 +238,6 @@ module Std.Strings {
     lemma CharsConsistent()
       ensures forall c <- chars :: c in charToDigit && chars[charToDigit[c]] == c
     {}
-
-    @IsolateAssertions
-    lemma DigitsConsistent()
-      ensures DigitCharsConsistent()
-    {
-      forall d: nat | d < |chars|
-        ensures chars[d] in charToDigit && charToDigit[chars[d]] == d
-      {}
-    }
-
-    lemma LemmaNatRoundTrip(n: nat)
-      ensures forall c <- OfNat(n) :: IsDigitChar(c)
-      ensures ToNat(OfNat(n)) == n
-    {
-      DigitsConsistent();
-      LemmaOfNatToNat(n);
-    }
-
-    lemma LemmaIntRoundTrip(n: int)
-      ensures OfInt(n, '-') != ['-']
-      ensures ToInt(OfInt(n, '-'), '-') == n
-    {
-      DigitsConsistent();
-      LemmaOfIntToInt(n, '-');
-    }
   }
 
   module CharStrEscaping refines ParametricEscaping {
@@ -361,7 +295,7 @@ module Std.Strings {
     ensures OfInt(n) != "-"
     ensures ToInt(OfInt(n)) == n
   {
-    DecimalConversion.LemmaIntRoundTrip(n);
+    DecimalConversion.LemmaIntRoundTrip(n, '-');
   }
 
   /**
