@@ -46,6 +46,19 @@ method Main() {
   var x: int, y: int :| 0 <= y < 1 && 0 <= x < 10 - y && x * x == 81;
   print count, " ", x, " ", y, " ", Root(), "\n";
 
+  // 20 - j * j shrinks as j grows, which a substitution cannot tell, but enumerating j first needs none.
+  var b := new int[5, 20];
+  forall i, j | 0 <= j < 5 && 0 <= i < 20 - j * j {
+    b[j, i] := 1;
+  }
+  count := 0;
+  for j := 0 to 5 {
+    for i := 0 to 20 {
+      count := count + b[j, i];
+    }
+  }
+  print count, "\n";
+
   // 9 - j at j's bound 10 is -1, which u8 and u64 do not hold.
   var lowered := set i: u8, j: u8 {:nowarn} | j <= 9 && 9 - j <= i < 20 :: (i, j);
   var lowered64 := set i: u64, j: u64 {:nowarn} | j <= 9 && 9 - j <= i < 20 :: (i, j);
