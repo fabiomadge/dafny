@@ -139,10 +139,12 @@ public class ForallStmt : Statement, ICloneable<ForallStmt>, ICanFormat {
     }
   }
 
-  public List<BoundVar> UncompilableBoundVars() {
+  public List<BoundVar> UncompilableBoundVars() => UncompilableBoundVars(BoundVars, Bounds);
+
+  static List<BoundVar> UncompilableBoundVars(List<BoundVar> boundVars, List<BoundedPool> bounds) {
     Contract.Ensures(Contract.Result<List<BoundVar>>() != null);
     var v = BoundedPool.PoolVirtues.Finite | BoundedPool.PoolVirtues.Enumerable;
-    return BoundedPool.MissingBounds(BoundVars, Bounds, v);
+    return BoundedPool.MissingBounds(boundVars, bounds, v);
   }
 
   public bool SetIndent(int indentBefore, TokenNewIndentCollector formatter) {
@@ -173,6 +175,15 @@ public class ForallStmt : Statement, ICloneable<ForallStmt>, ICanFormat {
     if (!IsGhost) {
       // Since we've determined this is a non-ghost forall statement, we now check that the bound variables have compilable bounds.
       var uncompilableBoundVars = UncompilableBoundVars();
+      if (uncompilableBoundVars.Count != 0 && BoundVars.Count > 1) {
+        // Like a comprehension, try the bound variables in the reverse order, which the compiled code cannot observe.
+        // Only a compiled forall statement whose declared order fails is reordered, so the verifier sees all others as written.
+        var reversed = Enumerable.Reverse(BoundVars).ToList();
+        var bounds = ModuleResolver.DiscoverBestBounds_MultipleVars(reversed, Range, true);
+        if (UncompilableBoundVars(reversed, bounds).Count == 0) {
+          (BoundVars, Bounds, uncompilableBoundVars) = (reversed, bounds, []);
+        }
+      }
       if (uncompilableBoundVars.Count != 0) {
         foreach (var bv in uncompilableBoundVars) {
           reporter.Error(MessageSource.Resolver, ResolutionErrors.ErrorId.r_unknown_bounds_for_forall, this, "forall statements in non-ghost contexts must be compilable, but Dafny's heuristics can't figure out how to produce or compile a bounded set of values for '{0}'", bv.Name);

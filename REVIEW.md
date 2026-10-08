@@ -85,7 +85,10 @@ the first loop; a `forall` statement and a quantifier check nothing first.
 
 **No test needs the call case:** deleting that one arm leaves all four new tests passing (mutant M3).
 Prototyped as a deletion, with the case added to `UnguardedRangeBounds.dfy` — it fails at
-`1509ab981` and passes with the fix.
+`1509ab981` and passes with the fix. **The deletion costs nothing measurable:** translating the whole
+corpus to C# with and without the arm gives byte-identical code for all 1355 files that translate;
+the only difference is the new test case. (Keeping calls whose arguments already have their
+parameter's type, compared with constraints, would also be sound, but nothing needs it.)
 
 ### 3b. A program master compiles correctly is now rejected
 
@@ -107,9 +110,41 @@ enumerates `j` first.
 
 The description's Scope mentions that such a bound "is no longer used" and that no corpus file loses
 a bound — which my own sweep confirms (2082 files, 0 stdout differences) — but not that a user
-program can now be **rejected**. Either say so in Scope and the news fragment, or teach `IsMonotonic`
-that a product of factors known nonnegative on the enumerated range grows with them. The workaround
-is to add an explicit bound (`0 <= i < 25 && i < j * j` compiles on all three builds).
+program can now be **rejected**.
+
+Only `forall` statements are affected: they need finite bounds and, unlike comprehensions and
+quantifiers, are never tried in the reverse order. `:|` and let-such-that still work (they need only
+enumerability), as do set comprehensions. And master's luck cuts both ways here:
+
+```dafny
+method Fill(a: array2<int>)
+  requires a.Length0 == 5 && a.Length1 == 20
+  modifies a
+  ensures forall i, j | 0 <= j < 5 && 0 <= i < 20 - j * j :: a[j, i] == 1
+{
+  forall i: int, j: int | 0 <= j < 5 && 0 <= i < 20 - j * j {
+    a[j, i] := 1;
+  }
+}
+```
+
+verifies on master, whose compiled code then assigns **none** of the 70 elements (`a[0, 19]` prints
+`0`). The PR rejects it.
+
+**Fix (prototyped):** in `ForallStmt.ResolveGhostness`, where a compiled `forall` statement turns out
+to have unbounded variables, retry bounds discovery with the bound variables reversed, as
+comprehensions already do, and keep that order if it bounds them all. The compiled code cannot
+observe the enumeration order, and ghost `forall` statements are never touched, so the verifier
+sees every statement that compiles today exactly as written. With it, all three two-variable shapes
+compile and print the right answer on cs/java/js/py/go: `j * j` (30), `(j - 2) * (j - 2)` (10, not
+monotone at all) and `20 - j * j` (70, where master printed 0). `Fill` verifies on master and on the
+prototype alike, its negative control fails on both, and the program prints `1`. The resolve sweep
+over all 2082 files differs from the PR only in the new test line.
+
+**Residual:** a cascade that neither order resolves — `forall i, j, k | 0 <= j < 3 && 0 <= k < j * j
+&& 0 <= i < k * k` — is still rejected where master compiled it (14, correct by luck). Teaching
+`IsMonotonic` that a product of nonnegative factors grows with them would close this one (not
+prototyped); closing every such case would need master's unsound rule back. Say so in Scope.
 
 ### 3c. Probes that came out clean
 
@@ -212,7 +247,8 @@ PRs touch the same files; all nine trial-merge cleanly (`git merge-tree --write-
 
 ## 10. Prototype
 
-Commit `4861e8104`: 3a, 4 and 5 above, with the new test case. Release build and IntegrationTests
-clean, `dotnet format whitespace` clean, 54 probes × 5 backends correct, the four lit tests pass the
-harness on six backends, and resolving all 2082 corpus files gives byte-identical output to
-`1509ab981`. 3b is not prototyped — it is a design decision.
+On branch `review-6563`: `4861e8104` fixes 3a, 4 and 5, with the new test case; the commit after it
+fixes 3b, with a `forall` statement added to `DependentRangeBounds.dfy` that the PR rejects. On the
+final build: release build and IntegrationTests clean, `dotnet format whitespace` clean, 54 probes ×
+5 backends correct, the four lit tests pass the harness on six backends, and resolving all 2082
+corpus files gives the same output as `1509ab981` except for that new test line.

@@ -33,8 +33,9 @@ tightest is kept.
 
 A range's bounds are computed before the compiled code checks the conjuncts they rely on: in a set
 comprehension, those that mention the bounded variable or one enumerated after it, and in a `forall` statement
-or a quantifier, all of them. So a bound whose computation can fail is used only where it comes first, as the
-bound a range used to be computed from alone.
+or a quantifier, all of them. So a bound whose computation can fail, by a division by a variable, a call, or an
+index, is used only where it comes first, as the bound a range used to be computed from alone. A call counts even
+without a `requires`, since a constrained parameter type is a precondition too.
 
 **Bounds outside their type.** Until now the backends' range helpers only ever received the type's constant
 bounds. Discovery also turns `x <= e` into `e + 1`, moves terms across an inequality (`i < j + 50` gives `j`
@@ -51,7 +52,11 @@ of the variable's own type.
 bound whether the dependent bound grows or shrinks with it: the monotonicity check ran on the substituted
 bound, which no longer mentions the variable, so it always passed. The check now runs on the dependent bound,
 an upper bound is substituted where it grows and a lower bound where it shrinks, and the bound is not used
-where it does neither. Every bound on the needed side is substituted, so the tightest is taken at run time.
+where it does neither. Every bound on the needed side is substituted, so the tightest is taken at run time. Where
+that leaves a variable of a compiled `forall` statement unbounded, as `i` in `0 <= j < 5 && 0 <= i < 20 - j * j`,
+the statement is tried with its bound variables in the reverse order, as comprehensions already are, so that `j`
+is enumerated first and no substitution is needed. Master compiled that statement too, but substituted `j`'s
+upper bound and assigned none of its 70 elements.
 
 ## Scope
 
@@ -59,9 +64,9 @@ where it does neither. Every bound on the needed side is substituted, so the tig
   and `NativeNewtypeRanges.dfy` leaves `cpp` out. #6550 needs that part in turn: on its own it makes the
   program above print `0`, and `set x: i32 | 5 <= x < 3` count up until it wraps around, where master compiles
   neither. So #6550 is best merged after this PR, adding `cpp` to that test's list.
-- A dependent bound that neither grows nor shrinks with the later variable, such as `i < j * j`, is no longer
-  used, so a `forall` statement or quantifier that has no other bound is now rejected where master compiled it.
-  No file of the test suite or the standard libraries loses a bound this way.
+- A `forall` statement over three or more variables that neither order bounds, like
+  `0 <= j < 3 && 0 <= k < j * j && 0 <= i < k * k`, is now rejected, where master compiled it by substituting
+  bounds that happened to grow. No file of the test suite or the standard libraries is affected.
 - A side with no bound of its own, and a bound whose computation can fail next to another bound, still iterate
   up to the type's limit, as before. So does a `forall` statement or quantifier over `int` whose bound divides
   by zero outside its guard, like `forall i | 0 < k && 0 <= i < 100 / k`, which master already gets wrong.
