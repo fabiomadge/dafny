@@ -68,10 +68,9 @@ public abstract class BoundedPool : ICloneable<BoundedPool> {
     BoundedPool best = null;
     foreach (var bound in bounds) {
       if (best is IntBoundedPool ibp0 && bound is IntBoundedPool ibp1) {
-        var lowerBounds = ChooseIntegerBounds(ibp0.LowerBounds.Concat(ibp1.LowerBounds), true);
-        var upperBounds = ChooseIntegerBounds(ibp0.UpperBounds.Concat(ibp1.UpperBounds), false);
-        best = new IntBoundedPool(lowerBounds.FirstOrDefault(), upperBounds.FirstOrDefault(),
-          lowerBounds.Skip(1).ToList(), upperBounds.Skip(1).ToList());
+        best = new IntBoundedPool(
+          ChooseIntegerBounds(ibp0.LowerBounds.Concat(ibp1.LowerBounds), true),
+          ChooseIntegerBounds(ibp0.UpperBounds.Concat(ibp1.UpperBounds), false));
       } else if (best == null || bound.Preference() > best.Preference()) {
         best = bound;
       }
@@ -130,9 +129,9 @@ public abstract class BoundedPool : ICloneable<BoundedPool> {
       e = binary.E0.Resolved;
     }
     if (e is not (IdentifierExpr or MemberSelectExpr or FunctionCallExpr or SeqSelectExpr or UnaryOpExpr {
-          ResolvedOp: UnaryOpExpr.ResolvedOpcode.SeqLength or UnaryOpExpr.ResolvedOpcode.SetCard
-          or UnaryOpExpr.ResolvedOpcode.MultiSetCard or UnaryOpExpr.ResolvedOpcode.MapCard
-        })) {
+      ResolvedOp: UnaryOpExpr.ResolvedOpcode.SeqLength or UnaryOpExpr.ResolvedOpcode.SetCard
+      or UnaryOpExpr.ResolvedOpcode.MultiSetCard or UnaryOpExpr.ResolvedOpcode.MapCard
+    })) {
       return false;
     }
     var (lower, upper) = ModuleResolver.TypeImpliedIntegerBounds(e.Type);
@@ -203,8 +202,7 @@ public abstract class BoundedPool : ICloneable<BoundedPool> {
     // pair up the bounds
     var n = Math.Min(lowerBounds.Count, upperBounds.Count);
     for (var i = 0; i < n; i++) {
-      others.Add(new IntBoundedPool(lowerBounds[i].LowerBound, upperBounds[i].UpperBound,
-        lowerBounds[i].OtherLowerBounds, upperBounds[i].OtherUpperBounds));
+      others.Add(new IntBoundedPool(lowerBounds[i].LowerBounds, upperBounds[i].UpperBounds));
     }
     for (var i = n; i < lowerBounds.Count; i++) {
       others.Add(lowerBounds[i]);
