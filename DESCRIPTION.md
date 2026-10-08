@@ -64,6 +64,11 @@ Master compiled that statement too, but substituted `j`'s upper bound and assign
   and `NativeNewtypeRanges.dfy` leaves `cpp` out. #6550 needs that part in turn: on its own it makes the
   program above print `0`, and `set x: i32 | 5 <= x < 3` count up until it wraps around, where master compiles
   neither. So #6550 is best merged after this PR, adding `cpp` to that test's list.
+- The verifier reads only whether a bound depends on allocation, which no integer bound does, but it sees the order
+  that bounds discovery leaves the bound variables in. Where a substitution that master made is now refused, a
+  comprehension or quantifier can come out reversed where master kept its order, as in
+  `forall i, j | 0 <= j < 5 && 0 <= i < (j - 2) * (j - 2) :: P(i, j)`. Apart from `DependentRangeBounds.dfy`, no file
+  of the test suite or the standard libraries translates to different Boogie.
 - A comprehension, quantifier or `forall` statement over three or more variables whose bounds neither order
   resolves, because one of them does not grow or shrink with a later variable, like `0 <= j < 3 &&
   0 <= k < (j - 1) * (j - 1) + 1 && 0 <= i < k * k`, is now rejected, where master compiled it by substituting a

@@ -254,6 +254,32 @@ Master has not moved since `5f717bf44` (2026-09-19), so **no rebase is needed**;
 PRs touch the same files; all nine trial-merge cleanly (`git merge-tree --write-tree`): #6514, #6524,
 #6526, #6527, #6530, #6550, #6552, #6334, #6335.
 
+## 9b. Root causes, and what the fixes leave
+
+- **Call hole (3a):** the cause is `CannotFail` equating "no `requires`" with "no precondition"; removing calls
+  removes it. It sits in a pre-existing class: compiled code computes range bounds before checking the conjuncts
+  they rely on, and `CannotFail` is a whitelist guarding that. Hoisting outer-only conjuncts before the inner loops
+  of `forall` statements and quantifiers, as set comprehensions already do (keeping conjunct order, which
+  `EmitGuardFragment` does not), would close that class for guards on outer variables, and fix master's own
+  `forall i | 0 < k && 0 <= i < 100 / k` crash. Separate change.
+- **Rejections (3b):** the PR made substitution sound by requiring monotonicity, so whatever `IsMonotonic` cannot
+  prove is dropped. The reorder (commit 2) and the product rule (commit 4) close the forall-specific and the
+  product cases; a non-monotone link has no sound endpoint substitution, so the rest needs a different design.
+  The root is that discovery tries only two variable orders and records the chosen one by reversing the AST's
+  `BoundVars`, which the verifier also reads. Two consequences, both measured:
+  - rejections, where neither order works (now only non-monotone cascades of three or more variables);
+  - **verifier input**: the PR's claim "the verifier only reads the virtues of the chosen pool, which this does not
+    change, so verification is unchanged" is not exact. The verifier reads only allocation virtues, which no integer
+    pool changes, but a refused substitution can flip the reversal: `forall i, j | 0 <= j < 5 && 0 <= i < j * j ::
+    P(i, j)` in a lemma comes out as `forall j, i` in Boogie on the PR, where master emits `forall i, j`. The product
+    rule restores master's encoding for that one; with `(j - 2) * (j - 2)` the reversal remains. Printing Boogie for
+    the corpus with master, the PR and the fixes gives identical output for 1181 of the 1182 files that translate;
+    the other is `DependentRangeBounds.dfy`, whose own dependent bounds change its variable order.
+  The principled follow-up: keep the enumeration order as a compiler-only permutation instead of reversing
+  `BoundVars`, then choose it by dependencies (enumerate a variable after those its bounds mention). That makes
+  reordering verifier-neutral, needs no substitution wherever such an order exists, gives exact rather than
+  substituted bounds, and subsumes the reversal heuristic, commit 2, most of commit 4 and the residual.
+
 ## 10. Prototype
 
 Branch `review-6563-commits-v2`, four commits on `1509ab981`, +123/−116 in total:
