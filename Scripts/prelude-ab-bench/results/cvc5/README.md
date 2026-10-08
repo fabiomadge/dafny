@@ -206,12 +206,13 @@ standard library (60 s per VC, seed 1; each group of runs next to its own baseli
 | every synonym inlined | 39 | 16 | 4 / 7 | 13 | 107 |
 | comparisons inlined (`cvc5-comparison-synonyms.patch`) | 20 | 2 | 0 / 0 | 9 | 61 |
 | eager definitions (`../../cvc5enc/`) | 21 | 15 | 0 / 0 | 8 | 49 |
-| portfolio: default and eager definitions | 21 | 15 | 0 / 0 | 8 | 44 |
+| portfolio of the default, eager definitions, every synonym inlined, comparisons inlined (`cvc5enc/cvc5portfolio.py`) | 43 | 27 | 0 / 0 | 17 | 40 |
+| the portfolio, with beta-reduction | | | | 18 | 39 |
 | rewritten proofs (`proof-fixes.patch`) | | | | 19 | 57 |
 | rewritten proofs, eager definitions | | | | 19 | 47 |
-| rewritten proofs, portfolio | | | | 19 | 41 [b] |
+| rewritten proofs, the portfolio | | | | 19 | 40 |
 
-[a] At a higher machine load than the other runs. [b] From two runs at different loads.
+[a] At a higher machine load than the other runs.
 
 **Inlining** Dafny's synonyms (`{:inline}`) gives cvc5 the operators directly, but every trigger that mentions
 arithmetic then becomes a pattern over interpreted operators (`{:trigger (x + y) / n}` becomes `(div (+ x y) n)`):
@@ -237,20 +238,26 @@ only. It is measured through a proxy between Dafny and cvc5 (`cvc5enc/cvc5proxy.
 HYBRID_SCOPE=all`); in Dafny it would be a pass over the Boogie program, or over the SMT text, for solvers other
 than Z3.
 
-**A portfolio** - the default and the eager encoding run side by side, the first proof wins - keeps every proof
-either one finds, so nothing is lost by construction: in the whole library 76 failing VCs become 55 without touching
-a proof, and 41 with the rewritten proofs, at up to twice the solver time. On the screens, pairing the eager
-definitions with every synonym inlined proves 41 of the 53 lambda-induction misses and 27 of the 118 other misses,
-again keeping all 320 controls.
+**A portfolio** runs several encodings of the same query side by side, and the first proof wins, so one that
+includes the unchanged query loses no proof that cvc5 finds alone. The encodings complement each other: of the 19
+lambda inductions, some configuration measured in the whole library proves 18 (all but `LemmaHoistOverDenominator`).
+`cvc5enc/cvc5portfolio.py` is such a portfolio, standing in for cvc5 under Dafny: an ordinary cvc5 session gets every
+command unchanged and answers whatever Boogie asks after a check-sat, and at each check-sat fresh cvc5 processes get
+the same query with the eager definitions, with every synonym inlined, and with the comparisons inlined. In the whole
+library, next to a baseline run under the same load, it proves 17 of the 19 lambda inductions with the original
+proofs, 18 with beta-reduction (the members' runs predicted 18), and all 19 with the rewritten proofs; the failing
+VCs go from 76 to 42, 40 and 40. It lost one VC, a `JSON` well-formedness batch that times out alone either way; the
+gains sampled alone (9 of 37, in the configuration that claimed them) all hold. It costs up to four solver processes
+per open VC.
 
 Extending beta-reduction to lambdas bound to a variable (`var f := u => ...`, the form the Power lemmas use) fixes
 one more lemma under cvc5 (`LemmaModNegNeg`) and breaks two under Z3 (`LemmaPowIncreases`, `LemmaMulDistributes`).
 
 So the encoding is a large part of why cvc5 fails these proofs: the synonyms, related to their operators only by
-quantified axioms, need instances that cvc5 does not find. The eager definitions supply part of them without changing
-a trigger, and a portfolio makes the change free of regressions. The rewrites remain the only single change that
-fixes all 19 lambda inductions with nothing lost under either solver; the eager definitions and the portfolio add to
-them.
+quantified axioms, need instances that cvc5 does not find. No single encoding fixes that without costing proofs
+elsewhere, but a portfolio of them does: without touching a proof, it brings cvc5 to 18 of the 19 lambda inductions
+and 40 failing VCs in the standard library, against 57 with the rewritten proofs alone. The rewrites remain the only
+change that also suits Z3, and the only one that needs no extra solver time.
 
 ## Method
 
