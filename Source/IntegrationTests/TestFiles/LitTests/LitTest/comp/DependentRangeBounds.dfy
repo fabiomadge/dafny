@@ -24,6 +24,11 @@ method Main() {
   var scaled := set i: int, j: int, k: int {:nowarn} | 0 <= j < 5 && 0 <= i < 10 - 2 * j && 0 <= k < i :: (i, j, k);
   print |cascade|, " ", |scaled|, "\n";
 
+  // Bounds that neither grow nor shrink with a later variable, which neither this order nor its reverse can use.
+  var squares := set i: int, j: int, k: int {:nowarn} | 0 <= j < 3 && 0 <= k < j * j && 0 <= i < k * k :: (i, j, k);
+  var dips := set i: int, j: int, k: int {:nowarn} | 0 <= j < 3 && 0 <= k < (j - 1) * (j - 1) + 1 && 0 <= i < k * k :: (i, j, k);
+  print |squares|, " ", |dips|, "\n";
+
   // Bounds under multiplications and divisions by constants, parentheses, and conversions.
   var doubled := set i: int, j: int, k: int {:nowarn} | 0 <= j < 5 && 0 <= i < 2 * j && 0 <= k < i :: (i, j, k);
   var halved := set i: int, j: int, k: int {:nowarn} | 0 <= j < 10 && 0 <= i < j / 2 && 0 <= k < i :: (i, j, k);
@@ -36,6 +41,10 @@ method Main() {
   var a := new int[10, 5];
   forall i, j | 0 <= j < 5 && 0 <= i < 10 - j {
     a[i, j] := 1;
+  }
+  // No substitution can tell that 10 - j * j shrinks as j grows, so this enumerates j first.
+  forall i, j | 0 <= j < 5 && 0 <= i < 10 - j * j {
+    a[i, j] := a[i, j] + 1;
   }
   var count := 0;
   for i := 0 to 10 {

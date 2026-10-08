@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 
 namespace Microsoft.Dafny {
   public class ExprSubstituter : Substituter {
@@ -60,12 +61,14 @@ namespace Microsoft.Dafny {
           newBounds.Add(new ExactBoundedPool(entry.Item1));
         }
 
+        // The added variables are bound to expressions of the others, so they come last.
+        var newOrder = e.EnumerationOrder?.Concat(Enumerable.Range(e.BoundVars.Count, newBoundVars.Count - e.BoundVars.Count)).ToList();
         QuantifierExpr newExpr;
         if (expr is ForallExpr) {
-          newExpr = new ForallExpr(e.Origin, newBoundVars, newRange, newTerm, newAttrs) { Bounds = newBounds };
+          newExpr = new ForallExpr(e.Origin, newBoundVars, newRange, newTerm, newAttrs) { Bounds = newBounds, EnumerationOrder = newOrder };
         } else {
           Contract.Assert(expr is ExistsExpr);
-          newExpr = new ExistsExpr(e.Origin, newBoundVars, newRange, newTerm, newAttrs) { Bounds = newBounds };
+          newExpr = new ExistsExpr(e.Origin, newBoundVars, newRange, newTerm, newAttrs) { Bounds = newBounds, EnumerationOrder = newOrder };
         }
         usedSubstMap.Clear();
 
