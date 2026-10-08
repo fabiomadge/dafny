@@ -819,20 +819,21 @@ namespace Microsoft.Dafny {
           return -1; // forget about "bv OP thatSide"
         }
         var upperOnBv = op is BinaryExpr.ResolvedOpcode.Lt or BinaryExpr.ResolvedOpcode.Le ? whereIsBv == 0 : whereIsBv != 0;
+        // A product of nonnegative factors grows, or shrinks, with "bj" only where "bj" is nonnegative: up to an upper
+        // bound if "bj" has a nonnegative lower bound, and down to a lower bound only if that bound is nonnegative.
         var bjIsNonnegative = TypeImpliedIntegerBounds(bj.Type).Lower >= 0 ||
-                              jBounds.LowerBounds.Any(lower => ConstantFolder.TryFoldInteger(lower) is { Sign: >= 0 });
+                              jBounds.LowerBounds.Any(lower => IsNonnegative(lower, bj, false));
+        var bjBounds = jBounds.UpperBounds.Select(upper => (Bound: upper, IsUpper: true, Nonnegative: bjIsNonnegative))
+          .Concat(jBounds.LowerBounds.Select(lower => (Bound: lower, IsUpper: false, Nonnegative: IsNonnegative(lower, bj, false))))
+          .Where(b => !FreeVariables(b.Bound).Contains(bv)).ToList();
         var next = new List<Expression>();
         foreach (var side in sides) {
           if (!FreeVariables(side).Contains(bj)) {
             next.Add(side);
             continue;
           }
-          var grows = IsMonotonic(side, bj, true, bjIsNonnegative);
-          if (grows || IsMonotonic(side, bj, false, bjIsNonnegative)) {
-            next.AddRange((grows == upperOnBv ? jBounds.UpperBounds : jBounds.LowerBounds)
-              .Where(u => !FreeVariables(u).Contains(bv))
-              .Select(u => BoogieGenerator.Substitute(side, bj, u)));
-          }
+          next.AddRange(bjBounds.Where(b => IsMonotonic(side, bj, b.IsUpper == upperOnBv, b.Nonnegative))
+            .Select(b => BoogieGenerator.Substitute(side, bj, b.Bound)));
         }
         if (next.Count == 0) {
           return -1; // forget about "bv OP thatSide"

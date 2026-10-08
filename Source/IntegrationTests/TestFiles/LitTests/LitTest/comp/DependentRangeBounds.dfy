@@ -26,6 +26,11 @@ method Main() {
   var scaled := set i: int, j: int, k: int {:nowarn} | 0 <= j < 5 && 0 <= i < 10 - 2 * j && 0 <= k < i :: (i, j, k);
   print |cascade|, " ", |squares|, " ", |scaled|, "\n";
 
+  // A lower bound that can be negative, as low is, gives none for j * j.
+  var low := -5;
+  var floored := set i: int, j: int {:nowarn} | 0 <= j < 3 && low <= j && j * j <= i < 10 :: (i, j);
+  print |floored|, "\n";
+
   // Bounds under multiplications and divisions by constants, parentheses, and conversions.
   var doubled := set i: int, j: int, k: int {:nowarn} | 0 <= j < 5 && 0 <= i < 2 * j && 0 <= k < i :: (i, j, k);
   var halved := set i: int, j: int, k: int {:nowarn} | 0 <= j < 10 && 0 <= i < j / 2 && 0 <= k < i :: (i, j, k);
@@ -39,8 +44,9 @@ method Main() {
   forall i, j | 0 <= j < 5 && 0 <= i < 10 - j {
     a[i, j] := 1;
   }
-  // No substitution can tell that 10 - j * j shrinks as j grows, so this enumerates j first.
-  forall i, j | 0 <= j < 5 && 0 <= i < 10 - j * j {
+  // 10 - (j - 2) * (j - 2) first grows and then shrinks as j grows, so no bound of j can replace it, and this
+  // enumerates j first.
+  forall i, j | 0 <= j < 5 && 0 <= i < 10 - (j - 2) * (j - 2) {
     a[i, j] := a[i, j] + 1;
   }
   var count := 0;
