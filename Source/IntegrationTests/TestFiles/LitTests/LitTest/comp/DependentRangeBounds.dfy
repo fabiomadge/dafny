@@ -24,10 +24,11 @@ method Main() {
   var scaled := set i: int, j: int, k: int {:nowarn} | 0 <= j < 5 && 0 <= i < 10 - 2 * j && 0 <= k < i :: (i, j, k);
   print |cascade|, " ", |scaled|, "\n";
 
-  // Bounds that neither grow nor shrink with a later variable, which neither this order nor its reverse can use.
-  var squares := set i: int, j: int, k: int {:nowarn} | 0 <= j < 3 && 0 <= k < j * j && 0 <= i < k * k :: (i, j, k);
+  // Bounds that neither grow nor shrink with a later variable, which neither this order nor its reverse can use, the
+  // second time with a k that needs only one of its two bounds.
   var dips := set i: int, j: int, k: int {:nowarn} | 0 <= j < 3 && 0 <= k < (j - 1) * (j - 1) + 1 && 0 <= i < k * k :: (i, j, k);
-  print |squares|, " ", |dips|, "\n";
+  var optional := set i: int, j: int, k: int {:nowarn} | 0 <= j < 3 && 0 <= k < j * j && 0 <= i < k * k && k < i + 50 :: (i, j, k);
+  print |dips|, " ", |optional|, "\n";
 
   // The compiler gets copies of quantifiers that the trigger generator splits, and of a binding guard, which have to
   // enumerate j first too.

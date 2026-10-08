@@ -323,17 +323,27 @@ namespace Microsoft.Dafny {
 
     /// <summary>
     /// Returns an order of "bvars", as indices, in which each one comes after the variables that its best bounds mention
-    /// when all the others come before it, keeping the given order where possible. Returns null if there is a cycle, or
-    /// if some variable has no finite and enumerable bound even then.
+    /// when all the others come before it, keeping the given order where possible. Where each remaining variable waits for
+    /// another, as when a variable needs only some of the bounds it has, one that the variables placed so far already
+    /// bound comes next, unless its type alone bounds it. Returns null if there is no such order.
     /// </summary>
     static List<int> DependencyOrder<VT>(List<VT> bvars, Expression expr, bool polarity) where VT : IVariable {
       expr = WithTypeConstraints(bvars, expr, polarity);
       var noKnownBounds = bvars.ConvertAll(_ => (BoundedPool)null);
+      // The best bounds of "bvars[i]" when the variables "before" come before it and all others after it
+      BoundedPool BestBounds(int i, List<int> before) {
+        var ordered = before.Append(i).Concat(Enumerable.Range(0, bvars.Count).Where(k => k != i && !before.Contains(k))).ToList();
+        return BoundedPool.GetBest(DiscoverAllBounds_Aux_SingleVar(ordered.ConvertAll(k => bvars[k]), before.Count, expr, polarity,
+          noKnownBounds, out _));
+      }
+      bool BoundedByType(int i) {
+        var (lower, upper) = TypeImpliedIntegerBounds(bvars[i].Type);
+        return lower != null && upper != null;
+      }
       var dependencies = new List<List<int>>();
       for (var i = 0; i < bvars.Count; i++) {
         var others = Enumerable.Range(0, bvars.Count).Where(k => k != i).ToList();
-        var pool = BoundedPool.GetBest(DiscoverAllBounds_Aux_SingleVar(others.Append(i).Select(k => bvars[k]).ToList(),
-          bvars.Count - 1, expr, polarity, noKnownBounds, out _));
+        var pool = BestBounds(i, others);
         if (!FiniteAndEnumerable(pool)) {
           return null;
         }
@@ -341,12 +351,17 @@ namespace Microsoft.Dafny {
         dependencies.Add(others.Where(k => mentioned.Contains(bvars[k])).ToList());
       }
       var order = new List<int>();
-      while (order.Count < bvars.Count) {
-        var next = Enumerable.Range(0, bvars.Count).FirstOrDefault(i => !order.Contains(i) && dependencies[i].All(order.Contains), -1);
+      var unplaced = Enumerable.Range(0, bvars.Count).ToList();
+      while (unplaced.Count != 0) {
+        var next = unplaced.FirstOrDefault(i => dependencies[i].All(order.Contains), -1);
+        if (next < 0) {
+          next = unplaced.FirstOrDefault(i => !BoundedByType(i) && FiniteAndEnumerable(BestBounds(i, order)), -1);
+        }
         if (next < 0) {
           return null;
         }
         order.Add(next);
+        unplaced.Remove(next);
       }
       return order;
     }
