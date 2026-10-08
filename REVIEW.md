@@ -1,9 +1,9 @@
 # Review of dafny-lang/dafny#6563 (head `1509ab981`, base master `5f717bf44`)
 
 Everything below was measured on fresh Release builds of master `5f717bf44` and of the PR head,
-built with `git archive` into separate trees. Scripts and probes are under job `f479a154`'s tmp dir;
-the prototype is commit `4861e8104` on branch `worktree-review-6563` in
-`/local/home/fmadge/dafny/.claude/worktrees/review-6563`.
+built with `git archive` into separate trees. Scripts and probes are under job `f479a154`'s tmp dir. The
+prototypes are on fork branches: `review-6563-root` (`2ee608b0d`, the recommended redesign, 9c) and
+`review-6563-commits-v2` (`597c69dd7`, the smaller fix of the PR's design, 10).
 
 ## 1. What it does, and whether it should be done
 
@@ -144,18 +144,54 @@ over all 2082 files differs from the PR only in the new test line.
 **Residual, corrected:** I first called the remaining gap forall-specific. It is not: `0 <= j < 3 && 0 <= k <
 j * j && 0 <= i < k * k` is rejected as a set comprehension and as a quantifier too (master: 14, correct by
 luck). The product rule below closes it in all three forms. What remains is a cascade with a link that is not
-monotonic at all, like `k < (j - 1) * (j - 1) + 1` (master: 2, by luck; rejected with every fix here). Closing
-those would need master's unsound rule back.
+monotonic at all, like `k < (j - 1) * (j - 1) + 1` (master: 2, by luck). No substitution closes that soundly,
+so every fix within the PR's design rejects it. The redesign in 9c compiles it by enumerating `j` first.
 
-**Product rule (commit 4, optional):** master's substitution is sound wherever the bound is a product of
-nonnegative factors that grow or shrink together, so `IsMonotonic` accepts such a product of type `int` when the
-variable has a nonnegative lower bound (its type's, or a constant one). `ExactIntegerRangeBound` then computes
-`int` products down to their factors, so that a factor like a `u8` bound `e + 1` does not wrap. Without that
-half (mutant M7), `set i: int, j: u8 | j <= e && 0 <= i < (j as int) * (j as int) && ...` with `e = 255` fails on
-C#, Java and Go; with it, all five backends print 17. Restricting it to `int` keeps native products, which C++'s
-128-bit integers could not hold for 64-bit factors, out of it. It changes the generated C# of no corpus file.
+**Product rule (commits 4 and 5, optional), corrected:** a product of nonnegative factors grows, or shrinks, with a
+variable, but only where the variable is nonnegative. Commit 4 checked that the variable had *some* nonnegative
+lower bound and then substituted *every* lower bound, which was unsound:
 
-### 3c. Probes that came out clean
+```dafny
+var low := -5;
+var floored := set i: int, j: int | 0 <= j < 3 && low <= j && j * j <= i < 10 :: (i, j);
+```
+
+substituted `low * low` = 25 for `j * j` and printed 0 instead of 25; master and the PR print 25. Commit 5
+substitutes a lower bound into a product only if that bound is itself nonnegative. An upper bound still needs only
+the variable's nonnegative lower bound. My first fuzzer could not find this, because it gave each variable a single
+lower bound. With a constant and a dependent lower bound mixed in, it found 2 wrong answers in 200 programs on
+commit 4, and none after commit 5. `ExactIntegerRangeBound` computes `int` products down to their factors, so
+that a factor like a `u8` bound `e + 1` does not wrap. Without that half (mutant M7), `set i: int, j: u8 | j <= e &&
+0 <= i < (j as int) * (j as int) && ...` with `e = 255` fails on C#, Java and Go; with it, all five backends print
+17. Restricting the rule to `int` keeps native products out of it, which C++'s 128-bit integers could not hold for
+64-bit factors. It changes the generated C# of no corpus file. Commit 4 also made the `10 - j * j` forall test of
+commit 2 pass in the declared order, so that test no longer tested the reversal. Commit 5 tests it with
+`10 - (j - 2) * (j - 2)`, which no substitution can use.
+
+### 3c. The trigger generator's rewrite makes the PR emit C# that does not compile
+
+```dafny
+method Main() {
+  if i: int, j: int :| 0 <= j < 5 && 0 <= i < (j - 1) * (j - 1) + 1 && i * j == 2 {
+    print i, " ", j, "\n";
+  }
+}
+```
+
+Master prints `1 2`. On the PR, the C# compiler fails: `The name '_1_eg__d__t_h0' does not exist in the current
+context`. To break a matching loop, `ExprSubstituter` replaces `j - 1` with a new bound variable `_t#0`, which it
+appends last. It also rewrote the other variables' bounds, so `i`'s bound became `_t#0 * _t#0 + 1`, which the loop
+over `i` reads before `_t#0` exists. The bug is on master too: declare `j, i` and master fails the same way, on the
+guard and on an `exists` in a set comprehension. Master compiled the `i, j` form only because it put the constant
+17 in place of `i`'s bound. The PR rightly refuses that substitution, enumerates `j` first, and keeps
+`(j - 1) * (j - 1) + 1`. So the PR turns a program that worked into one that does not compile.
+
+Fix (prototyped on both branches): leave the bounds as they are. They are compiler-only, and the range's equality
+`_t#0 == j - 1` keeps them equivalent, so they then mention only variables enumerated before. That is 4 lines
+fewer. Both forms and the `exists` print the right answer, and a binding-guard test with this bound fails without
+the fix.
+
+### 3d. Probes that came out clean
 
 54 range probes × 5 backends: master fails 17, the PR fails 0. Also no regression from a null-field
 receiver (`b != null && i < b.v`), a `real`-to-`int` bound, or a subset-typed parameter reached
@@ -278,50 +314,93 @@ PRs touch the same files; all nine trial-merge cleanly (`git merge-tree --write-
   The principled follow-up: keep the enumeration order as a compiler-only permutation instead of reversing
   `BoundVars`, then choose it by dependencies (enumerate a variable after those its bounds mention). That makes
   reordering verifier-neutral, needs no substitution wherever such an order exists, gives exact rather than
-  substituted bounds, and subsumes the reversal heuristic, commit 2, most of commit 4 and the residual.
+  substituted bounds, and subsumes commit 2 and the non-monotone residual. It does not subsume the product rule,
+  as I first claimed: a cycle that only a substitution through a product breaks still needs it (measured in 9c).
 
-## 9c. Root-cause prototype (branch `review-6563-root`, `a747a6e35`)
+## 9c. Root-cause prototype (branch `review-6563-root`, head `2ee608b0d`)
 
-Three commits on `1509ab981`: the call fix, the cleanup, and the redesign, which replaces the earlier forall-reorder
-hook and the product rule (+185/−126 on the PR in total).
+Seven commits on `1509ab981`, +294/−159 on the PR in total (+249/−155 outside the tests):
+
+1. `fix: count a call as a range bound that can fail` (3a).
+2. `chore: delete the unused SubstituteBound, keep one list of bounds per side, and fix whitespace` (4, 5).
+3. `fix: enumerate bound variables in an order only the compiler sees, chosen by their dependencies`.
+4. `chore: find the dependency order with one discovery per variable, and test the copies that keep the order`.
+5. `fix: break a cycle of dependencies that a variable needs only some of`.
+6. `fix: keep the bounds of a quantifier whose matching loop the trigger generator rewrites` (3c).
+7. `fix: substitute a bound into a product of nonnegative factors` (3b's product rule, with v2 commit 5's
+   correction built in).
 
 - `DiscoverBestBounds_MultipleVars_AllowReordering` no longer reverses `BoundVars`. Bounds stay aligned with the
-  declared variables; an `EnumerationOrder` (indices) is recorded on comprehensions and forall statements and
-  followed only by the compiler: the quantifier, set and map loops, `CompileGuardedLoops` (also Java's
+  declared variables. An `EnumerationOrder` (indices) is recorded on comprehensions and forall statements, and only
+  the compiler follows it: the quantifier, set and map loops, `CompileGuardedLoops` (also Java's
   `EmitIngredients`), and `TrAssignSuchThat` for `if … :|` guards. The `Substituter`, `ExistsExpr.AlphaRename` and
   the trigger splitter's copies carry it; `ExprSubstituter` extends it for the variables it appends.
 - The legacy declared-vs-reversed choice is kept exactly, so any program that one of the two orders bounds compiles
   as before. Forall statements now get that choice too. Only where neither order bounds every variable,
-  `DependencyOrder` enumerates each variable after those its best bounds mention, if that order is acyclic.
-- Measured:
-  - every residual shape compiles and prints the right answer on cs/java/js/py/go, including
-    `k < (j - 1) * (j - 1) + 1` (2), which every earlier fix rejected; 54 probes + 16 shapes, all correct;
-  - the four lit tests pass the harness on six backends; resolving the corpus gives the same output as the PR,
-    apart from `DependentRangeBounds.dfy`'s new lines; executable C# is identical for every corpus program;
-  - the verifier sees declared order: Boogie differs from master for 7 pre-existing files (DivInternalsNonlinear,
-    Maps, UltraFilter, Bug118, Bug91, Leq, git-issue-1207), only in bound-variable order; all 7 pass their lit
-    tests, and the two ghost probes now match master where the PR reversed them;
-  - printed programs show declared order (`Regression15.dfy`'s `set X,Y`, which master printed as `set Y, X`); the
-    84 printing and trigger lit tests pass;
-  - full IntegrationTests (1914 tests on master, 1918 on the prototype): no test that passes on master fails; the
-    differences are the 4 new tests and `dafnydoc/doc1/TestDafnyDoc.dfy`, which fails only in the git-archived
-    master tree (an HTML diff).
+  `DependencyOrder` enumerates each variable after those its best bounds mention. Where every remaining variable
+  waits for another, as when `k` needs only one of its bounds `k < (j - 1) * (j - 1) + 1` and `k < i + 50`, a
+  variable that the ones placed so far already bound comes next. A variable bounded only by its type is not
+  placed that way, since that would enumerate the whole type.
+- The product rule still earns its place here. The dependency order no longer needs it for shapes like
+  `k < j * j && i < k * k`, but it breaks cycles that no order breaks, like `0 <= k <= j < (i - 1) * (i - 1) + 1 &&
+  k * k <= i < 3` (master 6, by luck; the PR rejects it). It has a cost: `0 <= j < 3 && 0 <= i < j * j` now
+  compiles in the declared order with `i < 9` substituted, as on master, where the reversed order alone gave exact
+  bounds (27 iterations instead of 5, a constant factor). That follows the existing policy for sums: the declared
+  order wins unless the reverse bounds more. No corpus program's C# changes. The tests that need another order
+  now use bounds that no substitution can use, like `(j - 1) * (j - 1) + 1`.
+- Measured on the head:
+  - fuzz: each program is a random three-variable set comprehension checked against brute force (correct / wrong
+    / rejected). The extended batches mix a constant and a dependent lower bound, and an outer `low`:
+
+    | batch | master | PR | root, `0327b9010` | root, head | v2 commit 4 | v2 head |
+    |---|---|---|---|---|---|---|
+    | seed 7 (160) | 101/22/37 | 120/0/40 | 127/0/33 | 130/0/30 | | |
+    | seed 23 (160) | 98/19/43 | 128/0/32 | 135/0/25 | 140/0/20 | | |
+    | extended, seed 41 (200) | 119/31/50 | 139/0/61 | 159/0/41 | 165/0/35 | 146/**2**/52 | 148/0/52 |
+    | extended, seed 59 (200) | 109/33/58 | 140/0/60 | 149/0/51 | 156/0/44 | 152/0/48 | 152/0/48 |
+
+    A u8 batch (120) agrees with master on every program. The head does worse than another build only on 8 of the
+    720 programs, which master gets right by luck. Five go through a link that is not monotonic over the
+    variable's range, like `c * c` with `-1 <= c`. Three go through a product whose factors are nonnegative only by
+    facts the rule does not track: another variable's bound (`c * a` with `1 <= a`), or a square (`low * low`).
+    Tracking those in `IsNonnegative` is the next step if that residual matters;
+  - the four lit tests pass the harness on six backends; `dotnet format whitespace` is clean;
+  - full IntegrationTests (1914 tests on master, 1918 on the head): no test that passes on master fails. The
+    differences are the 4 new tests, and `dafnydoc/doc1/TestDafnyDoc.dfy` and
+    `pythonmodule/multimodule/DerivedModule.dfy`, which fail only in the archived master tree;
+  - corpus: resolving all 2082 files gives master's output exactly, in the same total time (+0.16%). C# is
+    identical before and after each of the last two commits for all 1355 files that translate, apart from
+    `DependentRangeBounds.dfy`, so neither the product rule nor the matching-loop fix changes a corpus program.
+    Boogie is identical to the state before them for 1181 of the 1182 files that translate. The other is
+    `DependentRangeBounds.dfy`, which that state rejects;
+  - mutants: 11 of 16 fail `DependentRangeBounds.dfy`. They substitute any lower bound into a product, drop
+    products, compute `int` products in their own type, let `ExprSubstituter` rewrite the bounds, drop the cycle
+    break, or drop the order from 6 of the copies. The survivors are four copies that no test reaches (the
+    `Substituter`'s forall statement, `SplitPartTriggerWriter`'s, and the two clone constructors), and the type-only
+    guard of the cycle break, whose absence shows only as a hang;
+  - earlier, on commit 3 (`a747a6e35`): the verifier sees declared order. Boogie differs from master for 7
+    pre-existing files (DivInternalsNonlinear, Maps, UltraFilter, Bug118, Bug91, Leq, git-issue-1207), only in
+    bound-variable order. All 7 pass their lit tests, and the two ghost probes now match master where the PR
+    reversed them. Printed programs show declared order (`Regression15.dfy`'s `set X,Y`, which master printed as
+    `set Y, X`), and the 84 printing and trigger lit tests pass.
 - Not changed: `:|` and let-such-that keep their declared order, since it decides which value is chosen. A policy
   that prefers the dependency order even where the declared order works would give exact bounds everywhere, but
   would change compiled code (and possibly set print order) for accepted programs.
 
-## 10. Prototype
+## 10. Prototype of the smaller fix
 
-Branch `review-6563-commits-v2`, four commits on `1509ab981`, +123/−116 in total:
+Branch `review-6563-commits-v2`, six commits on `1509ab981`, +144/−128 in total. It keeps the PR's design and fixes
+what is wrong with it:
 
 1. `fix: count a call as a range bound that can fail` (3a).
 2. `fix: try a compiled forall statement's bound variables in reverse order` (3b), +6 lines: it reuses
-   `DiscoverBestBounds_MultipleVars_AllowReordering` in the failing path. Test: a `10 - j * j` forall statement
-   added to the existing one in `DependentRangeBounds.dfy` (master 25, PR rejects, fixed 66).
+   `DiscoverBestBounds_MultipleVars_AllowReordering` in the failing path.
 3. `chore: ...` (4, 5, and the `ChooseIntegerBounds` comment from 6).
-4. `fix: substitute a bound into a product of nonnegative factors` (the product rule above).
+4. `fix: substitute a bound into a product of nonnegative factors` (3b's product rule, unsound as committed).
+5. `fix: substitute only a nonnegative lower bound into a product` (its correction, with commit 2's test made to
+   need the reversal again).
+6. `fix: keep the bounds of a quantifier whose matching loop the trigger generator rewrites` (3c).
 
-On the final build: release build and IntegrationTests clean, `dotnet format whitespace` clean, 54 probes plus
-the 12 forall/residual shapes correct on cs/java/js/py/go, the four lit tests pass the harness on six backends,
-`Fill` verifies as on master, and all 2082 corpus files resolve, and all 1356 that translate translate to C#,
-exactly as at `1509ab981`, except for the new lines in `DependentRangeBounds.dfy` and `UnguardedRangeBounds.dfy`.
+On its head, the four lit tests pass the harness on six backends, `dotnet format whitespace` is clean, and it is
+never wrong on the fuzz batches above. It rejects more than the root branch, though: 17 of the seed-41 programs
+and 4 of the seed-59 ones that the root branch compiles.

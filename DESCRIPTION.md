@@ -42,7 +42,8 @@ bounds. Discovery also turns `x <= e` into `e + 1`, moves terms across an inequa
 the lower bound `i - 49`) and substitutes for a later variable a bound that the variable itself never reaches
 (`i < 2 * j` with `j < 128` gives `i` the bound `2 * 128`), none of which need lie in the newtype's range. So
 `CompileCollection` now emits each bound through `EmitIntegerRangeBound`, which computes its additions,
-subtractions, and multiplications and divisions by constants in `int`. The type's own bound is dropped only
+subtractions, multiplications and divisions by constants, and products of type `int`, in `int`. The type's own
+bound is dropped only
 next to a bound that lies in its type wherever it is computed, which is what keeps `forall i: u8 | n > 0 && n -
 1 <= i < n` from starting at -1 where `n` is 0. The arithmetic is computed in the compiler rather than in
 discovery because the verifier's witness guesses and the native type analysis read discovery's bounds as values
@@ -52,15 +53,23 @@ of the variable's own type.
 bound whether the dependent bound grows or shrinks with it: the monotonicity check ran on the substituted
 bound, which no longer mentions the variable, so it always passed. The check now runs on the dependent bound,
 an upper bound is substituted where it grows and a lower bound where it shrinks, and the bound is not used
-where it does neither. Every bound on the needed side is substituted, so the tightest is taken at run time.
+where it does neither. Every bound on the needed side is substituted, so the tightest is taken at run time. A
+product of nonnegative factors grows, or shrinks, with them, so it counts where the variable stays nonnegative:
+master compiled `forall i, j | 0 <= j < 5 && 0 <= i < 10 - j * j` by substituting `j`'s upper bound, and
+assigned none of its 26 elements, where `j`'s lower bound 0 is the one to substitute.
 
 **The order of the bound variables.** Discovery tried a comprehension's bound variables in their declared order
 and in reverse, and recorded a reversal by reversing them in the AST, which the verifier translates. Bounds now
 stay with the declared order, and a separate order that only the compiler follows records the choice. `forall`
 statements get the same choice, and where neither order bounds every variable, each variable is enumerated after
 the ones its bounds mention, which needs no substitution: `0 <= j < 3 && 0 <= k < (j - 1) * (j - 1) + 1 &&
-0 <= i < k * k` enumerates `j`, `k`, `i`. Master compiled `forall i, j | 0 <= j < 5 && 0 <= i < 10 - j * j`
-too, but substituted `j`'s upper bound and assigned none of its 26 elements.
+0 <= i < k * k` enumerates `j`, `k`, `i`.
+
+**A rewrite by the trigger generator.** To break a matching loop, the trigger generator replaces a term like
+`j - 1` with a new bound variable that the compiled code enumerates last, and it replaced the term in the other
+variables' bounds too. So `if j, i :| 0 <= j < 5 && 0 <= i < (j - 1) * (j - 1) + 1 && i * j == 2` gives C#
+that does not compile, on master too, and with `j` enumerated first, so would the same guard over `i, j`. The
+bounds now keep the term.
 
 ## Scope
 
@@ -83,9 +92,9 @@ too, but substituted `j`'s upper bound and assigned none of its 26 elements.
 Four tests under `comp/`: `NativeNewtypeRanges.dfy` for set comprehensions over `u8`, `i32`, `i64` and `u64`,
 at the type's edges and across 2^63; `NativeNewtypeRangeForms.dfy` for the forms C++ does not compile, among
 them a type bounded by a named constant and subset types; `DependentRangeBounds.dfy` for dependent bounds in
-both conjunct orders, under sums, negations, products, quotients and conversions, over cascades of three
-variables, and in a quantifier, a `forall` statement, `:|` and a let-such-that; `UnguardedRangeBounds.dfy` for
-bounds that rely on conjuncts checked only after the range is computed.
+both conjunct orders, under sums, negations, products, quotients and conversions, over cascades and cycles of
+three variables, and in a quantifier, a `forall` statement, a binding guard, `:|` and a let-such-that;
+`UnguardedRangeBounds.dfy` for bounds that rely on conjuncts checked only after the range is computed.
 
 All four pass on C#, Java, JS, Go, Python and the Dafny backend. On master the first two do not finish on C#
 within 120 s, and `DependentRangeBounds.dfy` prints `40 25 false`, `25 15`, `60 0` and `true` where it expects
@@ -94,9 +103,7 @@ on master, which computes none of its bounds, and fails if a bound that can fail
 the type's own bound is dropped next to `n - 1`.
 
 Resolving all 2082 files of the test suite and the standard libraries gives the same output as master, in the
-same total time. Replaying every `%testDafnyForEachCompiler` RUN line, except `NativeNewtypeRanges.dfy`, whose
-own `--compilers` the replay driver cannot pass through, and the 233 other lit tests that compile and run a
-program, gives master's verdicts on C#, JS, Java, Python, Go and C++, except that `DependentRangeBounds.dfy`
-and `NativeNewtypeRangeForms.dfy` now pass.
+same total time, and the whole IntegrationTests suite gives master's results, except that the four new tests
+pass.
 
 <small>By submitting this pull request, I confirm that my contribution is made under the terms of the [MIT license](https://github.com/dafny-lang/dafny/blob/master/LICENSE.txt).</small>
