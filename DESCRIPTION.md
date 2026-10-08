@@ -52,11 +52,11 @@ of the variable's own type.
 bound whether the dependent bound grows or shrinks with it: the monotonicity check ran on the substituted
 bound, which no longer mentions the variable, so it always passed. The check now runs on the dependent bound,
 an upper bound is substituted where it grows and a lower bound where it shrinks, and the bound is not used
-where it does neither. Every bound on the needed side is substituted, so the tightest is taken at run time. Where
-that leaves a variable of a compiled `forall` statement unbounded, as `i` in `0 <= j < 5 && 0 <= i < 20 - j * j`,
-the statement is tried with its bound variables in the reverse order, as comprehensions already are, so that `j`
-is enumerated first and no substitution is needed. Master compiled that statement too, but substituted `j`'s
-upper bound and assigned none of its 70 elements.
+where it does neither. A product of nonnegative `int` factors grows with them. Every bound on the needed side is
+substituted, so the tightest is taken at run time. Where that leaves a variable of a compiled `forall` statement
+unbounded, as `i` in `0 <= j < 5 && 0 <= i < 10 - j * j`, the statement is tried with its bound variables in the
+reverse order, as comprehensions already are, so that `j` is enumerated first and no substitution is needed.
+Master compiled that statement too, but substituted `j`'s upper bound and assigned none of its 26 elements.
 
 ## Scope
 
@@ -64,9 +64,10 @@ upper bound and assigned none of its 70 elements.
   and `NativeNewtypeRanges.dfy` leaves `cpp` out. #6550 needs that part in turn: on its own it makes the
   program above print `0`, and `set x: i32 | 5 <= x < 3` count up until it wraps around, where master compiles
   neither. So #6550 is best merged after this PR, adding `cpp` to that test's list.
-- A `forall` statement over three or more variables that neither order bounds, like
-  `0 <= j < 3 && 0 <= k < j * j && 0 <= i < k * k`, is now rejected, where master compiled it by substituting
-  bounds that happened to grow. No file of the test suite or the standard libraries is affected.
+- A comprehension, quantifier or `forall` statement over three or more variables whose bounds neither order
+  resolves, because one of them does not grow or shrink with a later variable, like `0 <= j < 3 &&
+  0 <= k < (j - 1) * (j - 1) + 1 && 0 <= i < k * k`, is now rejected, where master compiled it by substituting a
+  bound that happened to be right. No file of the test suite or the standard libraries is affected.
 - A side with no bound of its own, and a bound whose computation can fail next to another bound, still iterate
   up to the type's limit, as before. So does a `forall` statement or quantifier over `int` whose bound divides
   by zero outside its guard, like `forall i | 0 < k && 0 <= i < 100 / k`, which master already gets wrong.
@@ -76,7 +77,7 @@ upper bound and assigned none of its 70 elements.
 Four tests under `comp/`: `NativeNewtypeRanges.dfy` for set comprehensions over `u8`, `i32`, `i64` and `u64`,
 at the type's edges and across 2^63; `NativeNewtypeRangeForms.dfy` for the forms C++ does not compile, among
 them a type bounded by a named constant and subset types; `DependentRangeBounds.dfy` for dependent bounds in
-both conjunct orders, under sums, negations, products, quotients and conversions, over a cascade of three
+both conjunct orders, under sums, negations, products, quotients and conversions, over cascades of three
 variables, and in a quantifier, a `forall` statement, `:|` and a let-such-that; `UnguardedRangeBounds.dfy` for
 bounds that rely on conjuncts checked only after the range is computed.
 

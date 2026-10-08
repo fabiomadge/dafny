@@ -141,10 +141,19 @@ monotone at all) and `20 - j * j` (70, where master printed 0). `Fill` verifies 
 prototype alike, its negative control fails on both, and the program prints `1`. The resolve sweep
 over all 2082 files differs from the PR only in the new test line.
 
-**Residual:** a cascade that neither order resolves — `forall i, j, k | 0 <= j < 3 && 0 <= k < j * j
-&& 0 <= i < k * k` — is still rejected where master compiled it (14, correct by luck). Teaching
-`IsMonotonic` that a product of nonnegative factors grows with them would close this one (not
-prototyped); closing every such case would need master's unsound rule back. Say so in Scope.
+**Residual, corrected:** I first called the remaining gap forall-specific. It is not: `0 <= j < 3 && 0 <= k <
+j * j && 0 <= i < k * k` is rejected as a set comprehension and as a quantifier too (master: 14, correct by
+luck). The product rule below closes it in all three forms. What remains is a cascade with a link that is not
+monotonic at all, like `k < (j - 1) * (j - 1) + 1` (master: 2, by luck; rejected with every fix here). Closing
+those would need master's unsound rule back.
+
+**Product rule (commit 4, optional):** master's substitution is sound wherever the bound is a product of
+nonnegative factors that grow or shrink together, so `IsMonotonic` accepts such a product of type `int` when the
+variable has a nonnegative lower bound (its type's, or a constant one). `ExactIntegerRangeBound` then computes
+`int` products down to their factors, so that a factor like a `u8` bound `e + 1` does not wrap. Without that
+half (mutant M7), `set i: int, j: u8 | j <= e && 0 <= i < (j as int) * (j as int) && ...` with `e = 255` fails on
+C#, Java and Go; with it, all five backends print 17. Restricting it to `int` keeps native products, which C++'s
+128-bit integers could not hold for 64-bit factors, out of it. It changes the generated C# of no corpus file.
 
 ### 3c. Probes that came out clean
 
@@ -247,8 +256,16 @@ PRs touch the same files; all nine trial-merge cleanly (`git merge-tree --write-
 
 ## 10. Prototype
 
-On branch `review-6563`: `4861e8104` fixes 3a, 4 and 5, with the new test case; the commit after it
-fixes 3b, with a `forall` statement added to `DependentRangeBounds.dfy` that the PR rejects. On the
-final build: release build and IntegrationTests clean, `dotnet format whitespace` clean, 54 probes ×
-5 backends correct, the four lit tests pass the harness on six backends, and resolving all 2082
-corpus files gives the same output as `1509ab981` except for that new test line.
+Branch `review-6563-commits-v2`, four commits on `1509ab981`, +123/−116 in total:
+
+1. `fix: count a call as a range bound that can fail` (3a).
+2. `fix: try a compiled forall statement's bound variables in reverse order` (3b), +6 lines: it reuses
+   `DiscoverBestBounds_MultipleVars_AllowReordering` in the failing path. Test: a `10 - j * j` forall statement
+   added to the existing one in `DependentRangeBounds.dfy` (master 25, PR rejects, fixed 66).
+3. `chore: ...` (4, 5, and the `ChooseIntegerBounds` comment from 6).
+4. `fix: substitute a bound into a product of nonnegative factors` (the product rule above).
+
+On the final build: release build and IntegrationTests clean, `dotnet format whitespace` clean, 54 probes plus
+the 12 forall/residual shapes correct on cs/java/js/py/go, the four lit tests pass the harness on six backends,
+`Fill` verifies as on master, and all 2082 corpus files resolve, and all 1356 that translate translate to C#,
+exactly as at `1509ab981`, except for the new lines in `DependentRangeBounds.dfy` and `UnguardedRangeBounds.dfy`.
