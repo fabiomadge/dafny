@@ -250,6 +250,33 @@ VCs go from 76 to 42, 40 and 40. It lost one VC, a `JSON` well-formedness batch 
 gains sampled alone (9 of 37, in the configuration that claimed them) all hold. It costs up to four solver processes
 per open VC.
 
+**The portfolio on the public corpus.** Its other three members, replayed on the 323 queries Z3 proves and plain cvc5
+misses, on the instruction sample, and on 296 queries neither solver proves (60 CPU-seconds each; every replay in
+`portfolio-members.csv.gz`):
+
+| | plain cvc5 | portfolio |
+|---|---:|---:|
+| queries Z3 proves (24,715) that cvc5 proves | 24,392 (98.7%) | 24,495 (99.1%) |
+| programs Z3 proves completely (917) that cvc5 proves completely | 830 | 849 |
+
+The members rescue 103 of the 323 misses (the eager definitions 61, every synonym inlined 76, the comparisons inlined
+35), and prove five queries of library lemmas that Z3 does not prove in the replay (`Lemma2To64` in all three copies,
+`LemmaModAddDenominator`, `LemmaMultiplyDivideLt`). Where a member proves a query plain cvc5 proves, its work is
+plain cvc5's (0.99x to 1.01x). Work against Z3 (user instructions less startup):
+
+| design | per query, random sample (geometric mean) | random sample, total |
+|---|---:|---:|
+| plain cvc5 | 4.05x | 7.1x |
+| parallel portfolio (all four members at once) | 15.8x | 25.4x |
+| fallback portfolio (the others only when plain cvc5 gives up or runs out of time) | 4.05x | 7.1x |
+
+The fallback costs extra only where plain cvc5 does not prove the query. Plain cvc5 spends 9.9 CPU-hours on the corpus
+(Z3 1.1 in the same replay), 6.5 of them on the 389 queries that reach the 60-second limit; giving up takes it a median
+0.07 s. With the other members capped at 60, 20 or 10 seconds each, the fallback adds 148%, 53% or 28% to plain
+cvc5's CPU time and rescues 103, 92 or 88 of the 323 misses; triggering it only on time-outs saves almost nothing
+more. The parallel portfolio's wall time per VC in the whole library equals the plain run's (0.97x), and the eager
+encoding's Python rewrite costs a median 24 ms per query.
+
 Extending beta-reduction to lambdas bound to a variable (`var f := u => ...`, the form the Power lemmas use) fixes
 one more lemma under cvc5 (`LemmaModNegNeg`) and breaks two under Z3 (`LemmaPowIncreases`, `LemmaMulDistributes`).
 
@@ -277,6 +304,6 @@ Files: `summary.md` and `report.md` (main replay), `options.txt`, `instructions.
 CPU times, resource units and memory under both solvers), `soundness/` (the query and its cores),
 `proof-fixes.patch`, `beta-reduce-lambda-args.patch` and `cvc5-comparison-synonyms.patch` (all against `master`),
 `../../cvc5enc/` (the proxy and the query rewrites),
-`stdlib-vcs.csv.gz`
+`portfolio-members.csv.gz` (the portfolio members' replays on the public corpus), `stdlib-vcs.csv.gz`
 (every standard-library VC's outcome, and Z3's resource count, for the original library, the rewritten
 one and the original under the prototype, under both solvers, and the cvc5 runs of the encoding table).
