@@ -6,6 +6,9 @@
 // bound only if it lies in the range of its type.
 
 newtype u8 = x: int | 0 <= x < 0x100
+type Pos = x: u8 | 0 < x witness 1
+
+function Hundred(x: Pos): u8 { 100 / x }
 
 method Main() {
   // i * j == 1 makes 100 / j defined, but the range of i is computed for j = 0 as well.
@@ -22,4 +25,7 @@ method Main() {
     a[i] := 2;
   }
   print a[0], " ", forall i: u8 {:nowarn} | n > 0 && n - 1 <= i < n :: i == 3, "\n";
+
+  // Hundred(k) divides by k, which only the type of its parameter keeps nonzero.
+  print forall i: u8 {:nowarn} | 0 < k && i < Hundred(k) :: i < 100, "\n";
 }
