@@ -105,13 +105,45 @@ each mode's startup; `modes.csv.gz`):
 | without `--incremental` (the VC's `push` dropped) | 3.83x | 6.6x | 1 |
 | `--cbqi-mode=conflict` | 3.97x | 5.4x | 3 |
 | `--no-cbqi` | 3.78x | 3.8x | 10 |
+| `--ieval=off` | 3.85x | 6.2x | 10 |
 | `--no-cbqi --user-pat=strict --simplification=none` | 3.49x | 4.3x | 14 |
 | the same without `--incremental` | 3.43x | 3.7x | 9 |
+| the same with `--ieval=off` (and `--incremental`) | 3.33x | 3.6x | 16 |
 
 A proof lost is one the default mode finds within 60 CPU-seconds and the mode does not, in both of two replays; a few
 are queries near the limit in every mode. Conflict-based instantiation is the one large part: without it the total
-falls by about 40%, mostly on heavy queries, but a typical query by 7%, and proofs are lost. With every option that
-saves work, a typical query still costs cvc5 3.4 to 3.5 times Z3's work.
+falls by about 40%, mostly on heavy queries, but a typical query by 7%, and proofs are lost. Instantiation evaluation,
+12% of cvc5's time in the profile below, saves 5% of a typical query's work when turned off and costs the heavy
+queries more (1.08x over all 1,434). With every option that saves work, a typical query still costs cvc5 3.3 to 3.5
+times Z3's work.
+
+## Closing the gap
+
+The other candidates, measured on 200 queries of the random sample (`relevance.csv.gz`):
+
+- **Not the axioms alone.** Boogie's pruning leaves a median 86 assertions in a query; cvc5's unsat core keeps 11 of
+  them, Z3's 3. On its own core cvc5 does a quarter of its work on the full query, as much as Z3 does on the full query
+  (1.03x per query, 0.80x in total). But Z3 gains nearly as much from its own core (0.33x), and given the same
+  assertions, Z3's core, cvc5 does 2.97x Z3's work per query (9.8x in total; it still proves 197 of the 200) and is
+  never cheaper: reading the script costs it 1.8 times Z3's work, checking it 10.5 times.
+- **No filter finds the core.** Keeping only the axioms whose patterns e-matching could fire (every symbol of one
+  pattern reachable from the VC and the axioms kept so far) keeps all of them: Boogie's pruning already does as much.
+  SInE axiom selection, which spreads relevance through each axiom's rarest symbols, keeps 61% to 96% of the
+  assertions and loses 35 to 3 of the 200 proofs; at its most selective cvc5 still does 2.3 times Z3's work.
+- **Not a fixed cost.** A trivial check costs either solver 11 to 14 million instructions beyond its startup, paid
+  again after each `(reset)`, which Boogie sends between VCs; a `push` and `pop` instead cost either about 1 million.
+- **No hotspot.** cvc5 1.4.1 built with symbols (the same answers as the release binary on these queries, and within
+  5 to 8% of its instructions) has a flat profile (`profile-*.txt`, 60 queries): memory allocation 9%; building,
+  hashing and looking up terms and their attributes about 12%; the equality engine 5%; flushing the output after each
+  command 2%. Inclusively, checking takes 69% (conflict-based instantiation 18%, of it instantiation evaluation 12%),
+  the `(push 1)` before the VC 21%, preprocessing 16% (substitution 9%), CNF conversion and registering terms 10%
+  (rewriting each quantifier as it is registered 7%), and parsing 9%.
+
+So no change on Dafny's side makes cvc5 competitive: the difference is how much cvc5 does per term and per axiom,
+throughout. Re-verification could send cvc5 only the assertions an earlier proof used (Boogie can already ask a solver
+for an unsat core over named facts): on Z3's core cvc5 does 0.98x the work Z3 does on the full query (0.78x in total).
+But a VC whose proof then needs more than the old core has to be sent again in full, and Z3 gains nearly as much from
+the same pruning.
 
 ## Options
 
@@ -331,6 +363,7 @@ CPU times, resource units and memory under both solvers), `soundness/` (the quer
 `proof-fixes.patch`, `beta-reduce-lambda-args.patch` and `cvc5-comparison-synonyms.patch` (all against `master`),
 `../../cvc5enc/` (the proxy and the query rewrites),
 `portfolio-members.csv.gz` (the portfolio members' replays on the public corpus), `modes.csv.gz` (the instruction
-sample under cvc5's other modes), `stdlib-vcs.csv.gz`
+sample under cvc5's other modes), `relevance.csv.gz` (both solvers on unsat cores and filtered queries),
+`profile-self.txt`, `profile-self-core.txt` and `profile-inclusive.txt` (cvc5's profile), `stdlib-vcs.csv.gz`
 (every standard-library VC's outcome, and Z3's resource count, for the original library, the rewritten
 one and the original under the prototype, under both solvers, and the cvc5 runs of the encoding table).
