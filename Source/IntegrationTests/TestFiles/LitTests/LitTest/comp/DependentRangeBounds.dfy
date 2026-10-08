@@ -19,10 +19,12 @@ method Main() {
   var negated := set i: int, j: int {:nowarn} | 0 <= j < 5 && -j <= i < 3 :: (i, j);
   print |sums|, " ", |negated|, "\n";
 
-  // A cascade of substitutions, and a bound that a multiplication makes shrink.
+  // Cascades of substitutions, one through products of nonnegative factors, and a bound that a multiplication makes
+  // shrink.
   var cascade := set i: int, j: int, k: int {:nowarn} | 0 <= k < 3 && k <= j < 5 && 0 <= i < 10 - j :: (i, j, k);
+  var squares := set i: int, j: int, k: int {:nowarn} | 0 <= j < 3 && 0 <= k < j * j && 0 <= i < k * k :: (i, j, k);
   var scaled := set i: int, j: int, k: int {:nowarn} | 0 <= j < 5 && 0 <= i < 10 - 2 * j && 0 <= k < i :: (i, j, k);
-  print |cascade|, " ", |scaled|, "\n";
+  print |cascade|, " ", |squares|, " ", |scaled|, "\n";
 
   // Bounds under multiplications and divisions by constants, parentheses, and conversions.
   var doubled := set i: int, j: int, k: int {:nowarn} | 0 <= j < 5 && 0 <= i < 2 * j && 0 <= k < i :: (i, j, k);
@@ -50,10 +52,12 @@ method Main() {
   var x: int, y: int :| 0 <= y < 1 && 0 <= x < 10 - y && x * x == 81;
   print count, " ", x, " ", y, " ", Root(), "\n";
 
-  // 9 - j at j's bound 10 is -1, which u8 and u64 do not hold.
+  // 9 - j at j's bound 10 is -1, which u8 and u64 do not hold, and j's bound e + 1 is 256.
   var lowered := set i: u8, j: u8 {:nowarn} | j <= 9 && 9 - j <= i < 20 :: (i, j);
   var lowered64 := set i: u64, j: u64 {:nowarn} | j <= 9 && 9 - j <= i < 20 :: (i, j);
-  print |lowered|, " ", |lowered64|, "\n";
+  var e: u8 := 255;
+  var squared := set i: int, j: u8 {:nowarn} | j <= e && 0 <= i < (j as int) * (j as int) && i < 300 && i + 1 == (j as int) * (j as int) :: j;
+  print |lowered|, " ", |lowered64|, " ", |squared|, "\n";
 
   // Either of j's two upper bounds can be the tighter one.
   var huge: u64, ten: u64 := 0x100_0000_0000, 10;
