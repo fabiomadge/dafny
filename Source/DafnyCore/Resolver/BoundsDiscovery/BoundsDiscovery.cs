@@ -289,16 +289,21 @@ namespace Microsoft.Dafny {
             if ((me.Virtues & BoundedPool.PoolVirtues.Enumerable) != 0) { meBetter++; }
           }
         }
-        if (meBetter > 0) {
+        // A side that only a variable's type bounds is enumerated up to the type's limit, so where the two orders seem
+        // equally good, the one that leaves fewer such sides is better.
+        var reversedBounds = Unpermuted(orderMissyElliott, boundsMissyElliott);
+        if (meBetter > 0 || meBetter == 0 && BoundedSides(bvars, reversedBounds) > BoundedSides(bvars, bounds)) {
           // yes, this reordering seems to have been better
           order = orderMissyElliott;
-          bounds = Unpermuted(order, boundsMissyElliott);
+          bounds = reversedBounds;
         }
-        // Where neither order bounds every variable, enumerate each after the variables that its bounds mention.
-        if (bvars.Count > 2 && !bounds.TrueForAll(FiniteAndEnumerable) && DependencyOrder(bvars, expr, polarity) is { } dependencyOrder) {
+        // Where neither order bounds every side of every variable, enumerate each after the variables that its bounds
+        // mention.
+        if (bvars.Count > 2 && BoundedSides(bvars, bounds) < 2 * bvars.Count && DependencyOrder(bvars, expr, polarity) is { } dependencyOrder) {
           var dependencyBounds = Unpermuted(dependencyOrder,
             DiscoverBestBounds_MultipleVars(dependencyOrder.ConvertAll(i => bvars[i]), expr, polarity));
-          if (dependencyBounds.TrueForAll(FiniteAndEnumerable)) {
+          if (dependencyBounds.TrueForAll(FiniteAndEnumerable) &&
+              (!bounds.TrueForAll(FiniteAndEnumerable) || BoundedSides(bvars, dependencyBounds) > BoundedSides(bvars, bounds))) {
             order = dependencyOrder;
             bounds = dependencyBounds;
           }
@@ -322,10 +327,25 @@ namespace Microsoft.Dafny {
       pool != null && pool.Virtues.HasFlag(BoundedPool.PoolVirtues.Finite | BoundedPool.PoolVirtues.Enumerable);
 
     /// <summary>
+    /// Returns on how many sides "pool" bounds "bv" finitely, counting a side of a variable whose type has a limit on
+    /// both sides only if a bound other than that limit bounds it there, since it is enumerated up to the limit otherwise.
+    /// </summary>
+    static int BoundedSides(IVariable bv, BoundedPool pool) {
+      if (pool is IntBoundedPool p && TypeImpliedIntegerBounds(bv.Type) is { Lower: { } lower, Upper: { } upper }) {
+        return (p.LowerBounds.Any(b => ConstantFolder.TryFoldInteger(b) != lower) ? 1 : 0) +
+               (p.UpperBounds.Any(b => ConstantFolder.TryFoldInteger(b) != upper) ? 1 : 0);
+      }
+      return FiniteAndEnumerable(pool) ? 2 : 0;
+    }
+
+    static int BoundedSides<VT>(List<VT> bvars, List<BoundedPool> bounds) where VT : IVariable =>
+      bvars.Zip(bounds, (bv, pool) => BoundedSides(bv, pool)).Sum();
+
+    /// <summary>
     /// Returns an order of "bvars", as indices, in which each one comes after the variables that its best bounds mention
     /// when all the others come before it, keeping the given order where possible. Where each remaining variable waits for
     /// another, as when a variable needs only some of the bounds it has, one that the variables placed so far already
-    /// bound comes next, unless its type alone bounds it. Returns null if there is no such order.
+    /// bound on as many sides as all the others would comes next. Returns null if there is no such order.
     /// </summary>
     static List<int> DependencyOrder<VT>(List<VT> bvars, Expression expr, bool polarity) where VT : IVariable {
       expr = WithTypeConstraints(bvars, expr, polarity);
@@ -336,11 +356,8 @@ namespace Microsoft.Dafny {
         return BoundedPool.GetBest(DiscoverAllBounds_Aux_SingleVar(ordered.ConvertAll(k => bvars[k]), before.Count, expr, polarity,
           noKnownBounds, out _));
       }
-      bool BoundedByType(int i) {
-        var (lower, upper) = TypeImpliedIntegerBounds(bvars[i].Type);
-        return lower != null && upper != null;
-      }
       var dependencies = new List<List<int>>();
+      var sides = new List<int>();
       for (var i = 0; i < bvars.Count; i++) {
         var others = Enumerable.Range(0, bvars.Count).Where(k => k != i).ToList();
         var pool = BestBounds(i, others);
@@ -349,13 +366,14 @@ namespace Microsoft.Dafny {
         }
         var mentioned = new HashSet<IVariable>(PoolExpressions(pool).SelectMany(FreeVariables));
         dependencies.Add(others.Where(k => mentioned.Contains(bvars[k])).ToList());
+        sides.Add(BoundedSides(bvars[i], pool));
       }
       var order = new List<int>();
       var unplaced = Enumerable.Range(0, bvars.Count).ToList();
       while (unplaced.Count != 0) {
         var next = unplaced.FirstOrDefault(i => dependencies[i].All(order.Contains), -1);
         if (next < 0) {
-          next = unplaced.FirstOrDefault(i => !BoundedByType(i) && FiniteAndEnumerable(BestBounds(i, order)), -1);
+          next = unplaced.FirstOrDefault(i => BoundedSides(bvars[i], BestBounds(i, order)) == sides[i], -1);
         }
         if (next < 0) {
           return null;

@@ -6,6 +6,7 @@
 
 newtype u8 = x: int | 0 <= x < 0x100
 newtype u64 = x: int | 0 <= x < 0x1_0000_0000_0000_0000
+newtype i32 = x: int | -0x8000_0000 <= x < 0x8000_0000
 type uint32 = x: int | 0 <= x < 0x1_0000_0000
 
 method Main() {
@@ -78,6 +79,13 @@ method Main() {
   var e: u8 := 255;
   var squared := set i: int, j: u8 {:nowarn} | j <= e && 0 <= i < (j as int) * (j as int) && i < 300 && i + 1 == (j as int) * (j as int) :: j;
   print |lowered|, " ", |lowered64|, " ", |squared|, "\n";
+
+  // Native variables that only another order bounds by more than their type's limits, up to which they would be
+  // enumerated otherwise: the reverse order, a cascade, and a b and c that bound each other.
+  var modulo := set i: u64, j: u64 {:nowarn} | j < 10 && i < j % 3 + 1 :: (i, j);
+  var moduloCascade := set i: u64, j: u64, k: u64 {:nowarn} | j < 3 && k < j % 3 + 1 && i < k * k :: (i, j, k);
+  var signed := set c: i32, b: i32, a: i32 {:nowarn} | 0 <= b < 3 && 3 - b <= c < b * b + 1 && c <= a < c * c :: (a, b, c);
+  print |modulo|, " ", |moduloCascade|, " ", |signed|, "\n";
 
   // Either of j's two upper bounds can be the tighter one.
   var huge: u64, ten: u64 := 0x100_0000_0000, 10;
