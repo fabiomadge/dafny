@@ -31,7 +31,7 @@ module Std.Strings {
 
     lemma CharsConsistent()
       ensures forall c <- chars :: c in charToDigit && chars[charToDigit[c]] == c
-      ensures forall d: nat | d < |chars| :: chars[d] in charToDigit && charToDigit[chars[d]] == d
+      ensures forall d: nat | d < |chars| :: charToDigit[chars[d]] == d
 
     function BASE(): nat {
       base

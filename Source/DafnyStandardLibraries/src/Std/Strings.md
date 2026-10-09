@@ -28,5 +28,4 @@ module NumberRoundTrips {
 }
 ```
 
-Every refinement of `ParametricConversion`, such as `HexConversion`, has the same lemmas;
-there, `LemmaIntRoundTrip` takes the sign character, which must not be a digit.
+Every refinement of `ParametricConversion`, such as `HexConversion`, has the same lemmas.
