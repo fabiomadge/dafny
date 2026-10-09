@@ -181,14 +181,51 @@ They prove 67 queries the release binary does not and lose 114, half of them by 
 alone accounts for about half of the losses (`configs-*` in `speedups.csv.gz`). `--enum-inst` would add proofs at no
 cost, but it is unsound here (below).
 
-The rest is cvc5's to change. On a typical query it never instantiates 40 of the 65 axioms, and without them it does
-half the work (0.50x per query, 199 of 200 still proved; 0.51x with `--no-cbqi` on both sides; `unused-axioms-*` in
-`relevance.csv.gz`). Its timers on 60 queries put the difference in preprocessing (30% of it: substitution and
-non-clausal simplification, which visit every axiom), CNF conversion and registering terms (17%), and instantiation
-(18%): cvc5 pays for every axiom up front, whether or not it ever uses it. Preprocessing and registering an axiom only
-once its patterns can match would remove most of that. Dafny cannot decide it for cvc5: a simulation of e-matching
-over the query's terms (`../../cvc5enc/ematch.py`) drops 64% of the axioms but loses 15% of the proofs on the 1,000
-queries, and Z3 gains as much from the same filter (0.69x).
+**Axioms held back until they can match.** On a typical query cvc5 never instantiates 40 of the 65 axioms, and
+without them it does half the work (0.50x per query, 199 of 200 still proved; 0.51x with `--no-cbqi` on both sides;
+`unused-axioms-*` in `relevance.csv.gz`). Its timers on 60 queries put the difference in preprocessing (30% of it:
+substitution and non-clausal simplification, which visit every axiom), CNF conversion and registering terms (17%), and
+instantiation (18%): cvc5 pays for every axiom up front. Dafny cannot tell which axioms will be used: a simulation of
+e-matching over the query's terms (`../../cvc5enc/ematch.py`) drops 64% of the axioms but loses 15% of the proofs on
+the 1,000 queries, and Z3 gains as much from the same filter (0.69x). cvc5 can: `cvc5-lazy-axioms.patch` (against
+cvc5 1.4.1, with the flush change; on with `CVC5_LAZY_AXIOMS=1`) holds back each input axiom asserted before the first
+`push` whose bound variables are all of uninterpreted sorts and whose patterns are applications of uninterpreted
+functions, and releases it as a lemma, with the top-level substitutions applied, once some ground term exists for every
+function of one of its patterns. After 20 full-effort checks, and before it answers, it releases the rest, so a `sat`
+or `unknown` is about the whole input; an axiom held back only weakens the problem, so an `unsat` stays sound. On the
+1,000 random queries:
+
+| cvc5 | instructions | cycles | vs Z3 per query: instructions | cycles | proofs lost |
+|---|---:|---:|---:|---:|---:|
+| built from source, with jemalloc | 0.88x | 0.84x | 3.56x | 3.93x | 0 |
+| ... holding axioms back | 0.71x | | 2.87x | | 0 |
+| ... and profile-guided (trained with axioms held back) | 0.69x | 0.62x | 2.79x | 2.91x | 0 |
+
+Holding back axioms over any sort does more (0.67x), but over the corpus six queries the release binary proves in
+about a second, under every seed, then run out of time. Keeping axioms with arithmetic or Boolean variables in place
+restores five: other strategies instantiate those without a trigger match (bisecting one query found Dafny's
+`INTERNAL_sub_boogie(x, y) == x - y`); in the sixth, holding back a function's definition axiom over `T@U`, whose
+pattern terms occur in the VC, changes the search enough to lose a proof the release binary finds in 0.13 s. Other
+variants did worse: releasing
+everything at the first last-call round pre-empted the modules that run there and prove many queries; returning after
+a release starved instantiation where axioms trickled out; checking that each axiom still is one quantifier after
+rewriting costs a tenth of the gain (it rewrites the axioms that stay held back); and testing one level of each pattern
+against the equality engine saves 4% more but runs out of time on about one query in 1,000. Replayed over the public
+corpus next to the release binary, query by query:
+
+| | release | the build with axioms held back |
+|---|---:|---:|
+| queries Z3 proves (24,715) | 24,387 (98.7%) | 24,399 (98.7%) |
+| programs Z3 proves completely (917) | 830 | 834 |
+| work on the 24,412 queries both prove, per query (instructions) | 1 | 0.69x |
+| CPU time | 9.8 h | 9.1 h |
+
+It proves 25 queries the release binary does not and runs out of time on 13 it proves: ten of those take the
+release binary 34 to 52 s, close to the limit, and three take it 0.1, 0.3 and 8.8 s (the `LittleEndianNat` lemma
+above, `Classics.dfy`'s `AdditiveFactorial`, `PriorityQueue.dfy`'s `SiftDown`). CPU time falls less than the work,
+since the time-outs take two thirds of it. So cvc5 itself can be made to do two thirds of its work without losing
+proofs: 2.8 times Z3's on a typical query, from 4.05. The rest of the gap is in how cvc5 builds, stores and processes
+terms (allocation, hashing, attributes, the equality engine), spread too thinly to remove by one change.
 
 ## Options
 
@@ -438,7 +475,8 @@ CPU times, resource units and memory under both solvers), `soundness/` (the quer
 `portfolio-members.csv.gz` (the portfolio members' replays on the public corpus), `modes.csv.gz` (the instruction
 sample under cvc5's other modes), `relevance.csv.gz` (both solvers on unsat cores and filtered queries),
 `profile-self.txt`, `profile-self-core.txt` and `profile-inclusive.txt` (cvc5's profile), `speedups.csv.gz` (cvc5's
-builds and option sets on the samples and the corpus), `cvc5-flush-when-waited-on.patch` (against cvc5 1.4.1),
+builds and option sets on the samples and the corpus), `cvc5-flush-when-waited-on.patch` and
+`cvc5-lazy-axioms.patch` (against cvc5 1.4.1; the second includes the first),
 `stdlib-vcs.csv.gz`
 (every standard-library VC's outcome, and Z3's resource count, for the original library, the rewritten
 one and the original under the prototype, under both solvers, and the cvc5 runs of the encoding table).

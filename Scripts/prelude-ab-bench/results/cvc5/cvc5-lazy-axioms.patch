@@ -1,0 +1,423 @@
+--- a/src/parser/commands.cpp
++++ b/src/parser/commands.cpp
+@@ -142,8 +142,13 @@
+   {
+     printResult(solver, out);
+   }
+-  // always flush the output
+-  out << std::flush;
++  // flush the output when a client may be waiting on it
++  const std::string name = getCommandName();
++  if (!ok() || name.rfind("check-sat", 0) == 0 || name.rfind("get-", 0) == 0
++      || name == "echo" || solver->getOption("print-success") == "true")
++  {
++    out << std::flush;
++  }
+ }
+ 
+ std::string Cmd::toString() const
+--- a/src/smt/env.h
++++ b/src/smt/env.h
+@@ -138,6 +138,8 @@
+ 
+   /** Get a reference to the top-level substitution map */
+   theory::TrustSubstitutionMap& getTopLevelSubstitutions();
++  /** Input axioms held back until their patterns can match (CVC5_LAZY_AXIOMS). */
++  std::vector<Node>& getLazyAxioms() { return d_lazyAxioms; }
+ 
+   /** Get the options object (const version only) owned by this Env. */
+   const Options& getOptions() const;
+@@ -379,6 +381,8 @@
+   std::unique_ptr<theory::Evaluator> d_eval;
+   /** The top level substitutions */
+   std::unique_ptr<theory::TrustSubstitutionMap> d_topLevelSubs;
++  /** Input axioms held back until their patterns can match. */
++  std::vector<Node> d_lazyAxioms;
+   /**
+    * The logic we're in. This logic may be an extension of the logic set by the
+    * user, which may be different from the user-provided logic due to the
+--- a/src/smt/solver_engine.cpp
++++ b/src/smt/solver_engine.cpp
+@@ -11,6 +11,9 @@
+  */
+ 
+ #include "smt/solver_engine.h"
++
++#include <cstdlib>
++#include <cstring>
+ 
+ #include "base/check.h"
+ #include "base/exception.h"
+@@ -983,6 +986,67 @@
+   return n;
+ }
+ 
++namespace {
++// CVC5_LAZY_AXIOMS: a quantified input assertion whose every pattern is a list of
++// applications of uninterpreted functions can wait until its patterns can match.
++bool lazyAxiomsEnabled()
++{
++  static const bool on = std::getenv("CVC5_LAZY_AXIOMS") != nullptr;
++  return on;
++}
++bool isLazyAxiomCandidate(const Node& f)
++{
++  if (f.getKind() != Kind::FORALL || f.getNumChildren() != 3)
++  {
++    return false;
++  }
++  // only quantifiers over uninterpreted sorts: other strategies (such as
++  // counterexample-guided instantiation over arithmetic) instantiate the others
++  // without a trigger match, so those must not wait for one
++  static const bool anySort = std::getenv("CVC5_LAZY_ANY_SORT") != nullptr;
++  for (const Node& v : f[0])
++  {
++    if (!anySort && !v.getType().isUninterpretedSort())
++    {
++      return false;
++    }
++  }
++  bool hasPattern = false;
++  for (const Node& p : f[2])
++  {
++    if (p.getKind() != Kind::INST_PATTERN)
++    {
++      continue;
++    }
++    hasPattern = true;
++    for (const Node& t : p)
++    {
++      if (t.getKind() != Kind::APPLY_UF)
++      {
++        return false;
++      }
++    }
++  }
++  return hasPattern;
++}
++// debugging: CVC5_LAZY_AXIOMS_EXEMPT=a-b never holds back the candidates
++// numbered a to b-1 (in assertion order)
++bool lazyAxiomExempt()
++{
++  static long count = 0;
++  static const char* ex = std::getenv("CVC5_LAZY_AXIOMS_EXEMPT");
++  long n = count++;
++  if (ex == nullptr)
++  {
++    return false;
++  }
++  long a = std::strtol(ex, nullptr, 10);
++  const char* dash = std::strchr(ex, '-');
++  long b = dash != nullptr ? std::strtol(dash + 1, nullptr, 10) : a + 1;
++  return a <= n && n < b;
++}
++}  // namespace
++
+ void SolverEngine::assertFormulaInternal(const Node& formula)
+ {
+   // as an optimization we do not check whether formula is well-formed here, and
+@@ -991,6 +1055,18 @@
+   // note we could throw a warning here if formula and f are different,
+   // but currently don't.
+   Node f = eliminateSubtypesForProof(formula);
++  // CVC5_LAZY_REWRITE: hold back only what is still one patterned quantifier
++  // after rewriting (the rewriter can turn an axiom into ground facts); off by
++  // default, as rewriting every candidate up front costs a tenth of the gain
++  if (lazyAxiomsEnabled() && !d_isInternalSubsolver && getNumUserLevels() == 0
++      && isLazyAxiomCandidate(f)
++      && (std::getenv("CVC5_LAZY_REWRITE") == nullptr
++          || isLazyAxiomCandidate(d_env->getRewriter()->rewrite(f)))
++      && !lazyAxiomExempt())
++  {
++    d_env->getLazyAxioms().push_back(f);
++    return;
++  }
+   d_smtSolver->getAssertions().assertFormula(f);
+ }
+ 
+--- a/src/theory/inference_id.h
++++ b/src/theory/inference_id.h
+@@ -491,6 +491,8 @@
+   QUANTIFIERS_SKOLEMIZE,
+   // Q1 <=> Q2, where Q1 and Q2 are alpha equivalent
+   QUANTIFIERS_REDUCE_ALPHA_EQ,
++  // an input axiom held back until its patterns could match
++  QUANTIFIERS_LAZY_AXIOM,
+   // a higher-order match predicate lemma
+   QUANTIFIERS_HO_MATCH_PRED,
+   // purification of non-variable higher-order function
+--- a/src/theory/inference_id.cpp
++++ b/src/theory/inference_id.cpp
+@@ -354,6 +354,7 @@
+     case InferenceId::QUANTIFIERS_SKOLEMIZE: return "QUANTIFIERS_SKOLEMIZE";
+     case InferenceId::QUANTIFIERS_REDUCE_ALPHA_EQ:
+       return "QUANTIFIERS_REDUCE_ALPHA_EQ";
++    case InferenceId::QUANTIFIERS_LAZY_AXIOM: return "QUANTIFIERS_LAZY_AXIOM";
+     case InferenceId::QUANTIFIERS_HO_MATCH_PRED:
+       return "QUANTIFIERS_HO_MATCH_PRED";
+     case InferenceId::QUANTIFIERS_HO_PURIFY: return "QUANTIFIERS_HO_PURIFY";
+--- a/src/theory/quantifiers_engine.h
++++ b/src/theory/quantifiers_engine.h
+@@ -16,6 +16,7 @@
+ #define CVC5__THEORY__QUANTIFIERS_ENGINE_H
+ 
+ #include <map>
++#include <unordered_set>
+ #include <unordered_map>
+ 
+ #include "context/cdhashmap.h"
+@@ -157,6 +158,14 @@
+    * @param setModelUnsoundId the incomplete id if e is last call and we should
+    * answer "unknown" instead of "sat".
+    */
++  /** release held-back input axioms whose patterns can match; true if a lemma was sent */
++  bool activateLazyAxioms(Theory::Effort e);
++  /** release all held-back input axioms; true if any was */
++  bool releaseAllLazyAxioms();
++  /** one level of e-matching for a held-back axiom's pattern term t with operator op */
++  bool lazyPatternTermReady(const Node& t,
++                            const Node& op,
++                            std::map<Node, std::unordered_set<Node>>& reps);
+   void checkInternal(Theory::Effort e, IncompleteId& setModelUnsoundId);
+   /**
+    * Return true if we should recheck
+@@ -219,6 +228,12 @@
+   std::map<Node, bool> d_quants;
+   /** quantifiers pre-registered */
+   NodeSet d_quants_prereg;
++  /** the held-back input axioms released in this user context */
++  NodeSet d_lazyActive;
++  /** calls of activateLazyAxioms so far */
++  size_t d_lazyRounds = 0;
++  /** full-effort checks with axioms held back */
++  size_t d_lazyChecks = 0;
+   /** quantifiers reduced */
+   BoolMap d_quants_red;
+   /** Number of rounds we have instantiated */
+--- a/src/theory/quantifiers_engine.cpp
++++ b/src/theory/quantifiers_engine.cpp
+@@ -11,6 +11,14 @@
+  */
+ 
+ #include "theory/quantifiers_engine.h"
++
++#include "expr/node_algorithm.h"
++
++#include <cstdio>
++#include <unordered_set>
++#include <map>
++#include <sstream>
++#include <cstdlib>
+ 
+ #include "options/base_options.h"
+ #include "options/printer_options.h"
+@@ -58,6 +66,7 @@
+       d_treg(tr),
+       d_model(nullptr),
+       d_quants_prereg(userContext()),
++      d_lazyActive(userContext()),
+       d_quants_red(userContext()),
+       d_numInstRoundsLemma(0)
+ {
+@@ -188,6 +197,14 @@
+ {
+   IncompleteId setModelUnsoundId = IncompleteId::NONE;
+   checkInternal(e, setModelUnsoundId);
++  // held-back input axioms: before answering, release the rest, so that the
++  // answer is about the whole input
++  if (e == Theory::EFFORT_LAST_CALL && !d_qstate.getValuation().needCheck()
++      && !d_qim.hasSentLemma() && releaseAllLazyAxioms())
++  {
++    d_qim.clearPending();
++    return;
++  }
+   // SAT case
+   if (e == Theory::EFFORT_LAST_CALL && !d_qstate.getValuation().needCheck())
+   {
+@@ -261,6 +278,172 @@
+     return recheck;
+   }
+   return false;
++}
++
++bool QuantifiersEngine::releaseAllLazyAxioms()
++{
++  size_t sent = 0;
++  for (const Node& q : d_env.getLazyAxioms())
++  {
++    if (d_lazyActive.find(q) == d_lazyActive.end())
++    {
++      d_lazyActive.insert(q);
++      d_qim.lemma(d_env.getTopLevelSubstitutions().apply(q),
++                  InferenceId::QUANTIFIERS_LAZY_AXIOM);
++      sent++;
++    }
++  }
++  if (sent > 0 && std::getenv("CVC5_LAZY_AXIOMS_DEBUG") != nullptr)
++  {
++    std::fprintf(stderr, "lazy: released the remaining %zu before answering\n", sent);
++  }
++  return sent > 0;
++}
++
++bool QuantifiersEngine::lazyPatternTermReady(
++    const Node& t, const Node& op, std::map<Node, std::unordered_set<Node>>& reps)
++{
++  TermDb* tdb = d_treg.getTermDatabase();
++  eq::EqualityEngine* ee = d_qstate.getEqualityEngine();
++  auto repsOf = [&](const Node& f) -> const std::unordered_set<Node>& {
++    auto it = reps.find(f);
++    if (it != reps.end())
++    {
++      return it->second;
++    }
++    std::unordered_set<Node>& r = reps[f];
++    for (size_t i = 0, n = tdb->getNumGroundTerms(f); i < n; i++)
++    {
++      Node g = tdb->getGroundTerm(f, i);
++      if (ee->hasTerm(g))
++      {
++        r.insert(ee->getRepresentative(g));
++      }
++    }
++    return r;
++  };
++  for (size_t i = 0, n = tdb->getNumGroundTerms(op); i < n; i++)
++  {
++    Node g = tdb->getGroundTerm(op, i);
++    if (g.getNumChildren() != t.getNumChildren())
++    {
++      continue;
++    }
++    bool ok = true;
++    for (size_t j = 0, m = t.getNumChildren(); ok && j < m; j++)
++    {
++      const Node& pa = t[j];
++      const Node& ga = g[j];
++      if (pa.getKind() == Kind::BOUND_VARIABLE)
++      {
++        continue;
++      }
++      if (pa.getKind() == Kind::APPLY_UF)
++      {
++        Node h = tdb->getMatchOperator(pa);
++        if (h.isNull())
++        {
++          continue;
++        }
++        const std::unordered_set<Node>& r = repsOf(h);
++        ok = ee->hasTerm(ga) && r.find(ee->getRepresentative(ga)) != r.end();
++      }
++      else if (!expr::hasBoundVar(pa))
++      {
++        ok = ee->hasTerm(pa) && ee->hasTerm(ga)
++             && ee->getRepresentative(pa) == ee->getRepresentative(ga);
++      }
++    }
++    if (ok)
++    {
++      return true;
++    }
++  }
++  return false;
++}
++
++bool QuantifiersEngine::activateLazyAxioms(Theory::Effort e)
++{
++  std::vector<Node>& lazy = d_env.getLazyAxioms();
++  if (lazy.empty())
++  {
++    return false;
++  }
++  // fairness: after this many full-effort checks, release whatever is still
++  // held back, so that a search that needs it does not run on without it
++  static const char* rounds = std::getenv("CVC5_LAZY_AXIOMS_ROUNDS");
++  static const size_t maxRounds =
++      rounds != nullptr ? std::strtoul(rounds, nullptr, 10) : 20;
++  if (++d_lazyChecks > maxRounds)
++  {
++    return releaseAllLazyAxioms();
++  }
++  TermDb* tdb = d_treg.getTermDatabase();
++  std::vector<Node> fire;
++  static const char* mode = std::getenv("CVC5_LAZY_AXIOMS");
++  // one level of matching for the first rounds (mode 2), then only the
++  // operators: an axiom some other strategy needs must not wait forever
++  const bool deep = mode != nullptr && mode[0] == '2' && d_lazyRounds++ < 8;
++  // representatives of the classes of each function's ground terms, computed on demand for this call
++  std::map<Node, std::unordered_set<Node>> reps;
++  for (const Node& q : lazy)
++  {
++    if (d_lazyActive.find(q) != d_lazyActive.end())
++    {
++      continue;
++    }
++    bool ready = false;
++    for (const Node& p : q[2])
++    {
++      if (p.getKind() != Kind::INST_PATTERN)
++      {
++        continue;
++      }
++      bool all = true;
++      for (const Node& t : p)
++      {
++        Node op = tdb->getMatchOperator(t);
++        if (op.isNull() || tdb->getNumGroundTerms(op) == 0
++            || (deep && !lazyPatternTermReady(t, op, reps)))
++        {
++          all = false;
++          break;
++        }
++      }
++      if (all)
++      {
++        ready = true;
++        break;
++      }
++    }
++    if (ready)
++    {
++      fire.push_back(q);
++    }
++  }
++  if (std::getenv("CVC5_LAZY_AXIOMS_DEBUG") != nullptr)
++  {
++    size_t active = 0;
++    for (const Node& q : lazy)
++    {
++      active += d_lazyActive.find(q) != d_lazyActive.end() ? 1 : 0;
++    }
++    std::fprintf(stderr, "lazy: effort %d release %zu (%s) active %zu of %zu\n",
++                 static_cast<int>(e), fire.size(),
++                 "ready",
++                 active, lazy.size());
++  }
++  if (fire.empty())
++  {
++    return false;
++  }
++  for (const Node& q : fire)
++  {
++    d_lazyActive.insert(q);
++    d_qim.lemma(d_env.getTopLevelSubstitutions().apply(q),
++                InferenceId::QUANTIFIERS_LAZY_AXIOM);
++  }
++  return true;
+ }
+ 
+ void QuantifiersEngine::checkInternal(Theory::Effort e,
+@@ -299,6 +482,13 @@
+     // was not conflicting. This should never happen, but in production mode, we
+     // proceed with the check.
+     DebugUnhandled();
++  }
++  // release held-back input axioms whose patterns can now match; the round
++  // goes on (d_qim.reset() below forgets these lemmas), so instantiation is
++  // not starved while axioms trickle out
++  if (e >= Theory::EFFORT_FULL)
++  {
++    activateLazyAxioms(e);
+   }
+   bool needsCheck = d_qim.hasPendingLemma();
+   QuantifiersModule::QEffort needsModelE = QuantifiersModule::QEFFORT_NONE;
