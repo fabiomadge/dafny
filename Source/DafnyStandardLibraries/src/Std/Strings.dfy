@@ -123,7 +123,7 @@ module Std.Strings {
 
     lemma LemmaOfIntToInt(n: int, minus: Char)
       requires DigitCharsConsistent()
-      requires minus !in charToDigit
+      requires !IsDigitChar(minus)
       ensures OfInt(n, minus) != [minus]
       ensures ToInt(OfInt(n, minus), minus) == n
     {
@@ -244,7 +244,7 @@ module Std.Strings {
     }
 
     lemma LemmaIntRoundTrip(n: int, minus: Char)
-      requires minus !in charToDigit
+      requires !IsDigitChar(minus)
       ensures OfInt(n, minus) != [minus]
       ensures ToInt(OfInt(n, minus), minus) == n
     {
@@ -278,12 +278,13 @@ module Std.Strings {
       LemmaOfNatToNat(n);
     }
 
-    lemma LemmaIntRoundTrip(n: int)
-      ensures OfInt(n, '-') != ['-']
-      ensures ToInt(OfInt(n, '-'), '-') == n
+    lemma LemmaIntRoundTrip(n: int, minus: Char)
+      requires !IsDigitChar(minus)
+      ensures OfInt(n, minus) != [minus]
+      ensures ToInt(OfInt(n, minus), minus) == n
     {
       DigitsConsistent();
-      LemmaOfIntToInt(n, '-');
+      LemmaOfIntToInt(n, minus);
     }
   }
 
@@ -342,7 +343,7 @@ module Std.Strings {
     ensures OfInt(n) != "-"
     ensures ToInt(OfInt(n)) == n
   {
-    DecimalConversion.LemmaIntRoundTrip(n);
+    DecimalConversion.LemmaIntRoundTrip(n, '-');
   }
 
   /**

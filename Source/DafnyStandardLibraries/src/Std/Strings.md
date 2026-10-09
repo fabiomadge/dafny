@@ -28,7 +28,6 @@ module NumberRoundTrips {
 }
 ```
 
-`DecimalConversion` and `HexConversion` have the same lemmas; `HexConversion.LemmaIntRoundTrip` takes
-the sign character, which must not be a digit. Other refinements of `ParametricConversion` get them as
-`LemmaOfNatToNat` and `LemmaOfIntToInt` by proving `DigitCharsConsistent()`, which, unlike
+`DecimalConversion` and `HexConversion` have the same lemmas. Other refinements of `ParametricConversion`
+get them as `LemmaOfNatToNat` and `LemmaOfIntToInt` by proving `DigitCharsConsistent()`, which, unlike
 `CharsConsistent`, rules out repeated `chars`.
