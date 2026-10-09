@@ -38,6 +38,24 @@ method Main() {
   var optional := set i: int, j: int, k: int {:nowarn} | 0 <= j < 4 && 0 <= k < (j - 1) * (j - 1) + 1 && 0 <= i < k * k && k < i + 50 :: (i, j, k);
   print |dips|, " ", |optional|, "\n";
 
+  // The same through bounds of other kinds: a sequence's length, membership in a set and in a sequence, and an
+  // equality.
+  var S := {[1, 2], [3], []};
+  var lengths := set s: seq<int>, i: int, j: int {:nowarn} | s in S && 0 <= j < |s| && 0 <= i < s[j] :: (s, i, j);
+  var SS := {{1, 2}, {3}};
+  var inSets := set x: int, i: int, s: set<int> {:nowarn} | s in SS && x in s && 0 <= i < x :: (i, x);
+  var Q := {[1, 3]};
+  var inSeqs := set x: int, i: int, q: seq<int> {:nowarn} | q in Q && x in q && 0 <= i < x :: (i, x);
+  var equal := set k: int, i: int, j: int {:nowarn} | 0 <= j < 3 && k == 2 * j + 1 && 0 <= i < k :: (i, j, k);
+  print |lengths|, " ", |inSets|, " ", |inSeqs|, " ", |equal|, "\n";
+  var MS := {multiset{2}};
+  var inMultisets := set x: int, i: int, m: multiset<int> {:nowarn} | m in MS && x in m && 0 <= i < x :: (i, x);
+  var M := {map[1 := 0, 4 := 0]};
+  var inMaps := set x: int, i: int, m: map<int, int> {:nowarn} | m in M && x in m && 0 <= i < x :: (i, x);
+  var TT := {{1, 2}};
+  var subsets := set s: set<int>, i: int, t: set<int> {:nowarn} | t in TT && s <= t && 0 <= i < |s| :: (s, i);
+  print |inMultisets|, " ", |inMaps|, " ", |subsets|, "\n";
+
   // The compiler gets copies of quantifiers that the trigger generator splits, and of a binding guard whose matching
   // loop it rewrites with a variable for j - 1, which have to enumerate j first too.
   var splitForall := set x: int {:nowarn} | 0 <= x < 2 && forall i: int, j: int | 0 <= j < 3 && 0 <= i < (j - 1) * (j - 1) + 1 :: Small(i) && Low(j);

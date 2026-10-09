@@ -391,7 +391,6 @@ namespace Microsoft.Dafny {
       MapBoundedPool p => [p.Map],
       SeqBoundedPool p => [p.Seq],
       SubSetBoundedPool p => [p.UpperBound],
-      SuperSetBoundedPool p => [p.LowerBound],
       ExactBoundedPool p => [p.E],
       _ => []
     };
