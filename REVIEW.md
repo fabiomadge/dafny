@@ -191,7 +191,37 @@ Fix (prototyped on both branches): leave the bounds as they are. They are compil
 fewer. Both forms and the `exists` print the right answer, and a binding-guard test with this bound fails without
 the fix.
 
-### 3d. Probes that came out clean
+### 3d. The #5897 fix stops where a bound needs another order
+
+```dafny
+newtype u64 = x: int | 0 <= x < 0x1_0000_0000_0000_0000
+
+method Main() {
+  print |set i: u64, j: u64 | j < 10 && i < j % 3 + 1 :: (i, j)|, "\n";  // 19
+}
+```
+
+This never finishes, on master or on the PR. With `j` declared first, the PR finishes it. In the declared order,
+`i`'s bound `j % 3 + 1` mentions a later variable and cannot be substituted, so only the type bounds `i`: from 0 to
+2^64. A native type bounds every variable in every order. So the reverse order never seems better to the legacy
+comparison, and the dependency order is tried only where some variable is unbounded. A random batch of 120 two- and
+three-variable comprehensions over `u64` and `i32` measures the gap: master finishes 9 of them, the PR 59, and the
+root prototype before this fix 59. None gives a wrong answer.
+
+Fix (root commit 8): count the sides of each variable that a bound other than its type's limit bounds, then:
+
+- where the legacy comparison ties, the order with more such sides wins;
+- the dependency order is also tried where a side has only its type's limit, and taken where it bounds more sides;
+- its cycle break places a variable once the placed ones bound it on as many sides as all the others would,
+  instead of never placing a variable of a bounded type.
+
+With the fix, 89 of the 120 finish, never fewer than before, with no wrong answers. The rest need a bound that no
+order gives, as when two variables bound each other only through `%`. The fix changes no verdict or output among
+the 1040 earlier fuzz programs. It changes the C# of no corpus program except `DependentRangeBounds.dfy`, whose
+three new lines each hang without it, and each of its 6 mutants hangs the test. An `int` or `nat` variable counts
+both sides whenever it is bounded at all, so for those every choice is the same as before.
+
+### 3e. Probes that came out clean
 
 54 range probes × 5 backends: master fails 17, the PR fails 0. Also no regression from a null-field
 receiver (`b != null && i < b.v`), a `real`-to-`int` bound, or a subset-typed parameter reached
@@ -317,9 +347,9 @@ PRs touch the same files; all nine trial-merge cleanly (`git merge-tree --write-
   substituted bounds, and subsumes commit 2 and the non-monotone residual. It does not subsume the product rule,
   as I first claimed: a cycle that only a substitution through a product breaks still needs it (measured in 9c).
 
-## 9c. Root-cause prototype (branch `review-6563-root`, head `2ee608b0d`)
+## 9c. Root-cause prototype (branch `review-6563-root`, head `a1b000e9e`)
 
-Seven commits on `1509ab981`, +294/−159 on the PR in total (+249/−155 outside the tests):
+Eight commits on `1509ab981`, +322/−160 on the PR in total (+268/−156 outside the tests):
 
 1. `fix: count a call as a range bound that can fail` (3a).
 2. `chore: delete the unused SubstituteBound, keep one list of bounds per side, and fix whitespace` (4, 5).
@@ -329,6 +359,7 @@ Seven commits on `1509ab981`, +294/−159 on the PR in total (+249/−155 outsid
 6. `fix: keep the bounds of a quantifier whose matching loop the trigger generator rewrites` (3c).
 7. `fix: substitute a bound into a product of nonnegative factors` (3b's product rule, with v2 commit 5's
    correction built in).
+8. `fix: prefer an order that bounds a native variable by more than its type` (3d).
 
 - `DiscoverBestBounds_MultipleVars_AllowReordering` no longer reverses `BoundVars`. Bounds stay aligned with the
   declared variables. An `EnumerationOrder` (indices) is recorded on comprehensions and forall statements, and only
@@ -339,8 +370,8 @@ Seven commits on `1509ab981`, +294/−159 on the PR in total (+249/−155 outsid
   as before. Forall statements now get that choice too. Only where neither order bounds every variable,
   `DependencyOrder` enumerates each variable after those its best bounds mention. Where every remaining variable
   waits for another, as when `k` needs only one of its bounds `k < (j - 1) * (j - 1) + 1` and `k < i + 50`, a
-  variable that the ones placed so far already bound comes next. A variable bounded only by its type is not
-  placed that way, since that would enumerate the whole type.
+  variable comes next once the ones placed so far bound it on as many sides as all the others would. That rules
+  out placing a variable that only its type would bound, which would enumerate the whole type.
 - The product rule still earns its place here. The dependency order no longer needs it for shapes like
   `k < j * j && i < k * k`, but it breaks cycles that no order breaks, like `0 <= k <= j < (i - 1) * (i - 1) + 1 &&
   k * k <= i < 3` (master 6, by luck; the PR rejects it). It has a cost: `0 <= j < 3 && 0 <= i < j * j` now
@@ -358,6 +389,8 @@ Seven commits on `1509ab981`, +294/−159 on the PR in total (+249/−155 outsid
     | seed 23 (160) | 98/19/43 | 128/0/32 | 135/0/25 | 140/0/20 | | |
     | extended, seed 41 (200) | 119/31/50 | 139/0/61 | 159/0/41 | 165/0/35 | 146/**2**/52 | 148/0/52 |
     | extended, seed 59 (200) | 109/33/58 | 140/0/60 | 149/0/51 | 156/0/44 | 152/0/48 | 152/0/48 |
+    | quantifiers and forall statements, seed 71 (200) | 146/11/43 | 159/0/41 | | 179/0/21 | | 176/0/24 |
+    | native `u64`/`i32`, seed 83 (120), finished / hung | 9/111 | 59/61 | | 89/31 (commit 7: 59/61) | | |
 
     A u8 batch (120) agrees with master on every program. The head does worse than another build only on 8 of the
     720 programs, which master gets right by luck. Five go through a link that is not monotonic over the
@@ -365,6 +398,11 @@ Seven commits on `1509ab981`, +294/−159 on the PR in total (+249/−155 outsid
     facts the rule does not track: another variable's bound (`c * a` with `1 <= a`), or a square (`low * low`).
     Tracking those in `IsNonnegative` is the next step if that residual matters;
   - the four lit tests pass the harness on six backends; `dotnet format whitespace` is clean;
+  - Rust follows the order, although its harness leg is non-blocking. Its generated code for every reordered
+    construct (reversed and dependency orders, the product-rule cycle, quantifiers, a map, a split quantifier, a
+    forall statement) enumerates in the recorded order. A probe of all of them except the forall statement prints
+    the brute-force answer on Rust. The forall statement fails Rust's build on master too;
+  - the quantifier batch gives the same verdicts on Java, JS, Go and Python as on C#;
   - full IntegrationTests (1914 tests on master, 1918 on the head): no test that passes on master fails. The
     differences are the 4 new tests, and `dafnydoc/doc1/TestDafnyDoc.dfy` and
     `pythonmodule/multimodule/DerivedModule.dfy`, which fail only in the archived master tree;
