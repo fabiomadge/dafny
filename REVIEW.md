@@ -2,7 +2,7 @@
 
 Everything below was measured on fresh Release builds of master `5f717bf44` and of the PR head,
 built with `git archive` into separate trees. Scripts and probes are under job `f479a154`'s tmp dir. The
-prototypes are on fork branches: `review-6563-root` (`2ee608b0d`, the recommended redesign, 9c) and
+prototypes are on fork branches: `review-6563-root` (`ddd8f7525`, the recommended redesign, 9c) and
 `review-6563-commits-v2` (`597c69dd7`, the smaller fix of the PR's design, 10).
 
 ## 1. What it does, and whether it should be done
@@ -347,9 +347,9 @@ PRs touch the same files; all nine trial-merge cleanly (`git merge-tree --write-
   substituted bounds, and subsumes commit 2 and the non-monotone residual. It does not subsume the product rule,
   as I first claimed: a cycle that only a substitution through a product breaks still needs it (measured in 9c).
 
-## 9c. Root-cause prototype (branch `review-6563-root`, head `a1b000e9e`)
+## 9c. Root-cause prototype (branch `review-6563-root`, head `ddd8f7525`)
 
-Eight commits on `1509ab981`, +322/−160 on the PR in total (+268/−156 outside the tests):
+Nine commits on `1509ab981`, +341/−160 on the PR in total (+267/−156 outside the tests):
 
 1. `fix: count a call as a range bound that can fail` (3a).
 2. `chore: delete the unused SubstituteBound, keep one list of bounds per side, and fix whitespace` (4, 5).
@@ -360,6 +360,8 @@ Eight commits on `1509ab981`, +322/−160 on the PR in total (+268/−156 outsid
 7. `fix: substitute a bound into a product of nonnegative factors` (3b's product rule, with v2 commit 5's
    correction built in).
 8. `fix: prefer an order that bounds a native variable by more than its type` (3d).
+9. `chore: test the dependency order through bounds of every kind, and drop supersets from it`. Only integer bounds
+   reached the dependency order in a test before, and a superset, never finite, never reaches it.
 
 - `DiscoverBestBounds_MultipleVars_AllowReordering` no longer reverses `BoundVars`. Bounds stay aligned with the
   declared variables. An `EnumerationOrder` (indices) is recorded on comprehensions and forall statements, and only
@@ -391,6 +393,7 @@ Eight commits on `1509ab981`, +322/−160 on the PR in total (+268/−156 outsid
     | extended, seed 59 (200) | 109/33/58 | 140/0/60 | 149/0/51 | 156/0/44 | 152/0/48 | 152/0/48 |
     | quantifiers and forall statements, seed 71 (200) | 146/11/43 | 159/0/41 | | 179/0/21 | | 176/0/24 |
     | native `u64`/`i32`, seed 83 (120), finished / hung | 9/111 | 59/61 | | 89/31 (commit 7: 59/61) | | |
+    | `:|`, let-such-that and binding guards, seed 97 (200) | 154/20/25 | 176/1/23 | | 185/0/15 | | 181/0/19 |
 
     A u8 batch (120) agrees with master on every program. The head does worse than another build only on 8 of the
     720 programs, which master gets right by luck. Five go through a link that is not monotonic over the
@@ -403,6 +406,12 @@ Eight commits on `1509ab981`, +322/−160 on the PR in total (+268/−156 outsid
     forall statement) enumerates in the recorded order. A probe of all of them except the forall statement prints
     the brute-force answer on Rust. The forall statement fails Rust's build on master too;
   - the quantifier batch gives the same verdicts on Java, JS, Go and Python as on C#;
+  - the such-that batch stresses substitution, since `:|` and let-such-that keep the declared order. A bound that
+    is too tight shows there as "no value", and as a wrong "none" in a binding guard. The head has neither. The
+    PR's one crash is 3c's matching-loop bug, which the fuzzer found again on its own;
+  - comprehensions whose dependency order goes through a sequence's length, membership in a set, multiset, map or
+    sequence, a subset, or an equality compile and print the right answer on five backends. The PR rejects four of
+    five such probes;
   - full IntegrationTests (1914 tests on master, 1918 on the head): no test that passes on master fails. The
     differences are the 4 new tests, and `dafnydoc/doc1/TestDafnyDoc.dfy` and
     `pythonmodule/multimodule/DerivedModule.dfy`, which fail only in the archived master tree;
@@ -411,11 +420,16 @@ Eight commits on `1509ab981`, +322/−160 on the PR in total (+268/−156 outsid
     `DependentRangeBounds.dfy`, so neither the product rule nor the matching-loop fix changes a corpus program.
     Boogie is identical to the state before them for 1181 of the 1182 files that translate. The other is
     `DependentRangeBounds.dfy`, which that state rejects;
-  - mutants: 11 of 16 fail `DependentRangeBounds.dfy`. They substitute any lower bound into a product, drop
-    products, compute `int` products in their own type, let `ExprSubstituter` rewrite the bounds, drop the cycle
-    break, or drop the order from 6 of the copies. The survivors are four copies that no test reaches (the
-    `Substituter`'s forall statement, `SplitPartTriggerWriter`'s, and the two clone constructors), and the type-only
-    guard of the cycle break, whose absence shows only as a hang;
+  - mutants of commit 7 that fail `DependentRangeBounds.dfy`: 11 of 16. They substitute any lower bound into a
+    product, drop products, compute `int` products in their own type, let `ExprSubstituter` rewrite the bounds, drop
+    the cycle break, or drop the order from 6 of the copies. Commit 8 replaced the type-only guard that survived; its
+    6 mutants each hang the test. Commit 9's cases fail with any kind of bound dropped from `PoolExpressions`: all 7 mutants fail the test;
+  - the four copies that no test reaches are the `Substituter`'s forall statement, `SplitPartTriggerWriter`'s, and
+    the two clone constructors. I tried to reach them through the match flattener, which clones case bodies with
+    their resolved fields after bounds discovery. Dropping the cloned forall statement's bounds does break
+    resolution, so that clone is checked. Dropping its order, or the comprehension's, leaves the compiled code
+    unchanged and right, with the same loop order. These copies keep the clones consistent, but no program I could
+    build observes them;
   - earlier, on commit 3 (`a747a6e35`): the verifier sees declared order. Boogie differs from master for 7
     pre-existing files (DivInternalsNonlinear, Maps, UltraFilter, Bug118, Bug91, Leq, git-issue-1207), only in
     bound-variable order. All 7 pass their lit tests, and the two ghost probes now match master where the PR
