@@ -61,10 +61,11 @@ Four tests under `comp/`: `NativeNewtypeRanges.dfy` and `NativeNewtypeRangeForms
 subset types, the second with the forms C++ does not compile; `DependentRangeBounds.dfy` for dependent bounds in
 comprehensions, quantifiers, `forall` statements, binding guards, `:|` and let-such-that, in every order; and
 `UnguardedRangeBounds.dfy` for bounds that rely on conjuncts checked only after the range is computed. All four pass
-on C#, Java, JS, Go, Python and the Dafny backend. On master, the first two do not finish, and
-`DependentRangeBounds.dfy` prints four wrong lines before its `:|` finds no value.
+on C#, Java, JS, Go, Python and the Dafny backend. On master, the first two do not finish, and master finds no
+bounds for six of `DependentRangeBounds.dfy`'s comprehensions.
 
-Resolving all 2082 files of the test suite and the standard libraries gives master's output in the same total time,
-and the IntegrationTests suite gives master's results, except that the four new tests pass.
+Resolving the test suite and the standard libraries gives master's output for every file but
+`DependentRangeBounds.dfy`, in the same total time, and the IntegrationTests suite gives master's results, except
+that the four new tests pass.
 
 <small>By submitting this pull request, I confirm that my contribution is made under the terms of the [MIT license](https://github.com/dafny-lang/dafny/blob/master/LICENSE.txt).</small>
