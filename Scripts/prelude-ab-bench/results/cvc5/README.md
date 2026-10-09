@@ -181,6 +181,15 @@ They prove 67 queries the release binary does not and lose 114, half of them by 
 alone accounts for about half of the losses (`configs-*` in `speedups.csv.gz`). `--enum-inst` would add proofs at no
 cost, but it is unsound here (below).
 
+**Without rebuilding or patching cvc5.** The official shared build of 1.4.1 (`cvc5-Linux-arm64-shared.zip`) with
+jemalloc preloaded (`LD_PRELOAD`; the build wants Debian's `libedit.so.2`, which a symlink to the system's
+`libedit.so.0` satisfies, as cvc5 uses it only for its shell) does 0.95x the static release binary's instructions and
+0.86x its cycles on the 1,000 random queries, with no proof lost: 4.03 times Z3's cycles per query instead of 4.69.
+Over the public corpus, next to the static release binary, it proves 15 more of Z3's queries (24,402) and 4 more
+complete programs (834), and loses none (`corpus-stock` in `speedups.csv.gz`). Adding `--user-pat=strict` (0.80x
+cycles on the sample) proves 23 more of Z3's queries than the release binary but 3 fewer complete programs: it gives
+up on 12 queries the release binary proves and runs out of time on 36.
+
 **Axioms held back until they can match.** On a typical query cvc5 never instantiates 40 of the 65 axioms, and
 without them it does half the work (0.50x per query, 199 of 200 still proved; 0.51x with `--no-cbqi` on both sides;
 `unused-axioms-*` in `relevance.csv.gz`). Its timers on 60 queries put the difference in preprocessing (30% of it:
