@@ -148,8 +148,8 @@ module MainTests {
 
   @Test
   method UnicodeEscapeTest() {
-    var bs :- expect ToUTF8Checked("\"\\u0041\\u00e9\\u2200\"");
+    var bs :- expect ToUTF8Checked("\"\\u0041\\u00e9\\u00C9\\ud83d\\ude00\"");
     var js :- expect API.Deserialize(bs);
-    expect js == Values.JSON.String("Aé∀");
+    expect js == Values.JSON.String("AéÉ😀");
   }
 }
