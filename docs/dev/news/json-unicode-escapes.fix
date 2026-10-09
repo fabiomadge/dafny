@@ -1,0 +1,1 @@
+`Std.JSON` decoded `\uXXXX` escapes in base 22, so `"\u0041"` became `"Y"`; it now decodes them in base 16.
