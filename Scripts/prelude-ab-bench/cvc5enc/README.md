@@ -18,3 +18,8 @@ interactive cvc5 gets the query unchanged, and fresh cvc5 processes get it under
 (default `eager,syn,cmp`: the eager definitions, every synonym a definition, the comparisons definitions), all in
 parallel. The first `unsat` wins, so a portfolio that includes the unchanged query loses no proof that cvc5 finds
 alone; it costs up to one solver process per member while a VC is open.
+
+`ematch.py` predicts which of a query's patterned axioms a solver could ever instantiate, by simulating e-matching
+over the query's ground terms (`fired(commands)`: classes merged by every equality in the query, three rounds, each
+instance adding its terms). As a filter it is not safe: it keeps a median 44% of the axioms but drops 18% of those
+cvc5 instantiates, and both solvers lose about 15% of their proofs (see `../results/cvc5/README.md`).

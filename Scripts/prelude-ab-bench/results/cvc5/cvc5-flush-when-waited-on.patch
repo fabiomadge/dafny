@@ -1,0 +1,18 @@
+--- a/src/parser/commands.cpp
++++ b/src/parser/commands.cpp
+@@ -142,8 +142,13 @@
+   {
+     printResult(solver, out);
+   }
+-  // always flush the output
+-  out << std::flush;
++  // flush the output when a client may be waiting on it
++  const std::string name = getCommandName();
++  if (!ok() || name.rfind("check-sat", 0) == 0 || name.rfind("get-", 0) == 0
++      || name == "echo" || solver->getOption("print-success") == "true")
++  {
++    out << std::flush;
++  }
+ }
+ 
+ std::string Cmd::toString() const
