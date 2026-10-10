@@ -36,9 +36,14 @@ namespace Microsoft.Dafny {
         return ie;
       }
       if (expr is QuantifierExpr e) {
+        // Each quantifier binds the variables of the terms it replaces outside the quantifiers nested in it
+        var enclosingUsedSubstMap = usedSubstMap;
+        usedSubstMap = [];
         var newAttrs = SubstAttributes(e.Attributes);
         var newRange = e.Range == null ? null : Substitute(e.Range);
         var newTerm = Substitute(e.Term);
+        var used = usedSubstMap;
+        usedSubstMap = enclosingUsedSubstMap;
         if (newAttrs == e.Attributes && newRange == e.Range && newTerm == e.Term) {
           return e;
         }
@@ -48,7 +53,7 @@ namespace Microsoft.Dafny {
         List<BoundedPool> newBounds = e.Bounds == null ? [] : [.. e.Bounds];
 
         // conjoin all the new equalities to the range of the quantifier
-        foreach (var entry in usedSubstMap) {
+        foreach (var entry in used) {
           var eq = new BinaryExpr(e.Origin, BinaryExpr.ResolvedOpcode.EqCommon, entry.Item2, entry.Item1);
           newRange = newRange == null ? eq : new BinaryExpr(e.Origin, BinaryExpr.ResolvedOpcode.And, eq, newRange);
           newBoundVars.Add((BoundVar)entry.Item2.Var);
@@ -62,7 +67,6 @@ namespace Microsoft.Dafny {
           Contract.Assert(expr is ExistsExpr);
           newExpr = new ExistsExpr(e.Origin, newBoundVars, newRange, newTerm, newAttrs) { Bounds = newBounds };
         }
-        usedSubstMap.Clear();
 
         newExpr.Type = expr.Type;
         return newExpr;
