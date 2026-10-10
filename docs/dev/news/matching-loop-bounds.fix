@@ -1,1 +1,1 @@
-A binding guard or quantifier whose matching loop the trigger generator rewrites, like `if j, i :| 0 <= j < 5 && 0 <= i < (j - 1) * (j - 1) + 1 && i * j == 2`, now compiles, where the generated code referred to a variable before declaring it.
+Fix compiled code that referred to an undefined variable, and verifier crashes, when Dafny rewrites a quantifier to break a matching loop, as in `if j, i :| 0 <= j < 5 && 0 <= i < (j - 1) * (j - 1) + 1 && i * j == 2` and `forall i | 0 < i < |s| :: s[i - 1] <= s[i] || (forall m | 0 <= m < i :: s[m] <= s[i])`.
