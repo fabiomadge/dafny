@@ -40,8 +40,8 @@ namespace Microsoft.Dafny {
         }
 
         var newBoundVars = new List<BoundVar>(e.BoundVars);
-        // The bounds keep the expressions that the added variables stand for, so that they do not mention those variables.
-        List<BoundedPool> newBounds = e.Bounds == null ? [] : [.. e.Bounds];
+        // Not substituted: a variable's bound must not mention later variables, and the added ones come last.
+        var newBounds = new List<BoundedPool>(e.Bounds ?? []);
 
         // conjoin all the new equalities to the range of the quantifier
         foreach (var entry in usedSubstMap) {
