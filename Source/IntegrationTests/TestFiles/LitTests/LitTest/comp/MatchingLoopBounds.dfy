@@ -1,12 +1,13 @@
 // RUN: %testDafnyForEachCompiler --refresh-exit-code=0 "%s"
 
-// To break a matching loop, the trigger generator replaces j - 1 with a new bound variable, which comes last, so the
-// bounds of the other variables must not mention it.
+// To break a matching loop, the trigger generator replaces j - 1 with a new bound variable, which comes last, so i's
+// bound must not mention it. Declaring j before i keeps j - 1 in that bound. The compiled code uses the rewritten
+// quantifier in a binding guard and in this lambda, though not in a bare quantifier.
 
 method Main() {
   if j: int, i: int :| 0 <= j < 5 && 0 <= i < (j - 1) * (j - 1) + 1 && i * j == 2 {
     print i, " ", j, "\n";
   }
-  var s := set x: int {:nowarn} | 0 <= x < 2 && (exists j: int, i: int | 0 <= j < 5 && 0 <= i < (j - 1) * (j - 1) + 1 :: i * j == 2);
-  print |s|, "\n";
+  var f := k => exists j: int, i: int | 0 <= j < 5 && 0 <= i < (j - 1) * (j - 1) + 1 :: i * j == k;
+  print f(2), "\n";
 }
