@@ -5,29 +5,22 @@ using System.Diagnostics.Contracts;
 namespace Microsoft.Dafny {
   public class ExprSubstituter : Substituter {
     readonly List<Tuple<Expression, IdentifierExpr>> exprSubstMap;
-    List<Tuple<Expression, IdentifierExpr>> usedSubstMap;
+    // For each quantifier being substituted into, outermost first, the replaced terms whose variables it binds
+    readonly List<List<Tuple<Expression, IdentifierExpr>>> usedSubstMaps = [];
 
     public ExprSubstituter(List<Tuple<Expression, IdentifierExpr>> exprSubstMap)
       : base(null, new Dictionary<IVariable, Expression>(), new Dictionary<TypeParameter, Type>()) {
       this.exprSubstMap = exprSubstMap;
-      this.usedSubstMap = [];
     }
 
     public bool TryGetExprSubst(Expression expr, out IdentifierExpr ie) {
-      var entry = usedSubstMap.Find(x => Triggers.ExprExtensions.ExpressionEq(expr, x.Item1));
-      if (entry != null) {
-        ie = entry.Item2;
-        return true;
+      var entry = exprSubstMap.Find(x => Triggers.ExprExtensions.ExpressionEq(expr, x.Item1));
+      // The innermost quantifier binds the variable, unless it or an enclosing one already does
+      if (entry != null && !usedSubstMaps.Exists(used => used.Contains(entry))) {
+        usedSubstMaps[^1].Add(entry);
       }
-      entry = exprSubstMap.Find(x => Triggers.ExprExtensions.ExpressionEq(expr, x.Item1));
-      if (entry != null) {
-        usedSubstMap.Add(entry);
-        ie = entry.Item2;
-        return true;
-      } else {
-        ie = null;
-        return false;
-      }
+      ie = entry?.Item2;
+      return entry != null;
     }
 
     public override Expression Substitute(Expression expr) {
@@ -36,9 +29,12 @@ namespace Microsoft.Dafny {
         return ie;
       }
       if (expr is QuantifierExpr e) {
+        usedSubstMaps.Add([]);
         var newAttrs = SubstAttributes(e.Attributes);
         var newRange = e.Range == null ? null : Substitute(e.Range);
         var newTerm = Substitute(e.Term);
+        var usedSubstMap = usedSubstMaps[^1];
+        usedSubstMaps.RemoveAt(usedSubstMaps.Count - 1);
         if (newAttrs == e.Attributes && newRange == e.Range && newTerm == e.Term) {
           return e;
         }
@@ -62,7 +58,6 @@ namespace Microsoft.Dafny {
           Contract.Assert(expr is ExistsExpr);
           newExpr = new ExistsExpr(e.Origin, newBoundVars, newRange, newTerm, newAttrs) { Bounds = newBounds };
         }
-        usedSubstMap.Clear();
 
         newExpr.Type = expr.Type;
         return newExpr;
