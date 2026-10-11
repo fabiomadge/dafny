@@ -1,0 +1,1 @@
+On C# and Java, a `set`, `map` or `multiset` no longer treats equal `real`s such as `0.5` and `1.0 / 2.0` as distinct.
