@@ -570,7 +570,7 @@ namespace Microsoft.Dafny.Compilers {
 
             wr = CaptureFreeVariables(e, false, out var su, inLetExprBody, wr, ref wStmts);
             if (receiver != null) {
-              su = new Substituter(new IdentifierExpr(e.Origin, receiver), su.substMap, su.typeMap);
+              su = CompilationSubstituter(su.substMap, new IdentifierExpr(e.Origin, receiver), su.typeMap);
             }
 
             wr = CreateLambda(e.BoundVars.ConvertAll(bv => bv.Type), Token.NoToken, e.BoundVars.ConvertAll(IdName),

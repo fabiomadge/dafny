@@ -20,6 +20,12 @@ namespace Microsoft.Dafny {
 
     public static readonly Substituter EMPTY = new Substituter(null, new Dictionary<IVariable, Expression>(), new Dictionary<TypeParameter, Type>());
 
+    /// <summary>
+    /// Whether a quantifier that the trigger generator split or rewrote is replaced by its parts, as the verifier needs.
+    /// The compiler compiles the quantifier as written.
+    /// </summary>
+    public bool UseSplitQuantifiers { get; init; } = true;
+
     public Substituter(Expression receiverReplacement, Dictionary<IVariable, Expression> substMap, Dictionary<TypeParameter, Type> typeMap, Label oldHeapLabel = null, SystemModuleManager systemModuleManager = null) {
       Contract.Requires(substMap != null);
       Contract.Requires(typeMap != null);
@@ -1054,7 +1060,7 @@ namespace Microsoft.Dafny {
       // For quantifiers and setComprehension we want to make sure that we don't introduce name clashes with
       // the enclosing scopes.
 
-      if (e is QuantifierExpr { SplitQuantifier: not null } quantifierExpr) {
+      if (UseSplitQuantifiers && e is QuantifierExpr { SplitQuantifier: not null } quantifierExpr) {
         if (forceSubstituteOfBoundVars) {
           return Substitute(quantifierExpr.SplitQuantifierExpression);
         } else {

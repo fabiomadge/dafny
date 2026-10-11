@@ -3454,7 +3454,7 @@ namespace Microsoft.Dafny.Compilers {
       wStmts = wStmts.Fork();
 
       var propertySuffix = SupportsProperties ? "" : "()";
-      su = su ?? new Substituter(null, new Dictionary<IVariable, Expression>(), new Dictionary<TypeParameter, Type>());
+      su ??= CompilationSubstituter(new Dictionary<IVariable, Expression>());
 
       newtypeConversionsWereExplicit =
         bound is SetBoundedPool or MapBoundedPool or SeqBoundedPool or MultiSetBoundedPool;
@@ -3598,8 +3598,7 @@ namespace Microsoft.Dafny.Compilers {
           sm[bv] = lowBound ? ib.LowerBound : ib.UpperBound;
         }
       }
-      var su = new Substituter(null, sm, new Dictionary<TypeParameter, Type>());
-      return su.Substitute(bnd);
+      return CompilationSubstituter(sm).Substitute(bnd);
     }
 
     private void IntroduceAndAssignBoundVars(ExistsExpr exists, ConcreteSyntaxTree wr) {
@@ -5168,7 +5167,7 @@ namespace Microsoft.Dafny.Compilers {
           return EmitBetaRedex(bvars.ConvertAll(IdName), fexprs, bvars.ConvertAll(bv => bv.Type), expr.Type, expr.Origin, inLetExprBody, wr, ref wStmts);
         }
       }
-      su = Substituter.EMPTY;
+      su = CompilationSubstituter(new Dictionary<IVariable, Expression>());
       return wr;
     }
 
@@ -5198,7 +5197,14 @@ namespace Microsoft.Dafny.Compilers {
         };
       }
 
-      su = new Substituter(null, sm, new Dictionary<TypeParameter, Type>());
+      su = CompilationSubstituter(sm);
+    }
+
+    protected static Substituter CompilationSubstituter(Dictionary<IVariable, Expression> substMap,
+      Expression receiverReplacement = null, Dictionary<TypeParameter, Type> typeMap = null) {
+      return new Substituter(receiverReplacement, substMap, typeMap ?? new Dictionary<TypeParameter, Type>()) {
+        UseSplitQuantifiers = false
+      };
     }
 
     protected ConcreteSyntaxTree StringLiteral(StringLiteralExpr str) {
