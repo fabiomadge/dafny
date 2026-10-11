@@ -18,16 +18,14 @@ datatype D = Make {
 }
 
 method Main() {
-  // Binding guards, and a quantifier in one
+  // Binding guards, one of them around such a quantifier
   if j, i :| 0 <= j < 5 && 0 <= i < (j - 1) * (j - 1) + 1 && i * j == 2 {
     print i, " ", j, "\n";
   }
   if {
-    case j, i :| 0 <= j < 5 && 0 <= i < (j - 1) * (j - 1) + 1 && i * j == 2 => print i, " ", j, "\n";
+    case c :| 0 <= c < 3 && exists j, i | 0 <= j < 5 && 0 <= i < (j - 1) * (j - 1) + 1 :: i * j == h(c) + 3 =>
+      print c, "\n";
     case true => print "none\n";
-  }
-  if c :| 0 <= c < 3 && exists j, i | 0 <= j < 5 && 0 <= i < (j - 1) * (j - 1) + 1 :: i * j == h(c) + 3 {
-    print c, "\n";
   }
   // A lambda that captures n
   var n := 5;
