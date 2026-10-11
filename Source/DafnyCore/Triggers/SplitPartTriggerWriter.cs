@@ -96,7 +96,7 @@ class SplitPartTriggerWriter {
 
     var expr = (QuantifierExpr)Comprehension;
     if (substMap.Count > 0) {
-      var s = new ExprSubstituter(substMap);
+      var s = new ExprSubstituter(substMap, reporter.Options);
       expr = s.Substitute(Comprehension) as QuantifierExpr;
       NamedExpressions.AddRange(substMap);
     } else {

@@ -1,0 +1,1 @@
+Fix an unsoundness where, to break a matching loop, Dafny replaced a term read in another state, such as inside `old`, with a variable that holds its value in the current state

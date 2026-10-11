@@ -1,0 +1,11 @@
+rewriting-a-matching-loop-respects-heap-states.dfy(21,18): Info: Selected triggers: {F(_t#0), F(i)} where _t#0 := i + c.f
+rewriting-a-matching-loop-respects-heap-states.dfy(33,18): Info: Selected triggers: {F(_t#1), F(_t#0), F(i)} where _t#0 := i + old@L(c.f) where _t#1 := i + old(c.f)
+rewriting-a-matching-loop-respects-heap-states.dfy(45,18): Info: Selected triggers: {F(_t#1), F(_t#0), F(i)} where _t#0 := i + G@L(c) where _t#1 := i + G(c)
+rewriting-a-matching-loop-respects-heap-states.dfy(53,18): Info: Selected triggers: {F(_t#1), F(_t#0), F(i)} where _t#0 := i + if fresh(c) then 1 else 0 where _t#1 := i + if fresh@L(c) then 1 else 0
+rewriting-a-matching-loop-respects-heap-states.dfy(60,18): Info: Selected triggers: {F(_t#0), F(i)} where _t#0 := i + 1
+rewriting-a-matching-loop-respects-heap-states.dfy(22,2): Error: assertion could not be proved
+rewriting-a-matching-loop-respects-heap-states.dfy(34,2): Error: assertion could not be proved
+rewriting-a-matching-loop-respects-heap-states.dfy(46,2): Error: assertion could not be proved
+rewriting-a-matching-loop-respects-heap-states.dfy(54,2): Error: assertion could not be proved
+
+Dafny program verifier finished with 5 verified, 4 errors

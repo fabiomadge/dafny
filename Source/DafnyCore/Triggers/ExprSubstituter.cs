@@ -6,10 +6,14 @@ namespace Microsoft.Dafny {
   public class ExprSubstituter : Substituter {
     readonly List<Tuple<Expression, IdentifierExpr>> exprSubstMap;
     List<Tuple<Expression, IdentifierExpr>> usedSubstMap;
+    readonly DafnyOptions options;
+    // The range defines a new variable in the current state, so it cannot stand for a term that reads the heap in old.
+    bool inOld;
 
-    public ExprSubstituter(List<Tuple<Expression, IdentifierExpr>> exprSubstMap)
+    public ExprSubstituter(List<Tuple<Expression, IdentifierExpr>> exprSubstMap, DafnyOptions options)
       : base(null, new Dictionary<IVariable, Expression>(), new Dictionary<TypeParameter, Type>()) {
       this.exprSubstMap = exprSubstMap;
+      this.options = options;
       this.usedSubstMap = [];
     }
 
@@ -31,9 +35,18 @@ namespace Microsoft.Dafny {
     }
 
     public override Expression Substitute(Expression expr) {
-      if (TryGetExprSubst(expr, out var ie)) {
+      if (!(inOld && ReadsHeap(expr)) && TryGetExprSubst(expr, out var ie)) {
         Contract.Assert(ie != null);
         return ie;
+      }
+      if (expr is OldExpr && !inOld) {
+        inOld = true;
+        try {
+          return base.Substitute(expr);
+        }
+        finally {
+          inOld = false;
+        }
       }
       if (expr is QuantifierExpr e) {
         var newAttrs = SubstAttributes(e.Attributes);
@@ -73,6 +86,12 @@ namespace Microsoft.Dafny {
         return newExpr;
       }
       return base.Substitute(expr);
+    }
+
+    bool ReadsHeap(Expression expr) {
+      var usesHeap = false;
+      FreeVariablesUtil.ComputeFreeVariables(options, expr, new HashSet<IVariable>(), ref usesHeap);
+      return usesHeap;
     }
   }
 }
