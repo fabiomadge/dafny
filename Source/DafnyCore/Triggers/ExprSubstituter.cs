@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 
 namespace Microsoft.Dafny {
   public class ExprSubstituter : Substituter {
@@ -39,13 +40,17 @@ namespace Microsoft.Dafny {
         var newAttrs = SubstAttributes(e.Attributes);
         var newRange = e.Range == null ? null : Substitute(e.Range);
         var newTerm = Substitute(e.Term);
-        if (newAttrs == e.Attributes && newRange == e.Range && newTerm == e.Term) {
+        var newBounds = SubstituteBoundedPoolList(e.Bounds);
+        if (newAttrs == e.Attributes && newRange == e.Range && newTerm == e.Term && newBounds == e.Bounds) {
           return e;
         }
 
         var newBoundVars = new List<BoundVar>(e.BoundVars);
-        // The bounds keep the expressions that the added variables stand for, so that they do not mention those variables.
-        List<BoundedPool> newBounds = e.Bounds == null ? [] : [.. e.Bounds];
+        // A variable's bound must not mention later variables, and the added ones come last, so the bounds get back
+        // the terms they stand for
+        var terms = usedSubstMap.ToDictionary(entry => entry.Item2.Var, entry => entry.Item1);
+        var restoreTerms = new Substituter(null, terms, new Dictionary<TypeParameter, Type>());
+        newBounds = (newBounds ?? []).ConvertAll(restoreTerms.SubstituteBoundedPool);
 
         // conjoin all the new equalities to the range of the quantifier
         foreach (var entry in usedSubstMap) {
