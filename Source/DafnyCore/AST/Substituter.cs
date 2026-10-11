@@ -18,8 +18,6 @@ namespace Microsoft.Dafny {
     protected readonly Label oldHeapLabel;
     [CanBeNull] protected readonly SystemModuleManager SystemModuleManager; // if non-null, substitutions into FunctionCallExpr's will be wrapped
 
-    public static readonly Substituter EMPTY = new Substituter(null, new Dictionary<IVariable, Expression>(), new Dictionary<TypeParameter, Type>());
-
     /// <summary>
     /// Whether a quantifier that the trigger generator split or rewrote is replaced by its parts, as the verifier needs.
     /// The compiler compiles the quantifier as written.
