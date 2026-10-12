@@ -35,13 +35,10 @@ public class ExistsExpr : QuantifierExpr, ICloneable<ExistsExpr> {
   /// Returns an expression like 'exists' but where the bound variables have been renamed to have
   /// 'prefix' as a prefix to their previous names.
   /// Assumes the expression has been resolved.
-  /// 'useSplitQuantifiers' is as in <see cref="Substituter.UseSplitQuantifiers"/>.
+  /// 'useSplitQuantifiers' is as in <see cref="Substituter.UseSplitQuantifiers"/>, and also keeps the renamed parts of a
+  /// split or rewritten quantifier.
   /// </summary>
   public Expression AlphaRename(string prefix, bool useSplitQuantifiers = true) {
-    if (useSplitQuantifiers && SplitQuantifierExpression is ExistsExpr splitQuantifierExpression) {
-      return splitQuantifierExpression.AlphaRename(prefix);
-    }
-
     var substMap = new Dictionary<IVariable, Expression>();
     var bvars = new List<BoundVar>();
     foreach (var bv in BoundVars) {
@@ -61,6 +58,10 @@ public class ExistsExpr : QuantifierExpr, ICloneable<ExistsExpr> {
       Type = Type.Bool,
       Bounds = s.SubstituteBoundedPoolList(Bounds),
     };
+    if (useSplitQuantifiers && SplitQuantifier != null) {
+      // The verifier translates the parts, but checks the well-formedness of the quantifier as written
+      ex.SplitQuantifier = SplitQuantifier.ConvertAll(part => ((ExistsExpr)part).AlphaRename(prefix));
+    }
     return ex;
   }
 }
