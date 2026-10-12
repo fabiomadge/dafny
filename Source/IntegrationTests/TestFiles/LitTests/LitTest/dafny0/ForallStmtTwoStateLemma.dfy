@@ -83,13 +83,95 @@ lemma Holds(b: bool, x: int)
 {
 }
 
-// In an argument, "fresh" refers to the method's entry, where o did not exist, so the forall statement gives true
-method FreshArgument() {
+// In an argument, "old" and "fresh" refer to the method's entry, where c.f == 1 and o did not exist, so the forall
+// statement gives true
+method OldAndFreshArgument(c: C)
+  requires c.f == 1
+  modifies c
+{
+  c.f := 0;
   var o := new C;
   forall x | x == 0 {
-    Holds(fresh(o), x);
+    Holds(old(c.f) == 1 && fresh(o), x);
   }
   assert false; // error
+}
+
+ghost function Sum(n: nat): nat { if n == 0 then 0 else n + Sum(n - 1) }
+
+lemma SumFormula(n: nat)
+  ensures 2 * Sum(n) == n * (n + 1)
+{
+}
+
+function Twice(x: nat): nat { 2 * x }
+
+// Each call's postcondition is about Twice(s[i]), whose definition the proof needs
+lemma CallInArgument(s: seq<nat>)
+  ensures forall i | 0 <= i < |s| :: Sum(2 * s[i]) == s[i] * (2 * s[i] + 1)
+{
+  forall i | 0 <= i < |s| {
+    SumFormula(Twice(s[i]));
+  }
+}
+
+datatype Counter = Counter(n: nat) {
+  function Next(): Counter { Counter(n + 1) }
+
+  lemma Formula()
+    ensures 2 * Sum(n) == n * (n + 1)
+  {
+    SumFormula(n);
+  }
+}
+
+// Each call's postcondition is about cs[i].Next(), whose definition the proof needs
+lemma CallInReceiver(cs: seq<Counter>)
+  requires |cs| > 3
+  ensures 2 * Sum(cs[3].n + 1) == (cs[3].n + 1) * (cs[3].n + 2)
+{
+  forall i | 0 <= i < |cs| {
+    cs[i].Next().Formula();
+  }
+}
+
+class Base {
+  var k: nat
+
+  ghost function Pow(x: nat): nat
+    reads this
+  {
+    if x == 0 then 1 else k * Pow(x - 1)
+  }
+}
+
+twostate lemma PowPositive(b: Base, x: nat)
+  requires old(b.k) > 0
+  ensures old(b.Pow(x)) > 0
+{
+  if x > 0 {
+    PowPositive(b, x - 1);
+  }
+}
+
+method Increment(a: array<nat>)
+  modifies a
+{
+  if a.Length > 0 {
+    a[0] := a[0] + 1;
+  }
+}
+
+// The only trigger is a[i] inside the lemma's old, but each call evaluates a[i] after Increment changed a
+method ArgumentInOld(b: Base, a: array<nat>)
+  requires b.k > 0
+  modifies a
+{
+  Increment(a);
+  forall i | 0 <= i < a.Length {
+    PowPositive(b, a[i]);
+  }
+  assert a.Length > 0 ==> b.Pow(a[0]) > 0;
 }
 
 ghost predicate T(x: Node?, n: int) { true }

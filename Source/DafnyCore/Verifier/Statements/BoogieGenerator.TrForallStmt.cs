@@ -105,10 +105,11 @@ public partial class BoogieGenerator {
     //     initHeap := $Heap;
     //     advance $Heap;
     //     assume (forall x,y :: (Range(x,y) && additionalRange)[INIT] &&
-    //                           ==> Post[old($Heap) := initHeap]( E(x,y)[INIT], Args(x,y)[INIT] ));
+    //                           ==> Post[old($Heap) := OLD]( E(x,y)[INIT], Args(x,y)[INIT] ));
     //   }
-    // where Post(this,args) is the postcondition of method M and
-    // INIT is the substitution [old($Heap),$Heap := old($Heap),initHeap].
+    // where Post(this,args) is the postcondition of method M,
+    // INIT is the substitution [old($Heap),$Heap := old($Heap),initHeap], and
+    // OLD is a two-state lemma's previous state and initHeap for any other method.
 
     if (definedness != null) {
       if (boundVars.Count != 0) {
@@ -190,12 +191,17 @@ public partial class BoogieGenerator {
       var anteCanCalls = initEtran.CanCallAssumption(p);
       var ante = initEtran.TrExpr(p);
 
-      var receiver = new BoogieWrapper(initEtran.TrExpr(Substitute(s0.Receiver, null, substMap, s0.MethodSelect.TypeArgumentSubstitutionsWithParents())), s0.Receiver.Type);
+      var receiverExpr = Substitute(s0.Receiver, null, substMap, s0.MethodSelect.TypeArgumentSubstitutionsWithParents());
+      var receiver = new BoogieWrapper(initEtran.TrExpr(receiverExpr), s0.Receiver.Type);
+      // The wrappers hide the calls in the receiver and the arguments from the postcondition's CanCall assumptions
+      Bpl.Expr post = includeCanCalls ? initEtran.CanCallAssumption(receiverExpr) : Bpl.Expr.True;
       for (int i = 0; i < s0.Method.Ins.Count; i++) {
         var arg = Substitute(s0.Args[i], null, substMap, s0.MethodSelect.TypeArgumentSubstitutionsWithParents());  // substitute the renamed bound variables for the declared ones
+        if (includeCanCalls) {
+          post = BplAnd(post, initEtran.CanCallAssumption(arg));
+        }
         argsSubstMap.Add(s0.Method.Ins[i], new BoogieWrapper(initEtran.TrExpr(arg), s0.Args[i].Type));
       }
-      Bpl.Expr post = Bpl.Expr.True;
       foreach (var ens in ConjunctsOf(s0.Method.Ens)) {
         p = Substitute(ens.E, receiver, argsSubstMap, s0.MethodSelect.TypeArgumentSubstitutionsWithParents());  // substitute the call's actuals for the method's formals
         if (includeCanCalls) {
@@ -206,7 +212,10 @@ public partial class BoogieGenerator {
 
       Bpl.Trigger tr = null;
       if (forallExpression != null) {
-        tr = TrTrigger(callEtran, forallExpression.Attributes, forallExpression.Origin, bvars, substMap, s0.MethodSelect.TypeArgumentSubstitutionsWithParents());
+        // The trigger generator chose these triggers for the forall expression, whose old also wraps the arguments,
+        // which the call evaluates in initHeap
+        var triggerEtran = new ExpressionTranslator(this, Predef, etran.HeapExpr, initHeap, etran.scope);
+        tr = TrTrigger(triggerEtran, forallExpression.Attributes, forallExpression.Origin, bvars, substMap, s0.MethodSelect.TypeArgumentSubstitutionsWithParents());
       } else if (triggers != null) {
         foreach (var trigger in triggers) {
           Contract.Assert(trigger.Count != 0);
