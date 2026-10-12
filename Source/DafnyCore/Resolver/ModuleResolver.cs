@@ -3721,9 +3721,7 @@ namespace Microsoft.Dafny {
 
       } else if (expr is QuantifierExpr) {
         var e = (QuantifierExpr)expr;
-        Contract.Assert(e.SplitQuantifier == null); // No split quantifiers during resolution
-
-        var s = FreeVariables(e.LogicalBody());
+        var s = FreeVariables(e.LogicalBody(true));
         foreach (var bv in e.BoundVars) {
           s.Remove(bv);
         }

@@ -1,0 +1,3 @@
+quantifiers-are-checked-as-written.dfy(35,65): Error: possible division by zero
+
+Dafny program verifier finished with 4 verified, 1 error

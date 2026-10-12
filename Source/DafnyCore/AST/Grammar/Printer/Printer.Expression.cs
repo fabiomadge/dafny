@@ -1168,7 +1168,8 @@ namespace Microsoft.Dafny {
       } else if (expr is QuantifierExpr) {
         QuantifierExpr e = (QuantifierExpr)expr;
 
-        if (e.SplitQuantifier != null) {
+        // A serialized program is parsed again, and the trigger generator's version need not be valid Dafny
+        if (e.SplitQuantifier != null && printMode != PrintModes.Serialization) {
           PrintExpr(e.SplitQuantifierExpression, contextBindingStrength, fragileContext, isRightmost,
             isFollowedBySemicolon, indent, keyword, resolv_count);
           return;

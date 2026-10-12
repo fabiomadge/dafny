@@ -234,6 +234,11 @@ public abstract class Expression : NodeWithOrigin {
         }
         yield break;
       }
+    } else if (expr is ExistsExpr { SplitQuantifier: not null } exists) {
+      foreach (Expression e in Disjuncts(exists.SplitQuantifierExpression)) {
+        yield return e;
+      }
+      yield break;
     }
 
     yield return expr;
