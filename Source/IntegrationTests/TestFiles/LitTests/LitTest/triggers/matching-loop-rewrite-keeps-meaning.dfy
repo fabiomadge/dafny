@@ -38,6 +38,52 @@ method CanCall() {
   assert false;
 }
 
+ghost function Lam(i: int): int ~> int
+
+// The lambda reads c.f when it is applied, after c.f changed
+method InLambda(c: C)
+  modifies c
+{
+  c.f := 1;
+  assume {:axiom} F(0) == 7 && F(1) == 0;
+  assume {:axiom} forall i :: F(i) <= F(i + c.f) || Lam(i) == ((x: int) reads c => F(i + c.f));
+  c.f := 0;
+  assume {:axiom} Lam(0).requires(0) && Lam(0)(0) == 7;
+  assert false;
+}
+
+lemma Lem(c: C, x: int)
+  requires c.f == 0
+  ensures F(x) <= F(x + old(c.f))
+{
+}
+
+// In the forall statement's postcondition, old is the state before the statement, but not in its range
+method InForallStatement(c: C)
+  requires c.f == 1
+  modifies c
+{
+  c.f := 0;
+  assume {:axiom} F(0) == 7 && F(1) == 0;
+  forall x | 0 <= x < 1 {
+    Lem(c, x);
+  }
+  assert false;
+}
+
+// The trigger generator's term equality ignores the labels of old
+method OldLabels(c: C)
+  modifies c
+{
+  c.f := 1;
+  label A:
+  c.f := 0;
+  label B:
+  assume {:axiom} F(0) == 7 && F(1) == 0;
+  assume {:axiom} forall i :: F(i) <= F(i + old@A(c.f)) || F(i + old@B(c.f)) == 7;
+  assert false;
+}
+
 // A variable of type Byte would make b + 1 a Byte also where it is not evaluated
 method VariableType() {
   assume {:axiom} exists b: Byte :: (b == 255 || G(b) <= G(b + 1)) && b == 255;
