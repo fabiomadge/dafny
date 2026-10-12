@@ -281,7 +281,10 @@ public class InductionRewriter : IRewriter {
 
     var finder = new Triggers.QuantifierCollector(Reporter);
     var triggersCollector = new Triggers.TriggersCollector(finder.exprsInOldContext, Reporter.Options, moduleDefinition);
-    var quantifierCollection = new Triggers.ComprehensionTriggerGenerator(quantifier, Enumerable.Repeat(quantifier, 1), Reporter);
+    // The quantifier only selects triggers and is not verified, so the rewrite may name any term in it, and every part
+    // whose matching loop it breaks requires additional bound variables below
+    var quantifierCollection = new Triggers.ComprehensionTriggerGenerator(quantifier, Enumerable.Repeat(quantifier, 1), Reporter,
+      nameAnyTerm: true);
     quantifierCollection.ComputeTriggers(triggersCollector);
     // Get the computed triggers, but only ask for those that do not require additional bound variables. (An alternative to this
     // design would be to add {:matchinglooprewrite false} to "quantifier" above. However, that would cause certain matching loops

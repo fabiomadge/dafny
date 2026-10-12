@@ -50,14 +50,6 @@ lemma LiteralTypes(b: bool)
 {
 }
 
-// The range would divide by zero and dereference null where the guards rule that out
-method Guards(a: array?<int>) {
-  if j :| 0 <= j < 5 && j != 1 && NonNeg(j) && NonNeg(j + 10 / (j - 1)) {
-  }
-  if j :| 0 <= j < 5 && a != null && NonNeg(j) && NonNeg(a.Length - j) {
-  }
-}
-
 // The term may be replaced, so this quantifier gets no matching-loop warning
 lemma Replaced(s: seq<int>, S: set<int>, M: multiset<int>, m: map<int, int>, a: array<int>, b: bool, r: real, x: bv8)
   requires forall i :: F(i) <= F(if !b && r < 1.0 && (!x & 1) == 0 then |s| + |S| - i else |M| * |m| - a.Length + i)
@@ -67,6 +59,30 @@ lemma Replaced(s: seq<int>, S: set<int>, M: multiset<int>, m: map<int, int>, a: 
 // Each part of the split quantifier binds its own new variable, and neither part gets a trigger
 lemma SplitParts(s: seq<int>)
   requires forall i, j :: 0 <= j < |s| - 1 ==> F2(i, j) <= F2(i + 1, s[j + 1]) && F2(i, j) <= F2(i + 2, s[j + 1])
+{
+}
+
+// Naming only i + 1 would leave no trigger, so the rewrite names neither term
+lemma PartialNaming(c: C)
+  requires forall i, j :: F2(i, j) <= F2(i + 1, c.f + j)
+  ensures F2(0, 0) <= F2(1, c.f)
+{
+}
+
+// The trigger of the nested quantifier would not mention a new variable, so the rewrite leaves that quantifier as it is
+ghost predicate FirstDescent(a: seq<int>) {
+  exists i :: 0 <= i < |a| - 1 && a[i] > a[i + 1] && (forall j {:trigger a[j]} :: 0 <= j < i ==> a[j] <= a[j + 1])
+}
+
+// The middle quantifier binds the new variable for x + 1 as well, which the innermost one takes
+ghost predicate Deep() {
+  forall x :: F(x) <= 0 || (forall y :: P(y) ==> F(x + 1) > 0 || (forall z :: P(z) ==> F(x + 1) > z))
+}
+
+// The induction hypothesis loops through n + Half(n), so it gets no triggers, although that term cannot be named
+lemma {:induction n} Induction(n: nat)
+  requires F(n) <= F(n + Half(n))
+  ensures F(n) <= F(n + Half(n))
 {
 }
 

@@ -26,8 +26,12 @@ class SplitPartTriggerWriter {
 
   private bool CouldSuppressLoops { get; set; }
 
-  internal SplitPartTriggerWriter(ComprehensionExpr comprehension) {
+  // Whether the rewrite may name a term that CanBeNamed rejects, in a quantifier that is not verified
+  private readonly bool nameAnyTerm;
+
+  internal SplitPartTriggerWriter(ComprehensionExpr comprehension, bool nameAnyTerm = false) {
     this.Comprehension = comprehension;
+    this.nameAnyTerm = nameAnyTerm;
     this.RejectedCandidates = [];
     this.NamedExpressions = [];
   }
@@ -82,7 +86,11 @@ class SplitPartTriggerWriter {
       var e = triggerMatch.OriginalExpr;
       if (triggersCollector.IsPotentialTriggerCandidate(e) && triggersCollector.IsTriggerKiller(e)) {
         foreach (var sub in e.SubExpressions) {
-          if (triggersCollector.IsTriggerKiller(sub) && (!triggersCollector.IsPotentialTriggerCandidate(sub)) && CanBeNamed(sub)) {
+          if (triggersCollector.IsTriggerKiller(sub) && (!triggersCollector.IsPotentialTriggerCandidate(sub))) {
+            if (!nameAnyTerm && !CanBeNamed(sub)) {
+              // Naming only some of the terms that the loop runs through can leave no trigger
+              return false;
+            }
             var entry = substMap.Find(x => ExprExtensions.ExpressionEq(sub, x.Item1));
             if (entry == null) {
               var newBv = new BoundVar(sub.Origin, "_t#" + substMap.Count, sub.Type);
@@ -126,8 +134,8 @@ class SplitPartTriggerWriter {
   /// <summary>
   /// The range defines the new variable outside the guards of the term's occurrences and possibly in another state
   /// than theirs, as for an occurrence inside an "old" or a lambda, or in a forall statement's postcondition. So the
-  /// term must mean the same in every state, be defined everywhere, call no function, as its CanCall assumption would
-  /// lose the guards, and have a type that does not constrain the variable.
+  /// term must mean the same in every state, call no function, as its CanCall assumption would lose the guards, and
+  /// have a type that does not constrain the variable.
   /// </summary>
   private static bool CanBeNamed(Expression expr) {
     expr = expr.Resolved;
@@ -135,13 +143,11 @@ class SplitPartTriggerWriter {
       return true;
     }
     if (expr is MemberSelectExpr { Member: SpecialField { SpecialId: SpecialField.ID.ArrayLength } } length) {
-      return length.Obj.Type.IsNonNullRefType && CanBeNamed(length.Obj);
+      return CanBeNamed(length.Obj);
     }
     return expr.Type.NormalizeExpandKeepConstraints() is IntType or RealType or BoolType or BitvectorType &&
            expr switch {
-             LiteralExpr or ITEExpr => true,
-             BinaryExpr binary => binary.ResolvedOp is not (BinaryExpr.ResolvedOpcode.Div or BinaryExpr.ResolvedOpcode.Mod or
-               BinaryExpr.ResolvedOpcode.LeftShift or BinaryExpr.ResolvedOpcode.RightShift),
+             LiteralExpr or ITEExpr or BinaryExpr => true,
              UnaryOpExpr unary => unary.ResolvedOp is UnaryOpExpr.ResolvedOpcode.BoolNot or UnaryOpExpr.ResolvedOpcode.BVNot or
                UnaryOpExpr.ResolvedOpcode.SeqLength or UnaryOpExpr.ResolvedOpcode.SetCard or
                UnaryOpExpr.ResolvedOpcode.MultiSetCard or UnaryOpExpr.ResolvedOpcode.MapCard,

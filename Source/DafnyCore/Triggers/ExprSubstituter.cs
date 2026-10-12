@@ -7,9 +7,8 @@ namespace Microsoft.Dafny {
   public class ExprSubstituter : Substituter {
     readonly List<Tuple<Expression, IdentifierExpr>> exprSubstMap;
     List<Tuple<Expression, IdentifierExpr>> usedSubstMap;
-    // The variables used in the rewritten quantifier itself rather than in a nested one
-    readonly HashSet<IdentifierExpr> usedAtTop = [];
-    int quantifierDepth;
+    // For each quantifier being rewritten, the variables used in it rather than in a nested one
+    readonly Stack<HashSet<IdentifierExpr>> usedHere = new();
 
     public ExprSubstituter(List<Tuple<Expression, IdentifierExpr>> exprSubstMap)
       : base(null, new Dictionary<IVariable, Expression>(), new Dictionary<TypeParameter, Type>()) {
@@ -37,22 +36,22 @@ namespace Microsoft.Dafny {
     public override Expression Substitute(Expression expr) {
       if (TryGetExprSubst(expr, out var ie)) {
         Contract.Assert(ie != null);
-        if (quantifierDepth == 1) {
-          usedAtTop.Add(ie);
-        }
+        usedHere.Peek().Add(ie);
         return ie;
       }
       if (expr is QuantifierExpr e) {
-        quantifierDepth++;
+        if (usedHere.Count != 0 && Attributes.Contains(e.Attributes, "trigger")) {
+          // The triggers of this nested quantifier would not mention a new variable that it binds
+          return e;
+        }
+        usedHere.Push([]);
         var newAttrs = SubstAttributes(e.Attributes);
         var newRange = e.Range == null ? null : Substitute(e.Range);
         var newTerm = Substitute(e.Term);
         var newBounds = SubstituteBoundedPoolList(e.Bounds);
-        quantifierDepth--;
-        if (quantifierDepth == 0) {
-          // A nested quantifier binds the variables used so far and removes them from usedSubstMap
-          usedSubstMap.AddRange(exprSubstMap.Where(entry => usedAtTop.Contains(entry.Item2) && !usedSubstMap.Contains(entry)).ToList());
-        }
+        var used = usedHere.Pop();
+        // A nested quantifier binds the variables used so far and removes them from usedSubstMap
+        usedSubstMap.AddRange(exprSubstMap.Where(entry => used.Contains(entry.Item2) && !usedSubstMap.Contains(entry)).ToList());
         if (newAttrs == e.Attributes && newRange == e.Range && newTerm == e.Term && newBounds == e.Bounds) {
           return e;
         }

@@ -22,11 +22,12 @@ namespace Microsoft.Dafny.Triggers {
     private readonly ComprehensionExpr comprehension;  //  the expression where the splits are originated from
     private List<SplitPartTriggerWriter> partWriters;
 
-    internal ComprehensionTriggerGenerator(ComprehensionExpr comprehension, IEnumerable<ComprehensionExpr> quantifiers, ErrorReporter reporter) {
+    internal ComprehensionTriggerGenerator(ComprehensionExpr comprehension, IEnumerable<ComprehensionExpr> quantifiers, ErrorReporter reporter,
+      bool nameAnyTerm = false) {
       Contract.Requires(quantifiers.All(q => !(q is QuantifierExpr) || ((QuantifierExpr)q).SplitQuantifier == null));
       this.reporter = reporter;
       this.comprehension = comprehension;
-      partWriters = quantifiers.Select(q => new SplitPartTriggerWriter(q)).ToList();
+      partWriters = quantifiers.Select(q => new SplitPartTriggerWriter(q, nameAnyTerm)).ToList();
     }
 
     internal void ComputeTriggers(TriggersCollector triggersCollector) {
