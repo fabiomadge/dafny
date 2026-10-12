@@ -148,3 +148,8 @@ lemma UseNestedOnly()
 ghost predicate Sorted(s: seq<int>) {
   forall i | 0 < i < |s| :: s[i - 1] <= s[i] || (forall m | 0 <= m < i :: s[m] <= s[i])
 }
+
+// The nested quantifier uses i - 1 too, before the enclosing quantifier does, and each binds its own new variable for it
+ghost predicate NestedFirst(s: seq<int>) {
+  forall i | 0 < i < |s| :: (forall m | 0 <= m < i :: s[m] <= s[i - 1]) || s[i - 1] <= s[i]
+}

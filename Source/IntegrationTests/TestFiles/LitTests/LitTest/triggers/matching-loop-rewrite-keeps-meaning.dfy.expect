@@ -13,4 +13,4 @@ matching-loop-rewrite-keeps-meaning.dfy(71,2): Error: assertion could not be pro
 matching-loop-rewrite-keeps-meaning.dfy(84,2): Error: assertion could not be proved
 matching-loop-rewrite-keeps-meaning.dfy(90,2): Error: assertion could not be proved
 
-Dafny program verifier finished with 15 verified, 6 errors
+Dafny program verifier finished with 16 verified, 6 errors
