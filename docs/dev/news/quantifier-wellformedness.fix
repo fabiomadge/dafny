@@ -1,0 +1,1 @@
+Fix checking the well-formedness of a quantifier that Dafny splits or rewrites to break a matching loop, in a binding guard or inside another binder such as a lambda: the verifier checked its parts instead of the quantifier as written, so it reported errors that the quantifier as written rules out, such as a division by zero, and missed some that only the parts rule out

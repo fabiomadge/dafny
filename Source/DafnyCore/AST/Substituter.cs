@@ -19,7 +19,7 @@ namespace Microsoft.Dafny {
     [CanBeNull] protected readonly SystemModuleManager SystemModuleManager; // if non-null, substitutions into FunctionCallExpr's will be wrapped
 
     /// <summary>
-    /// Whether a quantifier that the trigger generator split or rewrote is replaced by its parts, as the verifier needs.
+    /// Whether a quantifier that the trigger generator split or rewrote keeps its parts, which the verifier translates.
     /// The compiler compiles the quantifier as written.
     /// </summary>
     public bool UseSplitQuantifiers { get; init; } = true;
@@ -1058,14 +1058,6 @@ namespace Microsoft.Dafny {
       // For quantifiers and setComprehension we want to make sure that we don't introduce name clashes with
       // the enclosing scopes.
 
-      if (UseSplitQuantifiers && e is QuantifierExpr { SplitQuantifier: not null } quantifierExpr) {
-        if (forceSubstituteOfBoundVars) {
-          return Substitute(quantifierExpr.SplitQuantifierExpression);
-        } else {
-          return SubstituteComprehensionExpr((ComprehensionExpr)quantifierExpr.SplitQuantifierExpression, false);
-        }
-      }
-
       var newBoundVars = CreateBoundVarSubstitutions(e.BoundVars, forceSubstituteOfBoundVars && expr is ForallExpr or ExistsExpr or SetComprehension);
       var newRange = e.Range == null ? null : Substitute(e.Range);
       var newTerm = Substitute(e.Term);
@@ -1098,6 +1090,11 @@ namespace Microsoft.Dafny {
       // undo any changes to substMap (could be optimized to do this only if newBoundVars != e.BoundVars)
       foreach (var bv in e.BoundVars) {
         substMap.Remove(bv);
+      }
+
+      if (UseSplitQuantifiers && e is QuantifierExpr { SplitQuantifier: not null } quantifierExpr) {
+        // The verifier translates the parts, but checks the well-formedness of the quantifier as written
+        ((QuantifierExpr)newExpr).SplitQuantifier = quantifierExpr.SplitQuantifier.ConvertAll(Substitute);
       }
 
       return newExpr;
