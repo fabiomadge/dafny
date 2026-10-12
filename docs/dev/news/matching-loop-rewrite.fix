@@ -1,1 +1,1 @@
-Fix compiled code that referred to an undefined variable for a quantifier that Dafny rewrites to break a matching loop, such as `if j, i :| 0 <= j < 5 && 0 <= i < (j - 1) * (j - 1) + 1 && i * j == 2`
+Fix compiling a quantifier that Dafny rewrites to break a matching loop, such as `if j, i :| 0 <= j < 5 && 0 <= i < (j - 1) * (j - 1) + 1 && i * j == 2`: the code referred to an undefined variable, and a C# assembly's Dafny source, which Dafny reads when the assembly is used as a library, did not parse
