@@ -1,5 +1,15 @@
+ForallStmtTwoStateLemma.dfy(74,2): Warning: Could not find a trigger for this quantifier. Without a trigger, the quantifier may cause brittle verification. To silence this warning, add an explicit trigger using the {:trigger} attribute. For more information, see the section on quantifier instantiation rules in the reference manual.
+ForallStmtTwoStateLemma.dfy(89,2): Warning: Could not find a trigger for this quantifier. Without a trigger, the quantifier may cause brittle verification. To silence this warning, add an explicit trigger using the {:trigger} attribute. For more information, see the section on quantifier instantiation rules in the reference manual.
 ForallStmtTwoStateLemma.dfy(24,2): Error: assertion could not be proved
 ForallStmtTwoStateLemma.dfy(40,2): Error: assertion could not be proved
 ForallStmtTwoStateLemma.dfy(59,2): Error: assertion could not be proved
+ForallStmtTwoStateLemma.dfy(77,2): Error: assertion could not be proved
+ForallStmtTwoStateLemma.dfy(92,2): Error: assertion could not be proved
+ForallStmtTwoStateLemma.dfy(107,14): Error: a postcondition could not be proved on this return path
+ForallStmtTwoStateLemma.dfy(104,44): Related location: this is the postcondition that could not be proved
+ForallStmtTwoStateLemma.dfy(120,12): Error: a postcondition could not be proved on this return path
+ForallStmtTwoStateLemma.dfy(117,36): Related location: this is the postcondition that could not be proved
+ForallStmtTwoStateLemma.dfy(149,12): Error: a postcondition could not be proved on this return path
+ForallStmtTwoStateLemma.dfy(146,43): Related location: this is the postcondition that could not be proved
 
-Dafny program verifier finished with 7 verified, 3 errors
+Dafny program verifier finished with 15 verified, 8 errors

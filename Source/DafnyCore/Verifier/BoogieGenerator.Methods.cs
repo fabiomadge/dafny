@@ -799,6 +799,22 @@ namespace Microsoft.Dafny {
             DecreasesCheck(decrToks, null, decrCalleeDafny, decrCallerDafny, decrCallee, decrCaller, null, null, false, true));
         };
 
+        var additionalRange = decrCheck;
+        if (m is TwoStateLemma) {
+          // As a call does, require the receiver and the arguments for parameters that are not "new" to be allocated in
+          // the previous state
+          additionalRange = (decrSubstMap, exprTran) => {
+            var range = decrCheck(decrSubstMap, exprTran);
+            foreach (var (iv, bv) in inductionVars.Zip(parBoundVars)) {
+              if (iv is null or Formal { IsOld: true } &&
+                  GetWhereClause(bv.Origin, exprTran.TrExpr(decrSubstMap[bv]), bv.Type, exprTran.Old, ISALLOC, true) is { } isAlloc) {
+                range = BplAnd(range, isAlloc);
+              }
+            }
+            return range;
+          };
+        }
+
         var triggers = m.Attributes.AsEnumerable()
           .Where(attr => attr.Name is "inductionTrigger" or "_inductionTrigger")
           .Select(attr => attr.Args)
@@ -806,12 +822,12 @@ namespace Microsoft.Dafny {
 #if VERIFY_CORRECTNESS_OF_TRANSLATION_FORALL_STATEMENT_RANGE
         var definedness = new BoogieStmtListBuilder(this, options, builder.Context);
         var exporter = new BoogieStmtListBuilder(this, options, builder.Context);
-        TrForallStmtCall(m.Origin, parBoundVars, parBounds, parRange, decrCheck, null, triggers, recursiveCall, definedness,
+        TrForallStmtCall(m.Origin, parBoundVars, parBounds, parRange, additionalRange, null, triggers, recursiveCall, definedness,
           exporter, localVariables, etran);
         // All done, so put the two pieces together
         builder.Add(new Bpl.IfCmd(m.Origin, null, definedness.Collect(m.Origin), null, exporter.Collect(m.Origin)));
 #else
-        TrForallStmtCall(m.Origin, parBoundVars, parBounds, parRange, decrCheck, null, triggers, recursiveCall, null,
+        TrForallStmtCall(m.Origin, parBoundVars, parBounds, parRange, additionalRange, null, triggers, recursiveCall, null,
           builder, localVariables, etran, includeCanCalls: true);
 #endif
       }

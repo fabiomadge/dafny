@@ -1,1 +1,1 @@
-Fix unsoundness where a forall statement that calls a two-state lemma assumed its postcondition with `old` as the state before the forall statement rather than the lemma's previous state
+Fix unsoundness in the postcondition that a forall statement, or automatic induction, assumes for the calls of a lemma: `old` in a two-state lemma's postcondition referred to the state before the statement rather than the lemma's previous state, and `old` and `fresh` in an argument referred to that state rather than the caller's previous state

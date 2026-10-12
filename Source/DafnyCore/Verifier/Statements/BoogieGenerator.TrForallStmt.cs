@@ -170,63 +170,51 @@ public partial class BoogieGenerator {
       Contract.Assert(s0.Method.Ins.Count == s0.Args.Count);
       var callOld = s0.Method is TwoStateLemma ? etran.OldAt(s0.MethodSelect.AtLabel).HeapExpr : initHeap;
       var callEtran = new ExpressionTranslator(this, Predef, etran.HeapExpr, callOld, etran.scope);
-      Bpl.Expr anteCanCalls, ante;
-      Bpl.Expr typeAndAdditionalAntecedents;
-      Bpl.Expr post = Bpl.Expr.True;
-      Bpl.Trigger tr;
+      QuantifierExpr forallExpression = null;
       if (forallExpressions != null) {
-        // translate based on the forallExpressions since the triggers are computed based on it already.
-        QuantifierExpr expr = (QuantifierExpr)forallExpressions[0];
-        while (expr.SplitQuantifier != null && expr.SplitQuantifierExpression is QuantifierExpr quantifierExpr) {
-          expr = quantifierExpr;
+        // The triggers were computed for the forall expression, so use its bound variables and range
+        forallExpression = (QuantifierExpr)forallExpressions[0];
+        while (forallExpression.SplitQuantifier != null && forallExpression.SplitQuantifierExpression is QuantifierExpr quantifierExpr) {
+          forallExpression = quantifierExpr;
         }
-        boundVars = expr.BoundVars;
-        typeAndAdditionalAntecedents = initEtran.TrBoundVariablesRename(boundVars, bvars, out substMap);
-        if (additionalRange != null) {
-          typeAndAdditionalAntecedents = BplAnd(typeAndAdditionalAntecedents, additionalRange(substMap, initEtran));
-        }
-        tr = TrTrigger(callEtran, expr.Attributes, expr.Origin, bvars, substMap, s0.MethodSelect.TypeArgumentSubstitutionsWithParents());
+        boundVars = forallExpression.BoundVars;
+        range = forallExpression.Range;
+      }
+      var typeAndAdditionalAntecedents = initEtran.TrBoundVariablesRename(boundVars, bvars, out substMap);
+      if (additionalRange != null) {
+        // additionalRange produces something of the form canCallAssumptions ==> TrExpr
+        typeAndAdditionalAntecedents = BplAnd(typeAndAdditionalAntecedents, additionalRange(substMap, initEtran));
+      }
 
-        var p = Substitute(expr.Range, null, substMap);
-        anteCanCalls = initEtran.CanCallAssumption(p);
-        ante = initEtran.TrExpr(p);
-        p = Substitute(expr.Term, null, substMap);
-        post = BplAnd(post, callEtran.CanCallAssumption(p));
+      var p = Substitute(range, null, substMap);
+      var anteCanCalls = initEtran.CanCallAssumption(p);
+      var ante = initEtran.TrExpr(p);
+
+      var receiver = new BoogieWrapper(initEtran.TrExpr(Substitute(s0.Receiver, null, substMap, s0.MethodSelect.TypeArgumentSubstitutionsWithParents())), s0.Receiver.Type);
+      for (int i = 0; i < s0.Method.Ins.Count; i++) {
+        var arg = Substitute(s0.Args[i], null, substMap, s0.MethodSelect.TypeArgumentSubstitutionsWithParents());  // substitute the renamed bound variables for the declared ones
+        argsSubstMap.Add(s0.Method.Ins[i], new BoogieWrapper(initEtran.TrExpr(arg), s0.Args[i].Type));
+      }
+      Bpl.Expr post = Bpl.Expr.True;
+      foreach (var ens in ConjunctsOf(s0.Method.Ens)) {
+        p = Substitute(ens.E, receiver, argsSubstMap, s0.MethodSelect.TypeArgumentSubstitutionsWithParents());  // substitute the call's actuals for the method's formals
+        if (includeCanCalls) {
+          post = BplAnd(post, callEtran.CanCallAssumption(p));
+        }
         post = BplAnd(post, callEtran.TrExpr(p));
-      } else {
-        typeAndAdditionalAntecedents = initEtran.TrBoundVariablesRename(boundVars, bvars, out substMap);
-        if (additionalRange != null) {
-          // additionalRange produces something of the form canCallAssumptions ==> TrExpr
-          typeAndAdditionalAntecedents = BplAnd(typeAndAdditionalAntecedents, additionalRange(substMap, initEtran));
-        }
+      }
 
-        var p = Substitute(range, null, substMap);
-        anteCanCalls = initEtran.CanCallAssumption(p);
-        ante = initEtran.TrExpr(p);
-
-        var receiver = new BoogieWrapper(initEtran.TrExpr(Substitute(s0.Receiver, null, substMap, s0.MethodSelect.TypeArgumentSubstitutionsWithParents())), s0.Receiver.Type);
-        for (int i = 0; i < s0.Method.Ins.Count; i++) {
-          var arg = Substitute(s0.Args[i], null, substMap, s0.MethodSelect.TypeArgumentSubstitutionsWithParents());  // substitute the renamed bound variables for the declared ones
-          argsSubstMap.Add(s0.Method.Ins[i], new BoogieWrapper(initEtran.TrExpr(arg), s0.Args[i].Type));
-        }
-        foreach (var ens in ConjunctsOf(s0.Method.Ens)) {
-          p = Substitute(ens.E, receiver, argsSubstMap, s0.MethodSelect.TypeArgumentSubstitutionsWithParents());  // substitute the call's actuals for the method's formals
-          if (includeCanCalls) {
-            post = BplAnd(post, callEtran.CanCallAssumption(p));
-          }
-          post = BplAnd(post, callEtran.TrExpr(p));
-        }
-
-        tr = null;
-        if (triggers != null) {
-          foreach (var trigger in triggers) {
-            Contract.Assert(trigger.Count != 0);
-            var terms = trigger.ConvertAll(expr => {
-              expr = Substitute(expr, receiver, argsSubstMap, s0.MethodSelect.TypeArgumentSubstitutionsWithParents());
-              return callEtran.TrExpr(expr);
-            });
-            tr = new Trigger(trigger[0].Origin, true, terms, tr);
-          }
+      Bpl.Trigger tr = null;
+      if (forallExpression != null) {
+        tr = TrTrigger(callEtran, forallExpression.Attributes, forallExpression.Origin, bvars, substMap, s0.MethodSelect.TypeArgumentSubstitutionsWithParents());
+      } else if (triggers != null) {
+        foreach (var trigger in triggers) {
+          Contract.Assert(trigger.Count != 0);
+          var terms = trigger.ConvertAll(expr => {
+            expr = Substitute(expr, receiver, argsSubstMap, s0.MethodSelect.TypeArgumentSubstitutionsWithParents());
+            return callEtran.TrExpr(expr);
+          });
+          tr = new Trigger(trigger[0].Origin, true, terms, tr);
         }
       }
 
