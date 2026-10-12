@@ -1,8 +1,8 @@
 // RUN: %testDafnyForEachCompiler --refresh-exit-code=0 "%s"
 
 // To break a matching loop, the trigger generator rewrites each exists j, i below, replacing j - 1 with a new bound
-// variable. The compiler must compile such a quantifier as written, which it did for a bare quantifier, but not in
-// these contexts.
+// variable. The compiler must compile such a quantifier as written, also where it substitutes into it, as in each
+// context below.
 
 function h(x: int): int { x + 2 }
 
@@ -35,4 +35,9 @@ method Main() {
   var b := exists z |
     0 <= z < (if exists j, i | 0 <= j < 5 && 0 <= i < (j - 1) * (j - 1) + 1 :: i * j == 2 then 3 else 0) :: h(z) == 4;
   print f(2), " ", f(7), " ", x, " ", b, " ", Make.F(3), "\n";
+  // A set and a map comprehension, whose ranges the compiler splits into conjuncts, here of a negation
+  var s := set c | 0 <= c < 3 && !(exists j, i | 0 <= j < 5 && 0 <= i < (j - 1) * (j - 1) + 1 :: i * j == h(c) + 3);
+  var m := map c |
+    0 <= c < 3 && !(exists j, i | 0 <= j < 5 && 0 <= i < (j - 1) * (j - 1) + 1 :: i * j == h(c) + 3) :: 2 * c;
+  print s == {0, 2}, " ", m == map[0 := 0, 2 := 4], "\n";
 }
