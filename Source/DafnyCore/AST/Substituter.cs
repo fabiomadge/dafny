@@ -22,7 +22,8 @@ namespace Microsoft.Dafny {
 
     /// <summary>
     /// Whether a quantifier that the trigger generator split or rewrote is replaced by its parts, which the verifier
-    /// translates, instead of kept as written along with them, as the compiler and the well-formedness checks need it
+    /// translates, instead of kept as written along with them, as the compiler and the well-formedness checks need it.
+    /// A copy made only to select triggers wants the parts.
     /// </summary>
     public bool ReplaceSplitQuantifiers { get; init; }
 

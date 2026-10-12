@@ -1,4 +1,4 @@
-// RUN: %verify "%s" > "%t"
+// RUN: %verify --show-hints --allow-warnings "%s" > "%t"
 // RUN: %diff "%s.expect" "%t"
 
 // A substitution copies a quantifier that the trigger generator split or rewrote together with its parts, which the
@@ -35,6 +35,24 @@ module SuchThat {
     requires B(0)
   {
     var d: D :| exists i :: B(i) || (A(i, d) && A(i + 1, d)); d
+  }
+}
+
+module TriggerCopies {
+  function Pow(n: nat): nat { if n == 0 then 1 else 2 * Pow(n - 1) }
+  function h(n: nat): nat
+
+  // The triggers of a :| and of a quantifier with a let in its body are selected on a copy, whose hints name k + n once
+  method SuchThat()
+    requires Pow(5) == 32 && forall k: nat :: k < 2 ==> Pow(k) <= Pow(k + 5)
+  {
+    ghost var n: nat :| Pow(n) == 32 && forall k: nat :: k < 2 ==> Pow(k) <= Pow(k + n);
+  }
+
+  method Let()
+    requires forall n: nat :: var m := n; h(n) == 0 && forall k: nat :: k < 2 ==> h(k) <= h(k + m)
+  {
+    assert h(3) == 0;
   }
 }
 

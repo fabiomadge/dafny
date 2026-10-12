@@ -103,7 +103,9 @@ namespace Microsoft.Dafny.Triggers {
           substBoundVarToLocal.Add(boundVar, localIdentifierExpr);
         }
 
-        var substituterTo = new Substituter(null, substLocalToBoundVar, new Dictionary<TypeParameter, Type>());
+        var substituterTo = new Substituter(null, substLocalToBoundVar, new Dictionary<TypeParameter, Type>()) {
+          ReplaceSplitQuantifiers = true
+        };
         var existsExpr = new ExistsExpr(assignSuchThatStmt.Origin, boundVars, null,
           substituterTo.Substitute(assignSuchThatStmt.Expr),
           new Attributes("_delayTriggerWarning", new List<Expression>(), substituterTo.SubstAttributes(assignSuchThatStmt.Attributes))) {

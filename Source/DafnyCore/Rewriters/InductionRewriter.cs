@@ -274,7 +274,6 @@ public class InductionRewriter : IRewriter {
       reverseSubstMap.Add(boundVar, inductionVariableExpr);
     }
 
-    // The verifier translates the induction hypothesis with the parts of a split quantifier, so its triggers are for them
     var substituter = new Substituter(receiverReplacement, substMap, new Dictionary<TypeParameter, Type>()) {
       ReplaceSplitQuantifiers = true
     };

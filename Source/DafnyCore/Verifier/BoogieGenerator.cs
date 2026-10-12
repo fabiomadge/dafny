@@ -5134,7 +5134,9 @@ namespace Microsoft.Dafny {
       for (var i = 0; i < letExpr.LHSs.Count; i++) {
         substMap.Add(letExpr.LHSs[i].Var, letExpr.RHSs[i]);
       }
-      return BoogieGenerator.Substitute(letExpr.Body, null, substMap);
+      return new Substituter(null, substMap, new Dictionary<TypeParameter, Type>()) {
+        ReplaceSplitQuantifiers = true
+      }.Substitute(letExpr.Body);
     }
 
     Bpl.Expr HeapSameOrSucc(Bpl.Expr oldHeap, Bpl.Expr newHeap) {
