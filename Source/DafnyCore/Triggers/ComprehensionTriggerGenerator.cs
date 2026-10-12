@@ -160,7 +160,9 @@ namespace Microsoft.Dafny.Triggers {
         for (int i = 1; i < partWriters.Count; i++) {
           bool found = false;
           for (int j = 0; j < groups.Count; j++) {
-            if (HasSameTriggers(partWriters[i], groups[j].Quantifier)) {
+            // The merged quantifier binds only the group's variables, and a part that breaks a matching loop has new ones
+            if (HasSameTriggers(partWriters[i], groups[j].Quantifier) &&
+                partWriters[i].Comprehension.BoundVars.All(groups[j].Quantifier.Comprehension.BoundVars.Contains)) {
               // belong to the same group
               groups[j].Expressions.Add(partWriters[i].Comprehension);
               found = true;
