@@ -2,12 +2,10 @@ matching-loop-rewrite-keeps-meaning.dfy(30,18): Warning: Triggers were added to 
 matching-loop-rewrite-keeps-meaning.dfy(43,18): Warning: Triggers were added to this quantifier that may introduce matching loops, which may cause brittle verification. To silence this warning, add an explicit trigger using the {:trigger} attribute. For more information, see the section on quantifier instantiation rules in the reference manual.
 matching-loop-rewrite-keeps-meaning.dfy(55,7): Warning: Triggers were added to this quantifier that may introduce matching loops, which may cause brittle verification. To silence this warning, add an explicit trigger using the {:trigger} attribute. For more information, see the section on quantifier instantiation rules in the reference manual.
 matching-loop-rewrite-keeps-meaning.dfy(57,7): Warning: Triggers were added to this quantifier that may introduce matching loops, which may cause brittle verification. To silence this warning, add an explicit trigger using the {:trigger} attribute. For more information, see the section on quantifier instantiation rules in the reference manual.
-matching-loop-rewrite-keeps-meaning.dfy(69,18): Warning: Could not find a trigger for this quantifier. Without a trigger, the quantifier may cause brittle verification. To silence this warning, add an explicit trigger using the {:trigger} attribute. For more information, see the section on quantifier instantiation rules in the reference manual.
-matching-loop-rewrite-keeps-meaning.dfy(69,18): Warning: Could not find a trigger for this quantifier. Without a trigger, the quantifier may cause brittle verification. To silence this warning, add an explicit trigger using the {:trigger} attribute. For more information, see the section on quantifier instantiation rules in the reference manual.
+matching-loop-rewrite-keeps-meaning.dfy(69,11): Warning: Could not find a trigger for this quantifier. Without a trigger, the quantifier may cause brittle verification. To silence this warning, add an explicit trigger using the {:trigger} attribute. For more information, see the section on quantifier instantiation rules in the reference manual.
+matching-loop-rewrite-keeps-meaning.dfy(69,11): Warning: Could not find a trigger for this quantifier. Without a trigger, the quantifier may cause brittle verification. To silence this warning, add an explicit trigger using the {:trigger} attribute. For more information, see the section on quantifier instantiation rules in the reference manual.
 matching-loop-rewrite-keeps-meaning.dfy(31,2): Error: assertion could not be proved
 matching-loop-rewrite-keeps-meaning.dfy(38,2): Error: assertion could not be proved
 matching-loop-rewrite-keeps-meaning.dfy(44,2): Error: assertion could not be proved
-matching-loop-rewrite-keeps-meaning.dfy(50,2): Error: assertion could not be proved
-matching-loop-rewrite-keeps-meaning.dfy(70,2): Error: assertion could not be proved
 
-Dafny program verifier finished with 7 verified, 5 errors
+Dafny program verifier finished with 8 verified, 3 errors

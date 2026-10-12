@@ -45,9 +45,9 @@ method VariableType() {
 }
 
 // The int term if b then 1 else 0 is not the bv8 one
-method LiteralTypes(b: bool) {
-  assume {:axiom} forall i, k :: F2(i, k) <= F2(i + 1, if b then 1 else 0) || G8(if b then 1 else 0) == 3;
-  assert false;
+lemma LiteralTypes(b: bool)
+  requires forall i, k :: F2(i, k) <= F2(i + 1, if b then 1 else 0) || G8(if b then 1 else 0) == 3
+{
 }
 
 // The range would divide by zero and dereference null where the guards rule that out
@@ -65,9 +65,9 @@ lemma Replaced(s: seq<int>, S: set<int>, M: multiset<int>, m: map<int, int>, a: 
 }
 
 // Each part of the split quantifier binds its own new variable, and neither part gets a trigger
-method SplitParts(s: seq<int>) {
-  assume {:axiom} forall i, j :: 0 <= j < |s| - 1 ==> F2(i, j) <= F2(i + 1, s[j + 1]) && F2(i, j) <= F2(i + 2, s[j + 1]);
-  assert false;
+lemma SplitParts(s: seq<int>)
+  requires forall i, j :: 0 <= j < |s| - 1 ==> F2(i, j) <= F2(i + 1, s[j + 1]) && F2(i, j) <= F2(i + 2, s[j + 1])
+{
 }
 
 // The term occurs only in the nested quantifier, which binds the variable for it, so the enclosing one must not.
