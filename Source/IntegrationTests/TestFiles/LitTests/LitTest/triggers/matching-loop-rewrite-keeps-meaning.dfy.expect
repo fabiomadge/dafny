@@ -1,0 +1,13 @@
+matching-loop-rewrite-keeps-meaning.dfy(37,18): Warning: Triggers were added to this quantifier that may introduce matching loops, which may cause brittle verification. To silence this warning, add an explicit trigger using the {:trigger} attribute. For more information, see the section on quantifier instantiation rules in the reference manual.
+matching-loop-rewrite-keeps-meaning.dfy(99,2): Warning: Triggers were added to this quantifier that may introduce matching loops, which may cause brittle verification. To silence this warning, add an explicit trigger using the {:trigger} attribute. For more information, see the section on quantifier instantiation rules in the reference manual.
+matching-loop-rewrite-keeps-meaning.dfy(29,2): Error: assertion could not be proved
+matching-loop-rewrite-keeps-meaning.dfy(40,2): Error: assertion could not be proved
+matching-loop-rewrite-keeps-meaning.dfy(52,2): Error: assertion could not be proved
+matching-loop-rewrite-keeps-meaning.dfy(64,2): Error: assertion could not be proved
+matching-loop-rewrite-keeps-meaning.dfy(72,2): Error: assertion could not be proved
+matching-loop-rewrite-keeps-meaning.dfy(78,2): Error: assertion could not be proved
+matching-loop-rewrite-keeps-meaning.dfy(86,2): Error: assertion could not be proved
+matching-loop-rewrite-keeps-meaning.dfy(91,2): Error: assertion could not be proved
+matching-loop-rewrite-keeps-meaning.dfy(112,2): Error: assertion could not be proved
+
+Dafny program verifier finished with 8 verified, 9 errors

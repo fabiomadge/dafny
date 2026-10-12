@@ -357,11 +357,11 @@ namespace Microsoft.Dafny.Triggers {
     }
 
     private static bool ShallowEq(TypeTestExpr expr1, TypeTestExpr expr2) {
-      return Type.Equal_Improved(expr1.Type, expr2.Type);
+      return Type.Equal_Improved(expr1.ToType, expr2.ToType);
     }
 
     private static bool ShallowEq(UnaryOpExpr expr1, UnaryOpExpr expr2) {
-      return expr1.ResolvedOp == expr2.ResolvedOp;
+      return expr1.ResolvedOp == expr2.ResolvedOp && (expr1 as FreshExpr)?.AtLabel == (expr2 as FreshExpr)?.AtLabel;
     }
 
     private static bool ShallowEq(UnaryExpr expr1, UnaryExpr expr2) {
@@ -385,13 +385,17 @@ namespace Microsoft.Dafny.Triggers {
     }
 
     private static bool ShallowEq(OldExpr expr1, OldExpr expr2) {
-      return true;
+      return expr1.AtLabel == expr2.AtLabel;
     }
 
     private static bool ShallowEq(FunctionCallExpr expr1, FunctionCallExpr expr2) {
+      Func<Type, Type, bool> comparer = TypeEq;
       return expr1.Name == expr2.Name &&
              expr1.CoCall == expr2.CoCall && //TODO
-             expr1.Function == expr2.Function; // TODO TypeArgumentSubstitutions?
+             expr1.Function == expr2.Function &&
+             expr1.AtLabel == expr2.AtLabel &&
+             expr1.TypeApplication_AtEnclosingClass.SequenceEqual(expr2.TypeApplication_AtEnclosingClass, new PredicateEqualityComparer<Type>(comparer)) &&
+             expr1.TypeApplication_JustFunction.SequenceEqual(expr2.TypeApplication_JustFunction, new PredicateEqualityComparer<Type>(comparer));
     }
 
     private static bool ShallowEq(ApplyExpr expr1, ApplyExpr expr2) {
@@ -505,7 +509,8 @@ namespace Microsoft.Dafny.Triggers {
     }
 
     private static bool ShallowEq(LiteralExpr expr1, LiteralExpr expr2) {
-      if (!TriggerUtils.SameNullity(expr1.Value, expr2.Value) || (expr1.Value != null && !expr1.Value.Equals(expr2.Value))) {
+      if (!TriggerUtils.SameNullity(expr1.Value, expr2.Value) ||
+          (expr1.Value != null && (!expr1.Value.Equals(expr2.Value) || !Type.Equal_Improved(expr1.Type, expr2.Type)))) {
         return false;
       }
 

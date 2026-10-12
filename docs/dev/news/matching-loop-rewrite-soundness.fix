@@ -1,0 +1,1 @@
+Fix an unsoundness where, to break a matching loop, Dafny replaced a term with a variable that means something else, such as a term inside `old` or a lambda, or one with different type arguments; this also fixes crashes like `undeclared identifier: _t#0#0` for nested quantifiers

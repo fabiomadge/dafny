@@ -1,11 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 
 namespace Microsoft.Dafny {
   public class ExprSubstituter : Substituter {
     readonly List<Tuple<Expression, IdentifierExpr>> exprSubstMap;
     List<Tuple<Expression, IdentifierExpr>> usedSubstMap;
+    // The variables used in the rewritten quantifier itself rather than in a nested one
+    readonly HashSet<IdentifierExpr> usedAtTop = [];
+    int quantifierDepth;
+    // Inside old or a lambda, a term is read in another state than the range, which defines the new variables
+    int inOtherState;
 
     public ExprSubstituter(List<Tuple<Expression, IdentifierExpr>> exprSubstMap)
       : base(null, new Dictionary<IVariable, Expression>(), new Dictionary<TypeParameter, Type>()) {
@@ -31,15 +37,33 @@ namespace Microsoft.Dafny {
     }
 
     public override Expression Substitute(Expression expr) {
-      if (TryGetExprSubst(expr, out var ie)) {
+      if (inOtherState == 0 && TryGetExprSubst(expr, out var ie)) {
         Contract.Assert(ie != null);
+        if (quantifierDepth == 1) {
+          usedAtTop.Add(ie);
+        }
         return ie;
       }
+      if (expr is OldExpr or LambdaExpr) {
+        inOtherState++;
+        try {
+          return base.Substitute(expr);
+        }
+        finally {
+          inOtherState--;
+        }
+      }
       if (expr is QuantifierExpr e) {
+        quantifierDepth++;
         var newAttrs = SubstAttributes(e.Attributes);
         var newRange = e.Range == null ? null : Substitute(e.Range);
         var newTerm = Substitute(e.Term);
         var newBounds = SubstituteBoundedPoolList(e.Bounds);
+        quantifierDepth--;
+        if (quantifierDepth == 0) {
+          // A nested quantifier binds the variables used so far and removes them from usedSubstMap
+          usedSubstMap.AddRange(exprSubstMap.Where(entry => usedAtTop.Contains(entry.Item2) && !usedSubstMap.Contains(entry)).ToList());
+        }
         if (newAttrs == e.Attributes && newRange == e.Range && newTerm == e.Term && newBounds == e.Bounds) {
           return e;
         }
