@@ -27,6 +27,8 @@ namespace Microsoft.Dafny {
     /// </summary>
     public bool ReplaceSplitQuantifiers { get; init; }
 
+    private bool substitutingParts;
+
     public Substituter(Expression receiverReplacement, Dictionary<IVariable, Expression> substMap, Dictionary<TypeParameter, Type> typeMap, Label oldHeapLabel = null, SystemModuleManager systemModuleManager = null) {
       Contract.Requires(substMap != null);
       Contract.Requires(typeMap != null);
@@ -1061,7 +1063,7 @@ namespace Microsoft.Dafny {
       // For quantifiers and setComprehension we want to make sure that we don't introduce name clashes with
       // the enclosing scopes.
 
-      if (ReplaceSplitQuantifiers && e is QuantifierExpr { SplitQuantifier: not null } quantifierExpr) {
+      if ((ReplaceSplitQuantifiers || substitutingParts) && e is QuantifierExpr { SplitQuantifier: not null } quantifierExpr) {
         if (forceSubstituteOfBoundVars) {
           return Substitute(quantifierExpr.SplitQuantifierExpression);
         } else {
@@ -1104,7 +1106,10 @@ namespace Microsoft.Dafny {
       }
 
       if (e is QuantifierExpr { SplitQuantifier: not null } splitQuantifier) {
+        // Only the verifier reads the parts, so a quantifier in them needs only its own parts
+        substitutingParts = true;
         ((QuantifierExpr)newExpr).SplitQuantifier = splitQuantifier.SplitQuantifier.ConvertAll(Substitute);
+        substitutingParts = false;
       }
 
       return newExpr;
