@@ -168,7 +168,10 @@ public partial class BoogieGenerator {
       Dictionary<IVariable, Expression> substMap;
       var argsSubstMap = new Dictionary<IVariable, Expression>();  // maps formal arguments to actuals
       Contract.Assert(s0.Method.Ins.Count == s0.Args.Count);
-      var callEtran = new ExpressionTranslator(this, Predef, etran.HeapExpr, initHeap, etran.scope);
+      // In the postcondition, "old" is the state before the call, except for a two-state lemma, whose previous state
+      // is the caller's previous state or the state at its label
+      var callOld = s0.Method is TwoStateLemma ? etran.OldAt(s0.MethodSelect.AtLabel).HeapExpr : initHeap;
+      var callEtran = new ExpressionTranslator(this, Predef, etran.HeapExpr, callOld, etran.scope);
       Bpl.Expr anteCanCalls, ante;
       Bpl.Expr typeAndAdditionalAntecedents;
       Bpl.Expr post = Bpl.Expr.True;

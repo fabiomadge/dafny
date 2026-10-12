@@ -1,0 +1,5 @@
+ForallStmtTwoStateLemma.dfy(24,2): Error: assertion could not be proved
+ForallStmtTwoStateLemma.dfy(40,2): Error: assertion could not be proved
+ForallStmtTwoStateLemma.dfy(59,2): Error: assertion could not be proved
+
+Dafny program verifier finished with 7 verified, 3 errors
