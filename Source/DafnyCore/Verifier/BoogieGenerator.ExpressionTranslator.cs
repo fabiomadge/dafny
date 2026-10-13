@@ -1478,12 +1478,15 @@ BplBoundVar(varNameGen.FreshId(string.Format("#{0}#", bv.Name)), Predef.BoxType,
         return varsAndAntecedents;
       }
 
-      public Boogie.Expr TrBoundVariablesRename(List<BoundVar> boundVars, List<Variable> bvars, out Dictionary<IVariable, Expression> substMap) {
+      public Boogie.Expr TrBoundVariablesRename(List<BoundVar> boundVars, List<Variable> bvars, out Dictionary<IVariable, Expression> substMap,
+        List<bool>/*?*/ freeOfAlloc = null) {
         Contract.Requires(boundVars != null);
         Contract.Requires(bvars != null);
+        Contract.Requires(freeOfAlloc == null || freeOfAlloc.Count == boundVars.Count);
 
         substMap = new Dictionary<IVariable, Expression>();
         Boogie.Expr typeAntecedent = Boogie.Expr.True;
+        var i = 0;
         foreach (BoundVar bv in boundVars) {
           var newBoundVar = new BoundVar(bv.Origin, bv.Name, bv.Type);
           IdentifierExpr ie = new IdentifierExpr(newBoundVar.Origin, newBoundVar.AssignUniqueName(BoogieGenerator.CurrentDeclaration.IdGenerator)) {
@@ -1494,10 +1497,12 @@ BplBoundVar(varNameGen.FreshId(string.Format("#{0}#", bv.Name)), Predef.BoxType,
           Boogie.Variable bvar = new Boogie.BoundVariable(newBoundVar.Origin, new Boogie.TypedIdent(newBoundVar.Origin, newBoundVar.AssignUniqueName(BoogieGenerator.CurrentDeclaration.IdGenerator), BoogieGenerator.TrType(newBoundVar.Type)));
           bvars.Add(bvar);
           var bIe = new Boogie.IdentifierExpr(bvar.tok, bvar);
-          Boogie.Expr wh = BoogieGenerator.GetWhereClause(bv.Origin, bIe, newBoundVar.Type, this, NOALLOC);
+          var useAlloc = freeOfAlloc == null || freeOfAlloc[i] ? NOALLOC : ISALLOC;
+          Boogie.Expr wh = BoogieGenerator.GetWhereClause(bv.Origin, bIe, newBoundVar.Type, this, useAlloc);
           if (wh != null) {
             typeAntecedent = BplAnd(typeAntecedent, wh);
           }
+          i++;
         }
         return typeAntecedent;
       }

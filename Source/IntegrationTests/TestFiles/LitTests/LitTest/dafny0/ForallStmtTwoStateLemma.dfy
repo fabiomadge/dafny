@@ -97,6 +97,23 @@ method OldAndFreshArgument(c: C)
   assert false; // error
 }
 
+predicate Chosen(c: C)
+
+lemma Allocated(c: C)
+  ensures allocated(c)
+{
+}
+
+// The forall statement covers the objects allocated where its calls are, so not o
+method AllocatedLater() {
+  forall c: C | Chosen(c) {
+    Allocated(c);
+  }
+  var o := new C;
+  assume {:axiom} Chosen(o);
+  assert false; // error
+}
+
 ghost function Sum(n: nat): nat { if n == 0 then 0 else n + Sum(n - 1) }
 
 lemma SumFormula(n: nat)

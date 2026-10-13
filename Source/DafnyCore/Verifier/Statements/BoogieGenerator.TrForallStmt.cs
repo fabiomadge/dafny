@@ -173,15 +173,18 @@ public partial class BoogieGenerator {
       var callEtran = new ExpressionTranslator(this, Predef, etran.HeapExpr, callOld, etran.scope);
       QuantifierExpr forallExpression = null;
       if (forallExpressions != null) {
-        // The triggers were computed for the forall expression, so use its bound variables and range
+        // The triggers were computed for the forall expression, so use its bound variables, bounds and range
         forallExpression = (QuantifierExpr)forallExpressions[0];
         while (forallExpression.SplitQuantifier != null && forallExpression.SplitQuantifierExpression is QuantifierExpr quantifierExpr) {
           forallExpression = quantifierExpr;
         }
         boundVars = forallExpression.BoundVars;
+        bounds = forallExpression.Bounds;
         range = forallExpression.Range;
       }
-      var typeAndAdditionalAntecedents = initEtran.TrBoundVariablesRename(boundVars, bvars, out substMap);
+      // As the definedness check, the exported postcondition covers only values allocated where the calls are
+      var typeAndAdditionalAntecedents = initEtran.TrBoundVariablesRename(boundVars, bvars, out substMap,
+        BoundedPool.HasBounds(bounds, BoundedPool.PoolVirtues.IndependentOfAlloc_or_ExplicitAlloc));
       if (additionalRange != null) {
         // additionalRange produces something of the form canCallAssumptions ==> TrExpr
         typeAndAdditionalAntecedents = BplAnd(typeAndAdditionalAntecedents, additionalRange(substMap, initEtran));
