@@ -172,6 +172,7 @@ public partial class BoogieGenerator {
       var callOld = s0.Method is TwoStateLemma ? etran.OldAt(s0.MethodSelect.AtLabel).HeapExpr : initHeap;
       var callEtran = new ExpressionTranslator(this, Predef, etran.HeapExpr, callOld, etran.scope);
       QuantifierExpr forallExpression = null;
+      var statementBoundVars = boundVars;
       if (forallExpressions != null) {
         // The triggers were computed for the forall expression, so use its bound variables, bounds and range
         forallExpression = (QuantifierExpr)forallExpressions[0];
@@ -185,6 +186,11 @@ public partial class BoogieGenerator {
       // As in the definedness check, the exported postcondition covers only values allocated where the calls are
       var typeAndAdditionalAntecedents = initEtran.TrBoundVariablesRename(boundVars, bvars, out substMap,
         BoundedPool.HasBounds(bounds, BoundedPool.PoolVirtues.IndependentOfAlloc_or_ExplicitAlloc));
+      // A substitution, as of a function body, gives the forall expression its own copies of the statement's bound
+      // variables, which come first and in order, but the arguments still use the statement's
+      for (var i = 0; i < statementBoundVars.Count; i++) {
+        substMap[statementBoundVars[i]] = substMap[boundVars[i]];
+      }
       if (additionalRange != null) {
         // additionalRange produces something of the form canCallAssumptions ==> TrExpr
         typeAndAdditionalAntecedents = BplAnd(typeAndAdditionalAntecedents, additionalRange(substMap, initEtran));

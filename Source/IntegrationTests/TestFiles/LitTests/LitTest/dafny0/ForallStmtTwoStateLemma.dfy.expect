@@ -6,11 +6,11 @@ ForallStmtTwoStateLemma.dfy(59,2): Error: assertion could not be proved
 ForallStmtTwoStateLemma.dfy(77,2): Error: assertion could not be proved
 ForallStmtTwoStateLemma.dfy(97,2): Error: assertion could not be proved
 ForallStmtTwoStateLemma.dfy(114,2): Error: assertion could not be proved
-ForallStmtTwoStateLemma.dfy(218,14): Error: a postcondition could not be proved on this return path
-ForallStmtTwoStateLemma.dfy(215,44): Related location: this is the postcondition that could not be proved
-ForallStmtTwoStateLemma.dfy(231,12): Error: a postcondition could not be proved on this return path
-ForallStmtTwoStateLemma.dfy(228,36): Related location: this is the postcondition that could not be proved
-ForallStmtTwoStateLemma.dfy(260,12): Error: a postcondition could not be proved on this return path
-ForallStmtTwoStateLemma.dfy(257,43): Related location: this is the postcondition that could not be proved
+ForallStmtTwoStateLemma.dfy(230,14): Error: a postcondition could not be proved on this return path
+ForallStmtTwoStateLemma.dfy(227,44): Related location: this is the postcondition that could not be proved
+ForallStmtTwoStateLemma.dfy(243,12): Error: a postcondition could not be proved on this return path
+ForallStmtTwoStateLemma.dfy(240,36): Related location: this is the postcondition that could not be proved
+ForallStmtTwoStateLemma.dfy(272,12): Error: a postcondition could not be proved on this return path
+ForallStmtTwoStateLemma.dfy(269,43): Related location: this is the postcondition that could not be proved
 
-Dafny program verifier finished with 34 verified, 9 errors
+Dafny program verifier finished with 35 verified, 9 errors

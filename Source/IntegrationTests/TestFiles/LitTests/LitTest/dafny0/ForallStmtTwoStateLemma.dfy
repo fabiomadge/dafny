@@ -152,6 +152,18 @@ lemma CallInReceiver(cs: seq<Counter>)
   }
 }
 
+// The verifier substitutes into the function's body, and so into the forall statement and its postcondition separately
+ghost function InLet(k: nat): nat
+  requires k > 0
+  ensures 2 * Sum(k - 1) == (k - 1) * k
+{
+  var m := k;
+  forall i | 0 <= i < m {
+    SumFormula(i);
+  }
+  m
+}
+
 class Base {
   var k: nat
 
