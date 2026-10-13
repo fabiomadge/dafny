@@ -153,3 +153,8 @@ ghost predicate Sorted(s: seq<int>) {
 ghost predicate NestedFirst(s: seq<int>) {
   forall i | 0 < i < |s| :: (forall m | 0 <= m < i :: s[m] <= s[i - 1]) || s[i - 1] <= s[i]
 }
+
+// The term mentions the nested quantifier's variable, so only the nested quantifier can bind the new variable for it
+ghost predicate InnerVariable() {
+  forall i :: F(i) <= 0 || (forall j :: P(j) ==> F(i + j) > 0)
+}

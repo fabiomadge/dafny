@@ -1,57 +1,41 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Linq;
 
 namespace Microsoft.Dafny {
   public class ExprSubstituter : Substituter {
     readonly List<Tuple<Expression, IdentifierExpr>> exprSubstMap;
-    List<Tuple<Expression, IdentifierExpr>> usedSubstMap;
-    // For each quantifier being rewritten, the variables used in it rather than in a nested one
-    readonly Stack<HashSet<IdentifierExpr>> usedHere = new();
+    // For each quantifier being rewritten, the new variables that it binds: its own copies, for the terms that it uses
+    // itself
+    readonly Stack<List<(Tuple<Expression, IdentifierExpr> Entry, IdentifierExpr Variable)>> boundHere = new();
 
     public ExprSubstituter(List<Tuple<Expression, IdentifierExpr>> exprSubstMap)
       : base(null, new Dictionary<IVariable, Expression>(), new Dictionary<TypeParameter, Type>()) {
       this.exprSubstMap = exprSubstMap;
-      this.usedSubstMap = [];
-    }
-
-    public bool TryGetExprSubst(Expression expr, out IdentifierExpr ie) {
-      var entry = usedSubstMap.Find(x => Triggers.ExprExtensions.ExpressionEq(expr, x.Item1));
-      if (entry != null) {
-        ie = entry.Item2;
-        return true;
-      }
-      entry = exprSubstMap.Find(x => Triggers.ExprExtensions.ExpressionEq(expr, x.Item1));
-      if (entry != null) {
-        usedSubstMap.Add(entry);
-        ie = entry.Item2;
-        return true;
-      } else {
-        ie = null;
-        return false;
-      }
     }
 
     public override Expression Substitute(Expression expr) {
-      if (TryGetExprSubst(expr, out var ie)) {
-        Contract.Assert(ie != null);
-        usedHere.Peek().Add(ie);
-        return ie;
+      var named = exprSubstMap.Find(x => Triggers.ExprExtensions.ExpressionEq(expr, x.Item1));
+      if (named != null) {
+        var here = boundHere.Peek();
+        var variable = here.Find(b => b.Entry == named).Variable;
+        if (variable == null) {
+          variable = new IdentifierExpr(named.Item2.Origin, new BoundVar(named.Item2.Var.Origin, named.Item2.Var.Name, named.Item2.Var.Type));
+          here.Add((named, variable));
+        }
+        return variable;
       }
       if (expr is QuantifierExpr e) {
-        if (usedHere.Count != 0 && Attributes.Contains(e.Attributes, "trigger")) {
+        if (boundHere.Count != 0 && Attributes.Contains(e.Attributes, "trigger")) {
           // The triggers of this nested quantifier would not mention a new variable that it binds
           return e;
         }
-        usedHere.Push([]);
+        boundHere.Push([]);
         var newAttrs = SubstAttributes(e.Attributes);
         var newRange = e.Range == null ? null : Substitute(e.Range);
         var newTerm = Substitute(e.Term);
         var newBounds = SubstituteBoundedPoolList(e.Bounds);
-        var used = usedHere.Pop();
-        // Rebind the variables used here, which a nested quantifier bound and removed from usedSubstMap
-        usedSubstMap.AddRange(exprSubstMap.Where(entry => used.Contains(entry.Item2) && !usedSubstMap.Contains(entry)).ToList());
+        var bound = boundHere.Pop();
         if (newAttrs == e.Attributes && newRange == e.Range && newTerm == e.Term && newBounds == e.Bounds) {
           return e;
         }
@@ -64,18 +48,11 @@ namespace Microsoft.Dafny {
           newBounds = [.. newBounds];
         }
 
-        // A nested quantifier may have bound the same new variables, and a copy gives it its own
-        var renamer = new Substituter(null, new Dictionary<IVariable, Expression>(), new Dictionary<TypeParameter, Type>());
-        newRange = newRange == null ? null : renamer.Substitute(newRange);
-        newTerm = renamer.Substitute(newTerm);
-        newAttrs = renamer.SubstAttributes(newAttrs);
-        newBounds = [.. renamer.SubstituteBoundedPoolList(newBounds)];
-
         // conjoin all the new equalities to the range of the quantifier
-        foreach (var entry in usedSubstMap) {
-          var eq = new BinaryExpr(e.Origin, BinaryExpr.ResolvedOpcode.EqCommon, entry.Item2, entry.Item1);
+        foreach (var (entry, variable) in bound) {
+          var eq = new BinaryExpr(e.Origin, BinaryExpr.ResolvedOpcode.EqCommon, variable, entry.Item1);
           newRange = newRange == null ? eq : new BinaryExpr(e.Origin, BinaryExpr.ResolvedOpcode.And, eq, newRange);
-          newBoundVars.Add((BoundVar)entry.Item2.Var);
+          newBoundVars.Add((BoundVar)variable.Var);
           newBounds.Add(new ExactBoundedPool(entry.Item1));
         }
 
@@ -86,7 +63,6 @@ namespace Microsoft.Dafny {
           Contract.Assert(expr is ExistsExpr);
           newExpr = new ExistsExpr(e.Origin, newBoundVars, newRange, newTerm, newAttrs) { Bounds = newBounds };
         }
-        usedSubstMap.Clear();
 
         newExpr.Type = expr.Type;
         return newExpr;
