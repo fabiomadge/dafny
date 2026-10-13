@@ -152,6 +152,30 @@ lemma LambdaInLemma() {
   ghost var f := (y: C) requires y !in S => assert false; 0; // error
 }
 
+ghost function Depth(c: C, n: nat): nat {
+  if n == 0 then 0 else Depth(c, n - 1)
+}
+
+// Nor does an induction hypothesis cover such an object
+lemma {:induction c, n} InductionHypothesis(c: C, n: nat)
+  ensures Depth(c, n) == 0 && allocated(c)
+{
+  if n != 0 {
+    ghost var S := iset x: C | allocated(x);
+    ghost var f := (y: C) requires y !in S && Depth(y, n - 1) == 0 => var r: nat := -1; r; // error: -1 is not a nat
+  }
+}
+
+// Also for a two-state lemma's new parameter
+twostate lemma {:induction o, n} NewParameter(new o: C, n: nat)
+  ensures Depth(o, n) == 0 && allocated(o)
+{
+  if n != 0 {
+    ghost var S := iset x: C | allocated(x);
+    ghost var f := (y: C) requires y !in S && Depth(y, n - 1) == 0 => var r: nat := -1; r; // error: -1 is not a nat
+  }
+}
+
 ghost function Sum(n: nat): nat { if n == 0 then 0 else n + Sum(n - 1) }
 
 lemma SumFormula(n: nat)

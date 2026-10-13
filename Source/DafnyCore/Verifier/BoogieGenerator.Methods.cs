@@ -754,7 +754,7 @@ namespace Microsoft.Dafny {
             substMap.Add(iv, ie);
           }
           parBoundVars.Add(bv);
-          parBounds.Add(new SpecialAllocIndependenceAllocatedBoundedPool());  // record that we don't want alloc antecedents for these variables
+          parBounds.Add(new SpecialAllocIndependenceAllocatedBoundedPool());  // the additional range says where each is allocated
         }
 
         // Generate a CallStmt to be used as the body of the 'forall' statement.
@@ -799,21 +799,19 @@ namespace Microsoft.Dafny {
             DecreasesCheck(decrToks, null, decrCalleeDafny, decrCallerDafny, decrCallee, decrCaller, null, null, false, true));
         };
 
-        var additionalRange = decrCheck;
-        if (m is TwoStateLemma) {
-          // As a call does, require the receiver and the arguments for parameters that are not "new" to be allocated in
-          // the previous state
-          additionalRange = (decrSubstMap, exprTran) => {
-            var range = decrCheck(decrSubstMap, exprTran);
-            foreach (var (iv, bv) in inductionVars.Zip(parBoundVars)) {
-              if (iv is null or Formal { IsOld: true } &&
-                  GetWhereClause(bv.Origin, exprTran.TrExpr(decrSubstMap[bv]), bv.Type, exprTran.Old, ISALLOC, true) is { } isAlloc) {
-                range = BplAnd(range, isAlloc);
-              }
+        // As a call does, require the receiver and the arguments to be allocated, for a two-state lemma the receiver and
+        // the arguments for parameters that are not "new" in the previous state
+        ExpressionConverter additionalRange = (decrSubstMap, exprTran) => {
+          var range = decrCheck(decrSubstMap, exprTran);
+          foreach (var (iv, bv) in inductionVars.Zip(parBoundVars)) {
+            var state = m is TwoStateLemma && iv is null or Formal { IsOld: true } ? exprTran.Old : exprTran;
+            if (bv.Type.MayInvolveReferences &&
+                GetWhereClause(bv.Origin, exprTran.TrExpr(decrSubstMap[bv]), bv.Type, state, ISALLOC, true) is { } isAlloc) {
+              range = BplAnd(range, isAlloc);
             }
-            return range;
-          };
-        }
+          }
+          return range;
+        };
 
         var triggers = m.Attributes.AsEnumerable()
           .Where(attr => attr.Name is "inductionTrigger" or "_inductionTrigger")

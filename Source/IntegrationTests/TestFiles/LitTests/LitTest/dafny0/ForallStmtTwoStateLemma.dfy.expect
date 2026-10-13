@@ -2,6 +2,8 @@ ForallStmtTwoStateLemma.dfy(74,2): Warning: Could not find a trigger for this qu
 ForallStmtTwoStateLemma.dfy(94,2): Warning: Could not find a trigger for this quantifier. Without a trigger, the quantifier may cause brittle verification. To silence this warning, add an explicit trigger using the {:trigger} attribute. For more information, see the section on quantifier instantiation rules in the reference manual.
 ForallStmtTwoStateLemma.dfy(139,11): Warning: Could not find a trigger for this quantifier. Without a trigger, the quantifier may cause brittle verification. To silence this warning, add an explicit trigger using the {:trigger} attribute. For more information, see the section on quantifier instantiation rules in the reference manual.
 ForallStmtTwoStateLemma.dfy(148,17): Warning: Could not find a trigger for this quantifier. Without a trigger, the quantifier may cause brittle verification. To silence this warning, add an explicit trigger using the {:trigger} attribute. For more information, see the section on quantifier instantiation rules in the reference manual.
+ForallStmtTwoStateLemma.dfy(164,19): Warning: Could not find a trigger for this quantifier. Without a trigger, the quantifier may cause brittle verification. To silence this warning, add an explicit trigger using the {:trigger} attribute. For more information, see the section on quantifier instantiation rules in the reference manual.
+ForallStmtTwoStateLemma.dfy(174,19): Warning: Could not find a trigger for this quantifier. Without a trigger, the quantifier may cause brittle verification. To silence this warning, add an explicit trigger using the {:trigger} attribute. For more information, see the section on quantifier instantiation rules in the reference manual.
 ForallStmtTwoStateLemma.dfy(24,2): Error: assertion could not be proved
 ForallStmtTwoStateLemma.dfy(40,2): Error: assertion could not be proved
 ForallStmtTwoStateLemma.dfy(59,2): Error: assertion could not be proved
@@ -10,11 +12,13 @@ ForallStmtTwoStateLemma.dfy(97,2): Error: assertion could not be proved
 ForallStmtTwoStateLemma.dfy(114,2): Error: assertion could not be proved
 ForallStmtTwoStateLemma.dfy(143,43): Error: value does not satisfy the subset constraints of 'nat'
 ForallStmtTwoStateLemma.dfy(152,44): Error: assertion could not be proved
-ForallStmtTwoStateLemma.dfy(268,14): Error: a postcondition could not be proved on this return path
-ForallStmtTwoStateLemma.dfy(265,44): Related location: this is the postcondition that could not be proved
-ForallStmtTwoStateLemma.dfy(281,12): Error: a postcondition could not be proved on this return path
-ForallStmtTwoStateLemma.dfy(278,36): Related location: this is the postcondition that could not be proved
-ForallStmtTwoStateLemma.dfy(310,12): Error: a postcondition could not be proved on this return path
-ForallStmtTwoStateLemma.dfy(307,43): Related location: this is the postcondition that could not be proved
+ForallStmtTwoStateLemma.dfy(165,84): Error: value does not satisfy the subset constraints of 'nat'
+ForallStmtTwoStateLemma.dfy(175,84): Error: value does not satisfy the subset constraints of 'nat'
+ForallStmtTwoStateLemma.dfy(292,14): Error: a postcondition could not be proved on this return path
+ForallStmtTwoStateLemma.dfy(289,44): Related location: this is the postcondition that could not be proved
+ForallStmtTwoStateLemma.dfy(305,12): Error: a postcondition could not be proved on this return path
+ForallStmtTwoStateLemma.dfy(302,36): Related location: this is the postcondition that could not be proved
+ForallStmtTwoStateLemma.dfy(334,12): Error: a postcondition could not be proved on this return path
+ForallStmtTwoStateLemma.dfy(331,43): Related location: this is the postcondition that could not be proved
 
-Dafny program verifier finished with 36 verified, 11 errors
+Dafny program verifier finished with 37 verified, 13 errors
