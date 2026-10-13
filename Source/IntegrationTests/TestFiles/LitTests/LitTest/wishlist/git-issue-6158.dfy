@@ -1,9 +1,9 @@
 // RUN: %exits-with 4 %verify "%s" > "%t"
 // RUN: %diff "%s.expect" "%t"
 
-// The following program previously showed an unsoundness in the Dafny 4.10 / Boogie / Z3 4.12.1
-// tool stack. The soundness bug was fixed in Z3 4.16.0, so this program now correctly fails
-// to verify (as expected).
+// The following program showed an unsoundness in the Dafny 4.10 / Boogie / Z3 4.12.1 tool stack: to
+// break a matching loop, Dafny replaced j + lsb(j) with a variable whose range assumed that lsb's
+// precondition holds for every j. Dafny keeps a term with a call, so the program fails to verify.
 
 function lsb(i: nat): nat
   requires i > 0
