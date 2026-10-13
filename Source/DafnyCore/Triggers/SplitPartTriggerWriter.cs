@@ -104,8 +104,13 @@ class SplitPartTriggerWriter {
 
     var expr = (QuantifierExpr)Comprehension;
     if (substMap.Count > 0) {
-      var s = new ExprSubstituter(substMap);
+      var s = new ExprSubstituter(substMap, reporter.Options);
       expr = s.Substitute(Comprehension) as QuantifierExpr;
+      if (s.Replacements == 0 || (s.Failed && !nameAnyTerm)) {
+        // No range around a term has its variables in scope, or no term occurs as such, as in a let that the trigger
+        // generator looked through, so the rewrite would leave the loop
+        return false;
+      }
       NamedExpressions.AddRange(substMap);
     } else {
       // make a copy of the expr

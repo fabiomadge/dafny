@@ -1,5 +1,6 @@
-// RUN: %exits-with 4 %verify --allow-warnings "%s" > "%t"
+// RUN: %exits-with 4 %verify --allow-warnings --rprint "%t.rprint.dfy" "%s" > "%t"
 // RUN: %diff "%s.expect" "%t"
+// RUN: %OutputCheck --file-to-check "%t.rprint.dfy" "%s"
 
 // To break a matching loop, the trigger generator replaces a term with a new variable, which the quantifier's range
 // defines outside the term's guards and possibly in another state. Each assertion false below would follow if it
@@ -156,8 +157,8 @@ lemma PartialNaming(c: C)
 {
 }
 
-// The nested quantifier uses i + 1 too, but its own trigger would not mention a new variable that it bound, so the
-// rewrite leaves it as it is
+// The nested quantifier uses i + 1 too, but its own trigger would not mention a new variable that it bound, so it
+// refers to the enclosing quantifier's
 ghost predicate FirstDescent(a: seq<int>) {
   exists i :: 0 <= i < |a| - 1 && a[i] > a[i + 1] && (forall j {:trigger a[j]} :: 0 <= j < i ==> a[j] <= a[i + 1])
 }
@@ -186,7 +187,9 @@ lemma UseNestedOnly()
 }
 
 // The enclosing quantifier needs the new variable for i - 1, which the nested quantifier does not use, and in a function
-// body, which the verifier substitutes into, the two quantifiers must not bind the same variable
+// body, which the verifier substitutes into, the two quantifiers must not bind the same variable. The nested quantifier
+// keeps the trigger that the trigger generator selects for it.
+// CHECK: forall m: int \{:trigger s\[m\]\}
 ghost predicate Sorted(s: seq<int>) {
   forall i | 0 < i < |s| :: s[i - 1] <= s[i] || (forall m | 0 <= m < i :: s[m] <= s[i])
 }
@@ -199,4 +202,47 @@ ghost predicate NestedFirst(s: seq<int>) {
 // The term mentions the nested quantifier's variable, so only the nested quantifier can bind the new variable for it
 ghost predicate InnerVariable() {
   forall i :: F(i) <= 0 || (forall j :: P(j) ==> F(i + j) > 0)
+}
+
+ghost predicate R(j: int)
+ghost predicate P2(i: int, j: int)
+function Pow(n: nat): nat { if n == 0 then 1 else 2 * Pow(n - 1) }
+
+// The nested quantifier's trigger gets the enclosing quantifier's new variable for j + 1 too, which breaks the loop of
+// R(j) and R(j + 1)
+ghost predicate H() {
+  forall j :: R(j) ==> forall i {:trigger P2(i, j + 1)} :: P2(i, j + 1) ==> R(j + 1)
+}
+
+lemma UseH()
+  requires H() && R(5)
+  ensures forall i :: P2(i, 6) ==> R(6)
+{
+}
+
+// The nested quantifier mentions the let's variable, which the rewritten quantifier renames
+ghost predicate LetAround() {
+  forall i :: (var v :| v == i; exists w {:trigger P2(w, v)} :: P2(w, v)) || F(i) <= F(i + 1)
+}
+
+// The induction hypothesis has the postcondition's quantifier, with the trigger that the trigger generator selected
+lemma Exponent(n: nat)
+  ensures forall k :: P(k) ==> Pow(n) <= Pow(n + 1)
+{
+}
+
+// The trigger generator sees Pow(n + 1) through the let, but the induction hypothesis has no n + 1 to replace, so the
+// rewrite leaves it as it is
+lemma ThroughLet(n: nat)
+  ensures forall k :: P(k) ==> Pow(n) <= (var m := n; Pow(m + 1))
+{
+}
+
+datatype Instr = Branch(m: nat)
+
+// The match binds n, so no range around pc + n has it in scope, and the rewrite names nothing
+predicate WellTyped(ii: seq<Instr>, typing: seq<nat>)
+  requires forall pc :: 0 <= pc < |ii| ==> match ii[pc] case Branch(n) => pc + n < |typing|
+{
+  forall pc :: 0 <= pc < |ii| ==> match ii[pc] case Branch(n) => typing[pc + n] == typing[pc]
 }
