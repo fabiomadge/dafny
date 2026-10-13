@@ -72,3 +72,21 @@ module Caller {
     Callee.F(n)
   }
 }
+
+module SplitGuards {
+  predicate A(x: int) { x % 2 == 0 }
+  predicate B(x: int) { x % 3 == 0 }
+  predicate P(x: int)
+
+  // The trigger generator splits each case's binding guard into two parts, which are no binding guard, and a copy that
+  // replaces quantifiers by their parts, of a quantifier in a lambda or with an inlined let, keeps the guard
+  method InLambda() {
+    var f := (k: int) => forall n | 0 <= n < k ::
+      calc { A(2 * n); { if case x :| B(x) || (A(x) && A(x + 1)) => case true => } true; } B(3 * n);
+  }
+
+  lemma InLet()
+    requires forall x :: var z := x + 1; (assert true by { if case y :| A(y) || B(y + z) => case true => } P(z))
+  {
+  }
+}

@@ -1072,8 +1072,9 @@ namespace Microsoft.Dafny {
       if ((ReplaceSplitQuantifiers || substitutingParts) && e is QuantifierExpr { SplitQuantifier: not null } quantifierExpr) {
         if (forceSubstituteOfBoundVars) {
           return Substitute(quantifierExpr.SplitQuantifierExpression);
-        } else {
-          return SubstituteComprehensionExpr((ComprehensionExpr)quantifierExpr.SplitQuantifierExpression, false);
+        } else if (quantifierExpr.SplitQuantifierExpression is ComprehensionExpr part) {
+          // A binding guard keeps its variables, so only a single part can replace it
+          return SubstituteComprehensionExpr(part, false);
         }
       }
 

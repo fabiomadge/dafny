@@ -1,0 +1,1 @@
+Fix a crash, an `InvalidCastException`, on the binding guard of an `if case` whose condition Dafny splits, such as `case x :| B(x) || (A(x) && A(x + 1))`, inside a quantifier in a lambda or with a `let`
