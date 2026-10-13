@@ -8,6 +8,6 @@ module Client {
   import Library
 
   method Main() {
-    print Library.P(2), " ", Library.P(3), "\n";
+    print Library.P(2), " ", Library.P(3), " ", Library.Small(10), " ", Library.Small(11), "\n";
   }
 }
