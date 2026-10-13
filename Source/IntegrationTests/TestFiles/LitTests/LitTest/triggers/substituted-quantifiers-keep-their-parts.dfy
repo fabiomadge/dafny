@@ -14,6 +14,15 @@ module Induction {
     ensures Pow(n) >= 1 && forall k: nat :: k < 2 ==> Pow(k) <= Pow(k + n)
   {
   }
+
+  predicate P(k: int)
+
+  // The induction hypothesis copies the postcondition's quantifier, whose trigger P(k) the trigger generator selected,
+  // and the rewrite of its matching loop replaces n + 1 in the copy too
+  lemma PowMonotone(n: nat)
+    ensures forall k :: P(k) ==> Pow(n) <= Pow(n + 1)
+  {
+  }
 }
 
 module SuchThat {

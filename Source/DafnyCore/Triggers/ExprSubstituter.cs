@@ -36,10 +36,10 @@ namespace Microsoft.Dafny {
         return ie;
       }
       if (expr is QuantifierExpr e) {
-        if (e.TriggersSelected) {
-          // Rebuilding a quantifier whose triggers were selected already, as in a copy that {:autoReq} makes, from the
-          // quantifier as written would drop its parts and their triggers
-          return e;
+        if (e is { TriggersSelected: true, SplitQuantifier: not null }) {
+          // The verifier, for which the rewrite is, translates the parts of a copy of another module's quantifier,
+          // which have that module's triggers
+          return Substitute(e.SplitQuantifierExpression);
         }
         var newAttrs = SubstAttributes(e.Attributes);
         var newRange = e.Range == null ? null : Substitute(e.Range);
