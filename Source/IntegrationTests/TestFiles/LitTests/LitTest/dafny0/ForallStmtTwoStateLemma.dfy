@@ -120,8 +120,8 @@ lemma {:axiom} Prove(c: C)
   requires Chosen(c)
   ensures Proved(c)
 
-// In code that cannot allocate, the forall statement covers every object, such as a function's parameter, which need
-// not be allocated
+// A function without reads ** cannot depend on which objects are allocated, so its forall statement covers every
+// object, such as the function's parameter, which need not be allocated
 ghost function NotAllocated(x: C): bool
   ensures Chosen(x) ==> Proved(x)
 {
@@ -129,6 +129,27 @@ ghost function NotAllocated(x: C): bool
     Prove(c);
   }
   true
+}
+
+// A function with reads ** can, and its lambda is checked for any later heap, where y may be an object that no call
+// covered
+ghost function LambdaLater(): C ~> nat
+  reads **
+{
+  var S := iset x: C | allocated(x);
+  forall x: C | x !in S {
+    Allocated(x);
+  }
+  (y: C) requires y !in S => var r: nat := -1; r // error: -1 is not a nat
+}
+
+// So can a lemma
+lemma LambdaInLemma() {
+  ghost var S := iset x: C | allocated(x);
+  forall x: C | x !in S {
+    Allocated(x);
+  }
+  ghost var f := (y: C) requires y !in S => assert false; 0; // error
 }
 
 ghost function Sum(n: nat): nat { if n == 0 then 0 else n + Sum(n - 1) }

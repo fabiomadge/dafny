@@ -1,16 +1,20 @@
 ForallStmtTwoStateLemma.dfy(74,2): Warning: Could not find a trigger for this quantifier. Without a trigger, the quantifier may cause brittle verification. To silence this warning, add an explicit trigger using the {:trigger} attribute. For more information, see the section on quantifier instantiation rules in the reference manual.
 ForallStmtTwoStateLemma.dfy(94,2): Warning: Could not find a trigger for this quantifier. Without a trigger, the quantifier may cause brittle verification. To silence this warning, add an explicit trigger using the {:trigger} attribute. For more information, see the section on quantifier instantiation rules in the reference manual.
+ForallStmtTwoStateLemma.dfy(139,11): Warning: Could not find a trigger for this quantifier. Without a trigger, the quantifier may cause brittle verification. To silence this warning, add an explicit trigger using the {:trigger} attribute. For more information, see the section on quantifier instantiation rules in the reference manual.
+ForallStmtTwoStateLemma.dfy(148,17): Warning: Could not find a trigger for this quantifier. Without a trigger, the quantifier may cause brittle verification. To silence this warning, add an explicit trigger using the {:trigger} attribute. For more information, see the section on quantifier instantiation rules in the reference manual.
 ForallStmtTwoStateLemma.dfy(24,2): Error: assertion could not be proved
 ForallStmtTwoStateLemma.dfy(40,2): Error: assertion could not be proved
 ForallStmtTwoStateLemma.dfy(59,2): Error: assertion could not be proved
 ForallStmtTwoStateLemma.dfy(77,2): Error: assertion could not be proved
 ForallStmtTwoStateLemma.dfy(97,2): Error: assertion could not be proved
 ForallStmtTwoStateLemma.dfy(114,2): Error: assertion could not be proved
-ForallStmtTwoStateLemma.dfy(247,14): Error: a postcondition could not be proved on this return path
-ForallStmtTwoStateLemma.dfy(244,44): Related location: this is the postcondition that could not be proved
-ForallStmtTwoStateLemma.dfy(260,12): Error: a postcondition could not be proved on this return path
-ForallStmtTwoStateLemma.dfy(257,36): Related location: this is the postcondition that could not be proved
-ForallStmtTwoStateLemma.dfy(289,12): Error: a postcondition could not be proved on this return path
-ForallStmtTwoStateLemma.dfy(286,43): Related location: this is the postcondition that could not be proved
+ForallStmtTwoStateLemma.dfy(143,43): Error: value does not satisfy the subset constraints of 'nat'
+ForallStmtTwoStateLemma.dfy(152,44): Error: assertion could not be proved
+ForallStmtTwoStateLemma.dfy(268,14): Error: a postcondition could not be proved on this return path
+ForallStmtTwoStateLemma.dfy(265,44): Related location: this is the postcondition that could not be proved
+ForallStmtTwoStateLemma.dfy(281,12): Error: a postcondition could not be proved on this return path
+ForallStmtTwoStateLemma.dfy(278,36): Related location: this is the postcondition that could not be proved
+ForallStmtTwoStateLemma.dfy(310,12): Error: a postcondition could not be proved on this return path
+ForallStmtTwoStateLemma.dfy(307,43): Related location: this is the postcondition that could not be proved
 
-Dafny program verifier finished with 36 verified, 9 errors
+Dafny program verifier finished with 36 verified, 11 errors
