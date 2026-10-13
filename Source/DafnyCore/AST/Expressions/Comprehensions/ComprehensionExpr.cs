@@ -34,6 +34,12 @@ public abstract partial class ComprehensionExpr : Expression, IAttributeBearingD
   [FilledInDuringResolution] public List<BoundedPool?>? Bounds;
   // invariant Bounds == null || Bounds.Count == BoundVars.Count;
 
+  /// <summary>
+  /// Whether the trigger generator selected the triggers of the comprehension or of its parts, which a substitution
+  /// copies along with them
+  /// </summary>
+  internal bool TriggersSelected { get; set; }
+
   public List<BoundVar> UncompilableBoundVars() {
     var v = BoundedPool.PoolVirtues.Finite | BoundedPool.PoolVirtues.Enumerable;
     return BoundedPool.MissingBounds(BoundVars, Bounds, v);
@@ -56,6 +62,7 @@ public abstract partial class ComprehensionExpr : Expression, IAttributeBearingD
 
     if (cloner.CloneResolvedFields) {
       Bounds = original.Bounds?.Select(b => b?.Clone(cloner)).ToList();
+      TriggersSelected = original.TriggersSelected;
     }
   }
   public override IEnumerable<INode> Children =>

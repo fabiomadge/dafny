@@ -40,11 +40,6 @@ public abstract class QuantifierExpr : ComprehensionExpr, TypeParameter.ParentTy
 
   internal Expression? SplitQuantifierExpression { get; private set; }
 
-  /// <summary>
-  /// Whether the trigger generator selected the triggers of the parts, which a substitution copies along with them
-  /// </summary>
-  internal bool TriggersSelected { get; set; }
-
   static int FreshQuantId() {
     return System.Threading.Interlocked.Increment(ref currentQuantId);
   }
@@ -70,7 +65,6 @@ public abstract class QuantifierExpr : ComprehensionExpr, TypeParameter.ParentTy
     if (cloner.CloneResolvedFields) {
       if (original.SplitQuantifier != null) {
         SplitQuantifier = original.SplitQuantifier.Select(cloner.CloneExpr).ToList();
-        TriggersSelected = original.TriggersSelected;
       }
     }
     this.UniqueId = FreshQuantId();

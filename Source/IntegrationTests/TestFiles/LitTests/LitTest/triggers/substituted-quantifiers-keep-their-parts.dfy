@@ -61,10 +61,11 @@ module Callee {
 
   function F(n: int): int
     requires forall i :: 0 <= i < 5 ==> P(i, n) && P(i + 1, n)
+    requires |set i | 0 <= i < n && P(i, i + 1)| <= n
 }
 
-// {:autoReq} copies a precondition that another module split already. The copy keeps the parts and the triggers that
-// the other module selected, as the trigger generator would find none in terms that have n + 1
+// {:autoReq} copies the preconditions with the parts and triggers that the other module selected, which the trigger
+// generator would not find in terms that have n + 1, and does not select triggers, or warn about them, again
 module Caller {
   import Callee
 

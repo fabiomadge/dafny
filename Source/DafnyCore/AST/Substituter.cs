@@ -1098,7 +1098,9 @@ namespace Microsoft.Dafny {
           Contract.Assert(false); // unexpected ComprehensionExpr
         }
 
-        ((ComprehensionExpr)newExpr).Bounds = newBounds;
+        var copy = (ComprehensionExpr)newExpr;
+        copy.Bounds = newBounds;
+        copy.TriggersSelected = e.TriggersSelected;
       }
 
       // undo any changes to substMap (could be optimized to do this only if newBoundVars != e.BoundVars)
@@ -1108,11 +1110,9 @@ namespace Microsoft.Dafny {
 
       if (e is QuantifierExpr { SplitQuantifier: not null } splitQuantifier) {
         // Only the verifier translates the parts, so a quantifier in them needs only its own parts
-        var copy = (QuantifierExpr)newExpr;
         substitutingParts = true;
-        copy.SplitQuantifier = splitQuantifier.SplitQuantifier.ConvertAll(Substitute);
+        ((QuantifierExpr)newExpr).SplitQuantifier = splitQuantifier.SplitQuantifier.ConvertAll(Substitute);
         substitutingParts = false;
-        copy.TriggersSelected = splitQuantifier.TriggersSelected;
       }
 
       return newExpr;
