@@ -114,6 +114,23 @@ method AllocatedLater() {
   assert false; // error
 }
 
+ghost predicate Proved(c: C)
+
+lemma {:axiom} Prove(c: C)
+  requires Chosen(c)
+  ensures Proved(c)
+
+// In code that cannot allocate, the forall statement covers every object, such as a function's parameter, which need
+// not be allocated
+ghost function NotAllocated(x: C): bool
+  ensures Chosen(x) ==> Proved(x)
+{
+  forall c: C | Chosen(c) {
+    Prove(c);
+  }
+  true
+}
+
 ghost function Sum(n: nat): nat { if n == 0 then 0 else n + Sum(n - 1) }
 
 lemma SumFormula(n: nat)
