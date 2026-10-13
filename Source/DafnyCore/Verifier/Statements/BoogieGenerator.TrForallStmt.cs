@@ -182,7 +182,7 @@ public partial class BoogieGenerator {
         bounds = forallExpression.Bounds;
         range = forallExpression.Range;
       }
-      // As the definedness check, the exported postcondition covers only values allocated where the calls are
+      // As in the definedness check, the exported postcondition covers only values allocated where the calls are
       var typeAndAdditionalAntecedents = initEtran.TrBoundVariablesRename(boundVars, bvars, out substMap,
         BoundedPool.HasBounds(bounds, BoundedPool.PoolVirtues.IndependentOfAlloc_or_ExplicitAlloc));
       if (additionalRange != null) {
