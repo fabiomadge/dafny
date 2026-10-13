@@ -53,6 +53,15 @@ substituted-quantifiers-keep-their-parts.dfy(111,22): Info: auto requires post a
      if x: int :| A(x) {
      }
    } n >= 0;
+substituted-quantifiers-keep-their-parts.dfy(124,22): Info: auto requires post assert true by {
+     if y: int :| Q<int>(y) {
+       assert Q<int>(y);
+     }
+     if
+     case y: int :| Q<int>(y) =>
+       assert Q<int>(y);
+     case true =>
+   } true;
 substituted-quantifiers-keep-their-parts.dfy(95,25): Info: Selected triggers: {B(3 * n)}
 substituted-quantifiers-keep-their-parts.dfy(96,35): Info: Quantifier was split into 2 parts. Better verification performance and error reporting may be obtained by splitting the quantifier in source. For more information, see the section on quantifier instantiation rules in the reference manual.
 substituted-quantifiers-keep-their-parts.dfy(96,35): Info: Part #0 is 'B(x)'
@@ -63,5 +72,9 @@ substituted-quantifiers-keep-their-parts.dfy(100,13): Warning: Could not find a 
 substituted-quantifiers-keep-their-parts.dfy(100,69): Info: Selected triggers: {A(y)}
 substituted-quantifiers-keep-their-parts.dfy(105,36): Info: Selected triggers: {A(x)}
 substituted-quantifiers-keep-their-parts.dfy(105,36): Info: Selected triggers: {A(x)}
+substituted-quantifiers-keep-their-parts.dfy(118,39): Info: Selected triggers: {Q(y)}
+substituted-quantifiers-keep-their-parts.dfy(118,77): Info: Selected triggers: {Q(y)}
+substituted-quantifiers-keep-their-parts.dfy(118,39): Info: Selected triggers: {Q<int>(y)}
+substituted-quantifiers-keep-their-parts.dfy(118,77): Info: Selected triggers: {Q(y)}
 
-Dafny program verifier finished with 19 verified, 0 errors
+Dafny program verifier finished with 21 verified, 0 errors

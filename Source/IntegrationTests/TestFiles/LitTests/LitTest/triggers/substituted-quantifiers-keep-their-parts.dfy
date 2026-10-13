@@ -111,4 +111,17 @@ module SplitGuards {
   function {:autoReq} CallsGuarded(n: int): int {
     Guarded(n)
   }
+
+  predicate Q<T(!new)>(y: T)
+
+  function GuardedGeneric<T(!new)>(t: T): int
+    requires (assert true by { if y: T :| Q(y) { assert Q(y); } if case y: T :| Q(y) => assert Q(y); case true => } true)
+  {
+    0
+  }
+
+  // The copy of each binding guard has a y of type int, which the statement that it guards uses too
+  function {:autoReq} CallsGuardedGeneric(n: int): int {
+    GuardedGeneric(n)
+  }
 }
