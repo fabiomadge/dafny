@@ -229,6 +229,9 @@ namespace Microsoft.Dafny.Triggers {
         var triggerWriter = partWriters[index];
         triggerWriter.CommitTrigger(reporter, partWriters.Count > 1 ? index : null, systemModuleManager);
       }
+      if (comprehension is QuantifierExpr { SplitQuantifier: not null } quantifier) {
+        quantifier.TriggersSelected = true;
+      }
     }
 
     public List<List<Expression>> GetTriggers(bool includeTriggersThatRequireNamedExpressions) {

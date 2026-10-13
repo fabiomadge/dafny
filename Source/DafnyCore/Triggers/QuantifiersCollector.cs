@@ -62,6 +62,10 @@ namespace Microsoft.Dafny.Triggers {
       if (expr is ComprehensionExpr e && e.BoundVars.Count > 0 && !quantifiers.Contains(e)) {
         if (e is SetComprehension or MapComprehension) {
           AddComprehension(e, null);
+        } else if (e is QuantifierExpr { TriggersSelected: true } copy) {
+          // A copy of a quantifier whose triggers another module selected, as {:autoReq} makes, keeps them
+          quantifiers.Add(copy);
+          quantifiers.UnionWith(copy.SplitQuantifier);
         } else if (e is QuantifierExpr quantifier) {
           AddComprehension(quantifier, quantifier.SplitQuantifier);
         }

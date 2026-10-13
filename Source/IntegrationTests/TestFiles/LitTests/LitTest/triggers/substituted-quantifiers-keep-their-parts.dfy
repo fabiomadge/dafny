@@ -57,19 +57,19 @@ module TriggerCopies {
 }
 
 module Callee {
-  predicate P(x: int)
+  predicate P(i: int, n: int)
 
   function F(n: int): int
-    requires forall i :: 0 <= i < n ==> P(i)
+    requires forall i :: 0 <= i < 5 ==> P(i, n) && P(i + 1, n)
 }
 
-// {:autoReq} copies a precondition that another module split already, and this module splits the copy again, as it
-// splits a precondition of its own
+// {:autoReq} copies a precondition that another module split already. The copy keeps the parts and the triggers that
+// the other module selected, as the trigger generator would find none in terms that have n + 1
 module Caller {
   import Callee
 
   function {:autoReq} G(n: int): int {
-    Callee.F(n)
+    Callee.F(n + 1)
   }
 }
 

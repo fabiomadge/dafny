@@ -74,7 +74,7 @@ public class BottomUpVisitor {
     Visit(function.Decreases.Expressions);
     if (function.Body != null) { Visit(function.Body); }
   }
-  public void Visit(Expression expr) {
+  public virtual void Visit(Expression expr) {
     Contract.Requires(expr != null);
     // recursively visit all subexpressions and all substatements
     expr.SubExpressions.ForEach(Visit);
