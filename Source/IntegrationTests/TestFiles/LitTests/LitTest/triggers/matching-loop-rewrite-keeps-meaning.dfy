@@ -115,9 +115,10 @@ lemma PartialNaming(c: C)
 {
 }
 
-// The trigger of the nested quantifier would not mention a new variable, so the rewrite leaves that quantifier as it is
+// The nested quantifier uses i + 1 too, but its own trigger would not mention a new variable that it bound, so the
+// rewrite leaves it as it is
 ghost predicate FirstDescent(a: seq<int>) {
-  exists i :: 0 <= i < |a| - 1 && a[i] > a[i + 1] && (forall j {:trigger a[j]} :: 0 <= j < i ==> a[j] <= a[j + 1])
+  exists i :: 0 <= i < |a| - 1 && a[i] > a[i + 1] && (forall j {:trigger a[j]} :: 0 <= j < i ==> a[j] <= a[i + 1])
 }
 
 // The middle quantifier binds the new variable for x + 1 as well, which the innermost one takes
@@ -132,7 +133,7 @@ lemma {:induction n} Induction(n: nat)
 {
 }
 
-// The term occurs only in the nested quantifier, which binds the variable for it, so the enclosing one must not.
+// The term occurs only in the nested quantifier, which binds the variable for it, so the enclosing one must not
 ghost function NestedOnly(k: int): bool {
   forall i :: F(i) <= k || (forall j :: P(j) ==> F(i + 1) > j)
 }
@@ -143,8 +144,8 @@ lemma UseNestedOnly()
 {
 }
 
-// The nested quantifier binds the new variable for i - 1 as well, which the enclosing quantifier still needs, and in a
-// function body, which the verifier substitutes into, the two quantifiers must not bind the same variable.
+// The enclosing quantifier needs the new variable for i - 1, which the nested quantifier does not use, and in a function
+// body, which the verifier substitutes into, the two quantifiers must not bind the same variable
 ghost predicate Sorted(s: seq<int>) {
   forall i | 0 < i < |s| :: s[i - 1] <= s[i] || (forall m | 0 <= m < i :: s[m] <= s[i])
 }
