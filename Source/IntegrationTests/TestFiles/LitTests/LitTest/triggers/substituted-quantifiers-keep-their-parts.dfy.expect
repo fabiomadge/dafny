@@ -35,6 +35,10 @@ substituted-quantifiers-keep-their-parts.dfy(64,14): Warning: Could not find a t
 substituted-quantifiers-keep-their-parts.dfy(72,22): Info: auto requires post (forall i: int {:trigger P(i, n + 1)} :: 0 <= i && i < 5 ==> P(i, n + 1)) && forall i: int, _t#0: int | _t#0 == i + 1 :: 0 <= i && i < 5 ==> P(_t#0, n + 1);
  auto requires post |set i: int | 0 <= i && i < n + 1 && P(i, i + 1) :: i| <= n + 1;
 substituted-quantifiers-keep-their-parts.dfy(86,6): Info: <==
+substituted-quantifiers-keep-their-parts.dfy(101,22): Info: auto requires post assert true by {
+     if x: int :| A(x) {
+     }
+   } n >= 0;
 substituted-quantifiers-keep-their-parts.dfy(85,25): Info: Selected triggers: {B(3 * n)}
 substituted-quantifiers-keep-their-parts.dfy(86,35): Info: Quantifier was split into 2 parts. Better verification performance and error reporting may be obtained by splitting the quantifier in source. For more information, see the section on quantifier instantiation rules in the reference manual.
 substituted-quantifiers-keep-their-parts.dfy(86,35): Info: Part #0 is 'B(x)'
@@ -43,5 +47,7 @@ substituted-quantifiers-keep-their-parts.dfy(86,35): Info: Part #1 is 'A(x) && A
  Selected triggers: {A(_t#0), A(x)} where _t#0 := x + 1
 substituted-quantifiers-keep-their-parts.dfy(90,13): Warning: Could not find a trigger for this quantifier. Without a trigger, the quantifier may cause brittle verification. To silence this warning, add an explicit trigger using the {:trigger} attribute. For more information, see the section on quantifier instantiation rules in the reference manual.
 substituted-quantifiers-keep-their-parts.dfy(90,69): Info: Selected triggers: {A(y)}
+substituted-quantifiers-keep-their-parts.dfy(95,36): Info: Selected triggers: {A(x)}
+substituted-quantifiers-keep-their-parts.dfy(95,36): Info: Selected triggers: {A(x)}
 
-Dafny program verifier finished with 16 verified, 0 errors
+Dafny program verifier finished with 18 verified, 0 errors

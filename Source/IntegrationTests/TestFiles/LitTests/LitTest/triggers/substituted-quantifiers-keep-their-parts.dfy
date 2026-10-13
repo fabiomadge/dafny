@@ -90,4 +90,15 @@ module SplitGuards {
     requires forall x :: var z := x + 1; (assert true by { if case y :| A(y) || B(y + z) => case true => } P(z))
   {
   }
+
+  function Guarded(n: int): int
+    requires (assert true by { if x :| A(x) { } } n >= 0)
+  {
+    0
+  }
+
+  // The splitter visits the copy of the binding guard that {:autoReq} makes, which needs a type
+  function {:autoReq} CallsGuarded(n: int): int {
+    Guarded(n)
+  }
 }

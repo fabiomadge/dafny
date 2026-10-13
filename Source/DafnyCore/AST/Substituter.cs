@@ -1099,6 +1099,8 @@ namespace Microsoft.Dafny {
         }
 
         var copy = (ComprehensionExpr)newExpr;
+        // Substitute gives what it substitutes its type, but a statement's binding guard comes here directly
+        copy.Type = e.Type.Subst(typeMap);
         copy.Bounds = newBounds;
         copy.TriggersSelected = e.TriggersSelected;
       }
