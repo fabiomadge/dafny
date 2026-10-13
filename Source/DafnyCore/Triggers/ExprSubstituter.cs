@@ -36,6 +36,11 @@ namespace Microsoft.Dafny {
         return ie;
       }
       if (expr is QuantifierExpr e) {
+        if (e.TriggersSelected) {
+          // Rebuilding a quantifier whose triggers were selected already, as in a copy that {:autoReq} makes, from the
+          // quantifier as written would drop its parts and their triggers
+          return e;
+        }
         var newAttrs = SubstAttributes(e.Attributes);
         var newRange = e.Range == null ? null : Substitute(e.Range);
         var newTerm = Substitute(e.Term);

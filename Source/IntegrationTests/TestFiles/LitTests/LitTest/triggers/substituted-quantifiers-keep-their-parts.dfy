@@ -1,5 +1,6 @@
-// RUN: %verify --show-hints --allow-warnings "%s" > "%t"
+// RUN: %verify --show-hints --allow-warnings --rprint "%t.rprint.dfy" "%s" > "%t"
 // RUN: %diff "%s.expect" "%t"
+// RUN: %OutputCheck --file-to-check "%t.rprint.dfy" "%s"
 
 // The analyses below of the formula that the verifier translates see the parts of a quantifier that the trigger
 // generator split or rewrote, also where a substitution copied it
@@ -71,6 +72,15 @@ module Caller {
 
   function {:autoReq} G(n: int): int {
     Callee.F(n + 1)
+  }
+
+  predicate R(j: int)
+
+  // The rewrite of H's existential, which breaks the matching loop of R(j) and R(j + 1), keeps the parts of the copy in
+  // it and their triggers
+  // CHECK: \{:trigger P\(i, j\)\}
+  ghost predicate {:autoReq} H() {
+    exists j :: R(j) && Callee.F(j) == 0 && R(j + 1)
   }
 }
 

@@ -1,53 +1,67 @@
-substituted-quantifiers-keep-their-parts.dfy(8,11): Info: auto-accumulator tail recursive
-substituted-quantifiers-keep-their-parts.dfy(13,27): Info: Selected triggers: {Pow(_t#0), Pow(k)} where _t#0 := k + n
-substituted-quantifiers-keep-their-parts.dfy(8,11): Info: decreases n
-substituted-quantifiers-keep-their-parts.dfy(12,8): Info: {:induction n}
-substituted-quantifiers-keep-their-parts.dfy(12,8): Info: {:inductionTrigger Pow(n)}
-substituted-quantifiers-keep-their-parts.dfy(27,22): Info: Quantifier was split into 2 parts. Better verification performance and error reporting may be obtained by splitting the quantifier in source. For more information, see the section on quantifier instantiation rules in the reference manual.
-substituted-quantifiers-keep-their-parts.dfy(27,22): Info: Part #0 is 'B(i)'
+substituted-quantifiers-keep-their-parts.dfy(9,11): Info: auto-accumulator tail recursive
+substituted-quantifiers-keep-their-parts.dfy(14,27): Info: Selected triggers: {Pow(_t#0), Pow(k)} where _t#0 := k + n
+substituted-quantifiers-keep-their-parts.dfy(9,11): Info: decreases n
+substituted-quantifiers-keep-their-parts.dfy(13,8): Info: {:induction n}
+substituted-quantifiers-keep-their-parts.dfy(13,8): Info: {:inductionTrigger Pow(n)}
+substituted-quantifiers-keep-their-parts.dfy(28,22): Info: Quantifier was split into 2 parts. Better verification performance and error reporting may be obtained by splitting the quantifier in source. For more information, see the section on quantifier instantiation rules in the reference manual.
+substituted-quantifiers-keep-their-parts.dfy(28,22): Info: Part #0 is 'B(i)'
  Selected triggers: {B(i)}
-substituted-quantifiers-keep-their-parts.dfy(27,22): Info: Part #1 is 'A(i, d) && A(_t#0, d)'
+substituted-quantifiers-keep-their-parts.dfy(28,22): Info: Part #1 is 'A(i, d) && A(_t#0, d)'
  Selected triggers: {A(_t#0, d), A(i, d)} where _t#0 := i + 1
-substituted-quantifiers-keep-their-parts.dfy(31,51): Info: Quantifier was split into 2 parts. Better verification performance and error reporting may be obtained by splitting the quantifier in source. For more information, see the section on quantifier instantiation rules in the reference manual.
-substituted-quantifiers-keep-their-parts.dfy(31,51): Info: Part #0 is 'B(i)'
+substituted-quantifiers-keep-their-parts.dfy(32,51): Info: Quantifier was split into 2 parts. Better verification performance and error reporting may be obtained by splitting the quantifier in source. For more information, see the section on quantifier instantiation rules in the reference manual.
+substituted-quantifiers-keep-their-parts.dfy(32,51): Info: Part #0 is 'B(i)'
  Selected triggers: {B(i)}
-substituted-quantifiers-keep-their-parts.dfy(31,51): Info: Part #1 is 'A(i, d) && A(_t#0, d)'
+substituted-quantifiers-keep-their-parts.dfy(32,51): Info: Part #1 is 'A(i, d) && A(_t#0, d)'
  Selected triggers: {A(_t#0, d), A(i, d)} where _t#0 := i + 1
-substituted-quantifiers-keep-their-parts.dfy(37,16): Info: Quantifier was split into 2 parts. Better verification performance and error reporting may be obtained by splitting the quantifier in source. For more information, see the section on quantifier instantiation rules in the reference manual.
-substituted-quantifiers-keep-their-parts.dfy(37,16): Info: Part #0 is 'B(i)'
+substituted-quantifiers-keep-their-parts.dfy(38,16): Info: Quantifier was split into 2 parts. Better verification performance and error reporting may be obtained by splitting the quantifier in source. For more information, see the section on quantifier instantiation rules in the reference manual.
+substituted-quantifiers-keep-their-parts.dfy(38,16): Info: Part #0 is 'B(i)'
  Selected triggers: {B(i)}
-substituted-quantifiers-keep-their-parts.dfy(37,16): Info: Part #1 is 'A(i, d) && A(_t#0, d)'
+substituted-quantifiers-keep-their-parts.dfy(38,16): Info: Part #1 is 'A(i, d) && A(_t#0, d)'
  Selected triggers: {A(_t#0, d), A(i, d)} where _t#0 := i + 1
-substituted-quantifiers-keep-their-parts.dfy(42,11): Info: auto-accumulator tail recursive
-substituted-quantifiers-keep-their-parts.dfy(47,29): Info: Selected triggers: {Pow(_t#0), Pow(k)} where _t#0 := k + 5
-substituted-quantifiers-keep-their-parts.dfy(49,21): Info: Selected triggers: {Pow(n)} where _t#0 := k + n
-substituted-quantifiers-keep-their-parts.dfy(49,40): Info: Selected triggers: {Pow(_t#0), Pow(k)} where _t#0 := k + n
-substituted-quantifiers-keep-their-parts.dfy(53,13): Info: Selected triggers: {h(n)} (may loop with "h(k + n)") where _t#0 := k + n
-substituted-quantifiers-keep-their-parts.dfy(53,13): Warning: Triggers were added to this quantifier that may introduce matching loops, which may cause brittle verification. To silence this warning, add an explicit trigger using the {:trigger} attribute. For more information, see the section on quantifier instantiation rules in the reference manual.
-substituted-quantifiers-keep-their-parts.dfy(53,55): Info: Selected triggers: {h(_t#0), h(k)} where _t#0 := k + m
-substituted-quantifiers-keep-their-parts.dfy(42,11): Info: decreases n
-substituted-quantifiers-keep-their-parts.dfy(63,13): Info: Quantifier was split into 2 parts. Better verification performance and error reporting may be obtained by splitting the quantifier in source. For more information, see the section on quantifier instantiation rules in the reference manual.
-substituted-quantifiers-keep-their-parts.dfy(63,13): Info: Part #0 is '0 <= i < 5 ==> P(i, n)'
+substituted-quantifiers-keep-their-parts.dfy(43,11): Info: auto-accumulator tail recursive
+substituted-quantifiers-keep-their-parts.dfy(48,29): Info: Selected triggers: {Pow(_t#0), Pow(k)} where _t#0 := k + 5
+substituted-quantifiers-keep-their-parts.dfy(50,21): Info: Selected triggers: {Pow(n)} where _t#0 := k + n
+substituted-quantifiers-keep-their-parts.dfy(50,40): Info: Selected triggers: {Pow(_t#0), Pow(k)} where _t#0 := k + n
+substituted-quantifiers-keep-their-parts.dfy(54,13): Info: Selected triggers: {h(n)} (may loop with "h(k + n)") where _t#0 := k + n
+substituted-quantifiers-keep-their-parts.dfy(54,13): Warning: Triggers were added to this quantifier that may introduce matching loops, which may cause brittle verification. To silence this warning, add an explicit trigger using the {:trigger} attribute. For more information, see the section on quantifier instantiation rules in the reference manual.
+substituted-quantifiers-keep-their-parts.dfy(54,55): Info: Selected triggers: {h(_t#0), h(k)} where _t#0 := k + m
+substituted-quantifiers-keep-their-parts.dfy(43,11): Info: decreases n
+substituted-quantifiers-keep-their-parts.dfy(64,13): Info: Quantifier was split into 2 parts. Better verification performance and error reporting may be obtained by splitting the quantifier in source. For more information, see the section on quantifier instantiation rules in the reference manual.
+substituted-quantifiers-keep-their-parts.dfy(64,13): Info: Part #0 is '0 <= i < 5 ==> P(i, n)'
  Selected triggers: {P(i, n)}
-substituted-quantifiers-keep-their-parts.dfy(63,13): Info: Part #1 is '0 <= i && i < 5 ==> P(_t#0, n)'
-substituted-quantifiers-keep-their-parts.dfy(63,13): Warning: Could not find a trigger for this quantifier. Without a trigger, the quantifier may cause brittle verification. To silence this warning, add an explicit trigger using the {:trigger} attribute. For more information, see the section on quantifier instantiation rules in the reference manual.
-substituted-quantifiers-keep-their-parts.dfy(64,14): Warning: Could not find a trigger for this quantifier. Without a trigger, the quantifier may cause brittle verification. To silence this warning, add an explicit trigger using the {:trigger} attribute. For more information, see the section on quantifier instantiation rules in the reference manual.
-substituted-quantifiers-keep-their-parts.dfy(72,22): Info: auto requires post (forall i: int {:trigger P(i, n + 1)} :: 0 <= i && i < 5 ==> P(i, n + 1)) && forall i: int, _t#0: int | _t#0 == i + 1 :: 0 <= i && i < 5 ==> P(_t#0, n + 1);
+substituted-quantifiers-keep-their-parts.dfy(64,13): Info: Part #1 is '0 <= i && i < 5 ==> P(_t#0, n)'
+substituted-quantifiers-keep-their-parts.dfy(64,13): Warning: Could not find a trigger for this quantifier. Without a trigger, the quantifier may cause brittle verification. To silence this warning, add an explicit trigger using the {:trigger} attribute. For more information, see the section on quantifier instantiation rules in the reference manual.
+substituted-quantifiers-keep-their-parts.dfy(65,14): Warning: Could not find a trigger for this quantifier. Without a trigger, the quantifier may cause brittle verification. To silence this warning, add an explicit trigger using the {:trigger} attribute. For more information, see the section on quantifier instantiation rules in the reference manual.
+substituted-quantifiers-keep-their-parts.dfy(83,4): Info: autoreq added ((R(j) ==>
+   (forall i: int {:trigger P(i, j)} :: 
+     0 <= i &&
+     i < 5 ==>
+       P(i, j)) &&
+   forall i: int, _t#0: int | _t#0 == i + 1 :: 
+     0 <= i &&
+     i < 5 ==>
+       P(_t#0, j)) &&
+ (R(j) ==>
+   |set i: int | 0 <= i && i < j && P(i, i + 1) :: i| <= j)
+ ) &&
+substituted-quantifiers-keep-their-parts.dfy(73,22): Info: auto requires post (forall i: int {:trigger P(i, n + 1)} :: 0 <= i && i < 5 ==> P(i, n + 1)) && forall i: int, _t#0: int | _t#0 == i + 1 :: 0 <= i && i < 5 ==> P(_t#0, n + 1);
  auto requires post |set i: int | 0 <= i && i < n + 1 && P(i, i + 1) :: i| <= n + 1;
-substituted-quantifiers-keep-their-parts.dfy(86,6): Info: <==
-substituted-quantifiers-keep-their-parts.dfy(101,22): Info: auto requires post assert true by {
+substituted-quantifiers-keep-their-parts.dfy(83,4): Info: Selected triggers:
+   {R(_t#0), F(j)}, {R(_t#0), R(j)} where _t#0 := j + 1
+substituted-quantifiers-keep-their-parts.dfy(96,6): Info: <==
+substituted-quantifiers-keep-their-parts.dfy(111,22): Info: auto requires post assert true by {
      if x: int :| A(x) {
      }
    } n >= 0;
-substituted-quantifiers-keep-their-parts.dfy(85,25): Info: Selected triggers: {B(3 * n)}
-substituted-quantifiers-keep-their-parts.dfy(86,35): Info: Quantifier was split into 2 parts. Better verification performance and error reporting may be obtained by splitting the quantifier in source. For more information, see the section on quantifier instantiation rules in the reference manual.
-substituted-quantifiers-keep-their-parts.dfy(86,35): Info: Part #0 is 'B(x)'
+substituted-quantifiers-keep-their-parts.dfy(95,25): Info: Selected triggers: {B(3 * n)}
+substituted-quantifiers-keep-their-parts.dfy(96,35): Info: Quantifier was split into 2 parts. Better verification performance and error reporting may be obtained by splitting the quantifier in source. For more information, see the section on quantifier instantiation rules in the reference manual.
+substituted-quantifiers-keep-their-parts.dfy(96,35): Info: Part #0 is 'B(x)'
  Selected triggers: {B(x)}
-substituted-quantifiers-keep-their-parts.dfy(86,35): Info: Part #1 is 'A(x) && A(_t#0)'
+substituted-quantifiers-keep-their-parts.dfy(96,35): Info: Part #1 is 'A(x) && A(_t#0)'
  Selected triggers: {A(_t#0), A(x)} where _t#0 := x + 1
-substituted-quantifiers-keep-their-parts.dfy(90,13): Warning: Could not find a trigger for this quantifier. Without a trigger, the quantifier may cause brittle verification. To silence this warning, add an explicit trigger using the {:trigger} attribute. For more information, see the section on quantifier instantiation rules in the reference manual.
-substituted-quantifiers-keep-their-parts.dfy(90,69): Info: Selected triggers: {A(y)}
-substituted-quantifiers-keep-their-parts.dfy(95,36): Info: Selected triggers: {A(x)}
-substituted-quantifiers-keep-their-parts.dfy(95,36): Info: Selected triggers: {A(x)}
+substituted-quantifiers-keep-their-parts.dfy(100,13): Warning: Could not find a trigger for this quantifier. Without a trigger, the quantifier may cause brittle verification. To silence this warning, add an explicit trigger using the {:trigger} attribute. For more information, see the section on quantifier instantiation rules in the reference manual.
+substituted-quantifiers-keep-their-parts.dfy(100,69): Info: Selected triggers: {A(y)}
+substituted-quantifiers-keep-their-parts.dfy(105,36): Info: Selected triggers: {A(x)}
+substituted-quantifiers-keep-their-parts.dfy(105,36): Info: Selected triggers: {A(x)}
 
-Dafny program verifier finished with 18 verified, 0 errors
+Dafny program verifier finished with 19 verified, 0 errors
