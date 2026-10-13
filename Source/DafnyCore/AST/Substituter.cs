@@ -1134,9 +1134,10 @@ namespace Microsoft.Dafny {
 
       if (e is QuantifierExpr { SplitQuantifier: not null } splitQuantifier) {
         // Only the verifier translates the parts, so a quantifier in them needs only its own parts
+        var wasSubstitutingParts = substitutingParts;
         substitutingParts = true;
         ((QuantifierExpr)newExpr).SplitQuantifier = splitQuantifier.SplitQuantifier.ConvertAll(Substitute);
-        substitutingParts = false;
+        substitutingParts = wasSubstitutingParts;
       }
 
       return newExpr;
