@@ -212,10 +212,13 @@ public partial class BoogieGenerator {
 
       Bpl.Trigger tr = null;
       if (forallExpression != null) {
-        // The trigger generator chose these triggers for the forall expression, whose old also wraps the arguments,
-        // which the call evaluates in initHeap
-        var triggerEtran = new ExpressionTranslator(this, Predef, etran.HeapExpr, initHeap, etran.scope);
-        tr = TrTrigger(triggerEtran, forallExpression.Attributes, forallExpression.Origin, bvars, substMap, s0.MethodSelect.TypeArgumentSubstitutionsWithParents());
+        tr = TrTrigger(callEtran, forallExpression.Attributes, forallExpression.Origin, bvars, substMap, s0.MethodSelect.TypeArgumentSubstitutionsWithParents());
+        if (s0.Method is TwoStateLemma) {
+          // The trigger generator chose these triggers for the forall expression, whose old wraps the arguments too,
+          // which the call evaluates in initHeap, so a trigger's old may also mean initHeap
+          var argumentEtran = new ExpressionTranslator(this, Predef, etran.HeapExpr, initHeap, etran.scope);
+          tr?.AddLast(TrTrigger(argumentEtran, forallExpression.Attributes, forallExpression.Origin, bvars, substMap, s0.MethodSelect.TypeArgumentSubstitutionsWithParents()));
+        }
       } else if (triggers != null) {
         foreach (var trigger in triggers) {
           Contract.Assert(trigger.Count != 0);

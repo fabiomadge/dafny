@@ -174,6 +174,18 @@ method ArgumentInOld(b: Base, a: array<nat>)
   assert a.Length > 0 ==> b.Pow(a[0]) > 0;
 }
 
+// The only trigger is the lemma's own old(b.Pow(x)), and the assertion names it in the previous state
+method LemmaOld(b: Base)
+  requires b.k > 0
+  modifies b
+{
+  b.k := 0;
+  forall x | 0 <= x < 10 {
+    PowPositive(b, x);
+  }
+  assert old(b.Pow(5)) > 0;
+}
+
 ghost predicate T(x: Node?, n: int) { true }
 
 class Node {
