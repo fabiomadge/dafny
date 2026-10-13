@@ -2,6 +2,7 @@
 // RUN: %dafny /compile:3 "%s" %binaryDir/DafnyRuntime.dll %S/Output/MatchingLoopRewriteLib.dll >> "%t"
 // RUN: %diff "%s.expect" "%t"
 
+// As for dafny0/DafnyLibClient.dfy, the new CLI would include the Dafny runtime in both assemblies.
 // The library's assembly embeds the library's Dafny source, which Dafny parses again here.
 
 module Client {

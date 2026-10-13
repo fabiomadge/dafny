@@ -59,7 +59,7 @@ namespace Microsoft.Dafny.Triggers {
       }
 
       // only consider quantifiers that are not empty (Bound.Vars.Count > 0), and none whose triggers another module
-      // selected, as in a copy that {:autoReq} makes
+      // selected, as in a copy that {:autoReq} or a forall statement makes
       if (expr is ComprehensionExpr { TriggersSelected: false } e && e.BoundVars.Count > 0 && !quantifiers.Contains(e)) {
         if (e is SetComprehension or MapComprehension) {
           AddComprehension(e, null);

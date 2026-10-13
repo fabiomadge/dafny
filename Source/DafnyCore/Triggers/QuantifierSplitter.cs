@@ -106,8 +106,8 @@ namespace Microsoft.Dafny.Triggers {
     }
 
     protected override void VisitOneExpr(Expression expr) {
-      // A quantifier that is split already, or whose triggers another module selected, as in a copy that {:autoReq}
-      // makes, keeps its parts
+      // A quantifier that is split already, or whose triggers another module selected, as in a copy that {:autoReq} or
+      // a forall statement makes, keeps its parts
       if (expr is QuantifierExpr { SplitQuantifier: null, TriggersSelected: false } quantifier) {
         if (!splits.ContainsKey(quantifier) && AllowsSplitting(quantifier)) {
           splits[quantifier] = SplitQuantifier(quantifier).Select(e => {

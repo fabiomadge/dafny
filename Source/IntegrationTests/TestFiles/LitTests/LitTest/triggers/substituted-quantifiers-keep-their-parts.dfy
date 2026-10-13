@@ -121,6 +121,18 @@ module SplitGuards {
     Guarded(n)
   }
 
+  lemma GuardedLemma(n: int)
+    ensures (assert true by { if x :| A(x) { } } P(n) || !P(n))
+  {
+  }
+
+  // And the copy that a forall statement makes of the lemma's postcondition
+  method CallsGuardedLemma() {
+    forall n | 0 <= n < 3 {
+      GuardedLemma(n);
+    }
+  }
+
   predicate Q<T(!new)>(y: T)
 
   function GuardedGeneric<T(!new)>(t: T): int

@@ -55,7 +55,7 @@ substituted-quantifiers-keep-their-parts.dfy(120,22): Info: auto requires post a
      if x: int :| A(x) {
      }
    } n >= 0;
-substituted-quantifiers-keep-their-parts.dfy(133,22): Info: auto requires post assert true by {
+substituted-quantifiers-keep-their-parts.dfy(145,22): Info: auto requires post assert true by {
      if y: int :| Q<int>(y) {
        assert Q<int>(y);
      }
@@ -74,9 +74,16 @@ substituted-quantifiers-keep-their-parts.dfy(109,13): Warning: Could not find a 
 substituted-quantifiers-keep-their-parts.dfy(109,69): Info: Selected triggers: {A(y)}
 substituted-quantifiers-keep-their-parts.dfy(114,36): Info: Selected triggers: {A(x)}
 substituted-quantifiers-keep-their-parts.dfy(114,36): Info: Selected triggers: {A(x)}
-substituted-quantifiers-keep-their-parts.dfy(127,39): Info: Selected triggers: {Q(y)}
-substituted-quantifiers-keep-their-parts.dfy(127,77): Info: Selected triggers: {Q(y)}
-substituted-quantifiers-keep-their-parts.dfy(127,39): Info: Selected triggers: {Q<int>(y)}
-substituted-quantifiers-keep-their-parts.dfy(127,77): Info: Selected triggers: {Q(y)}
+substituted-quantifiers-keep-their-parts.dfy(125,35): Info: Selected triggers: {A(x)}
+substituted-quantifiers-keep-their-parts.dfy(131,4): Info: Selected triggers: {P(n)}
+substituted-quantifiers-keep-their-parts.dfy(125,35): Info: Selected triggers: {A(_'x)}
+substituted-quantifiers-keep-their-parts.dfy(139,39): Info: Selected triggers: {Q(y)}
+substituted-quantifiers-keep-their-parts.dfy(139,77): Info: Selected triggers: {Q(y)}
+substituted-quantifiers-keep-their-parts.dfy(139,39): Info: Selected triggers: {Q<int>(y)}
+substituted-quantifiers-keep-their-parts.dfy(139,77): Info: Selected triggers: {Q(y)}
+substituted-quantifiers-keep-their-parts.dfy(131,4): Info: ensures assert true by {
+     if _'x: int {:trigger A(_'x)} :| A(_'x) {
+     }
+   } P(n) || !P(n)
 
-Dafny program verifier finished with 23 verified, 0 errors
+Dafny program verifier finished with 26 verified, 0 errors
