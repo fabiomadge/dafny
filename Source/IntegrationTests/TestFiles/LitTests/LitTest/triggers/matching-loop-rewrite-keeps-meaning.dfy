@@ -102,6 +102,33 @@ lemma Replaced(s: seq<int>, S: set<int>, M: multiset<int>, m: map<int, int>, a: 
 {
 }
 
+const Step := 2
+datatype Window = Window(offset: int)
+
+class Strided {
+  const k: int
+  const h: int := k + Step
+
+  // Constants and destructors mean the same in every state, so the rewrite may replace the term and this quantifier
+  // gets no matching-loop warning
+  lemma Constants(w: Window, o: Strided)
+    requires forall i :: F(i) <= F(i + Step + k + h + w.offset + o.h)
+  {
+  }
+}
+
+class Generic<T> {
+  static const N: int := 3
+}
+
+// The initializer of o.h is known to be well-formed only for a non-null o, and the term equality may not tell
+// Generic<int>.N from Generic<nat>.N, so the rewrite leaves these quantifiers as they are
+lemma NotReplaced(o: Strided?)
+  requires forall i :: o != null ==> F(i) <= F(i + o.h)
+  requires forall i :: F(i) <= F(i + Generic<int>.N)
+{
+}
+
 // Each part of the split quantifier binds its own new variable, and neither part gets a trigger
 lemma SplitParts(s: seq<int>)
   requires forall i, j :: 0 <= j < |s| - 1 ==> F2(i, j) <= F2(i + 1, s[j + 1]) && F2(i, j) <= F2(i + 2, s[j + 1])
@@ -121,7 +148,7 @@ ghost predicate FirstDescent(a: seq<int>) {
   exists i :: 0 <= i < |a| - 1 && a[i] > a[i + 1] && (forall j {:trigger a[j]} :: 0 <= j < i ==> a[j] <= a[i + 1])
 }
 
-// The middle quantifier binds the new variable for x + 1 as well, which the innermost one takes
+// The middle and the innermost quantifier both use x + 1, and each binds its own new variable for it
 ghost predicate Deep() {
   forall x :: F(x) <= 0 || (forall y :: P(y) ==> F(x + 1) > 0 || (forall z :: P(z) ==> F(x + 1) > z))
 }
