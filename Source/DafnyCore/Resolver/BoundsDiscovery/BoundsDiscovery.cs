@@ -10,6 +10,13 @@ using System.Diagnostics.Contracts;
 
 namespace Microsoft.Dafny {
   public partial class ModuleResolver {
+    /// <summary>
+    /// Whether the code of a declaration can depend on which objects are allocated
+    /// </summary>
+    public static bool CanDependOnAllocation(object declaration) {
+      return declaration is not (Function { ReadsDoubleStar: false } or ConstantField or RedirectingTypeDecl);
+    }
+
     private class BoundsDiscoveryVisitor : ASTVisitor<BoundsDiscoveryVisitor.BoundsDiscoveryContext> {
       private readonly ModuleResolver resolver;
 
@@ -17,8 +24,7 @@ namespace Microsoft.Dafny {
         private readonly IASTVisitorContext astVisitorContext;
         readonly bool inLambdaExpression;
 
-        public bool AllowedToDependOnAllocationState =>
-          !(astVisitorContext is Function { ReadsDoubleStar: false } or ConstantField or RedirectingTypeDecl || inLambdaExpression);
+        public bool AllowedToDependOnAllocationState => CanDependOnAllocation(astVisitorContext) && !inLambdaExpression;
 
         public string Kind {
           get {

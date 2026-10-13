@@ -186,7 +186,7 @@ public partial class BoogieGenerator {
       // As in the definedness check, the exported postcondition covers only values allocated where the calls are, unless
       // the code cannot depend on which objects are allocated: elsewhere, code after the calls, such as a lambda, which
       // is checked for any later heap, can name an object that they did not cover
-      var allocatedOnly = CodeContextWrapper.Unwrap(codeContext) is not (Function { ReadsDoubleStar: false } or ConstantField or RedirectingTypeDecl);
+      var allocatedOnly = ModuleResolver.CanDependOnAllocation(CodeContextWrapper.Unwrap(codeContext));
       var typeAndAdditionalAntecedents = initEtran.TrBoundVariablesRename(boundVars, bvars, out substMap,
         allocatedOnly ? BoundedPool.HasBounds(bounds, BoundedPool.PoolVirtues.IndependentOfAlloc_or_ExplicitAlloc) : null);
       // A substitution, as of a function body, gives the forall expression its own copies of the statement's bound
