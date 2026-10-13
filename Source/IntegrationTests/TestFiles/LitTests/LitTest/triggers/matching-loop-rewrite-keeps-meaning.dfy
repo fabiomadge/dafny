@@ -129,6 +129,20 @@ lemma NotReplaced(o: Strided?)
 {
 }
 
+datatype Option<T> = None | Some(value: T)
+datatype Px = Px(x: int)
+datatype Qy = Qy(y: int)
+
+// For None, the CanCall assumptions of p.value.x and q.value.y would say that one value is both a Px and a Qy, once
+// F(0) instantiates the quantifier
+lemma NestedDestructors(p: Option<Px>, q: Option<Qy>)
+  requires p == None && q == None
+  requires forall i :: p.Some? && q.Some? ==> F(i) <= F(i + p.value.x + q.value.y)
+{
+  var _ := F(0);
+  assert false;
+}
+
 // Each part of the split quantifier binds its own new variable, and neither part gets a trigger
 lemma SplitParts(s: seq<int>)
   requires forall i, j :: 0 <= j < |s| - 1 ==> F2(i, j) <= F2(i + 1, s[j + 1]) && F2(i, j) <= F2(i + 2, s[j + 1])

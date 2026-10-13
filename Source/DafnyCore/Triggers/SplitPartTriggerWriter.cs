@@ -135,9 +135,10 @@ class SplitPartTriggerWriter {
   /// The range defines the new variable outside the guards of the term's occurrences and possibly in another state
   /// than theirs, as for an occurrence inside an "old" or a lambda, or in a forall statement's postcondition. So the
   /// term must mean the same in every state, call no function, as its CanCall assumption would lose the guards, and
-  /// have a type that does not constrain the variable. A constant's CanCall assumption is that of its initializer,
-  /// which is well-formed for a static constant and for any non-null object, and the term equality may not tell the
-  /// type arguments of a generic class apart.
+  /// have a type that does not constrain the variable. A destructor's CanCall assumption can say that the receiver has
+  /// one of the destructor's constructors, and a constant's is that of its initializer, which is well-formed for a
+  /// static constant and for any non-null object, so the receiver of either must be a variable or this, and a
+  /// constant's one that cannot be null. The term equality may not tell the type arguments of a generic class apart.
   /// </summary>
   private static bool CanBeNamed(Expression expr) {
     expr = expr.Resolved;
@@ -147,9 +148,12 @@ class SplitPartTriggerWriter {
     if (expr is MemberSelectExpr { Member: ConstantField { IsStatic: true } } constant) {
       return constant.TypeApplicationAtEnclosingClass.Count == 0;
     }
-    if (expr is MemberSelectExpr { Member: SpecialField { SpecialId: SpecialField.ID.ArrayLength } or ConstantField or DatatypeDestructor } select) {
-      return CanBeNamed(select.Obj) &&
+    if (expr is MemberSelectExpr { Member: ConstantField or DatatypeDestructor } select) {
+      return select.Obj.Resolved is IdentifierExpr or ThisExpr &&
              (select.Member is not ConstantField || !select.Obj.Type.IsRefType || select.Obj.Type.IsNonNullRefType);
+    }
+    if (expr is MemberSelectExpr { Member: SpecialField { SpecialId: SpecialField.ID.ArrayLength } } length) {
+      return CanBeNamed(length.Obj);
     }
     return expr.Type.NormalizeExpandKeepConstraints() is IntType or RealType or BoolType or BitvectorType &&
            expr switch {
