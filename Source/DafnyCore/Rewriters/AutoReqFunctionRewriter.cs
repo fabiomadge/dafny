@@ -144,7 +144,10 @@ public class AutoReqFunctionRewriter : IRewriter {
       }
 
       foreach (var req in f.Req) {
-        var sub = new AutoReqSubstituter(f_this, substMap, typeMap, systemModuleManager);
+        // This module splits the copy again, as a precondition of its own, also one that another module split already
+        var sub = new AutoReqSubstituter(f_this, substMap, typeMap, systemModuleManager) {
+          DropSplitQuantifierParts = true
+        };
         translated_f_reqs.Add(sub.Substitute(req.E));
       }
     }

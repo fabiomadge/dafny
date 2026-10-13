@@ -27,6 +27,7 @@ substituted-quantifiers-keep-their-parts.dfy(53,13): Warning: Triggers were adde
 substituted-quantifiers-keep-their-parts.dfy(53,55): Info: Selected triggers: {h(_t#0), h(k)} where _t#0 := k + m
 substituted-quantifiers-keep-their-parts.dfy(42,11): Info: decreases n
 substituted-quantifiers-keep-their-parts.dfy(63,13): Info: Selected triggers: {P(i)}
-substituted-quantifiers-keep-their-parts.dfy(70,22): Info: auto requires post forall i: int {:trigger P(i)} :: 0 <= i && i < n ==> P(i);
+substituted-quantifiers-keep-their-parts.dfy(71,22): Info: auto requires post forall i: int :: 0 <= i && i < n ==> P(i);
+substituted-quantifiers-keep-their-parts.dfy(63,13): Info: Selected triggers: {P(i)}
 
 Dafny program verifier finished with 12 verified, 0 errors

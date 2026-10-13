@@ -1,8 +1,8 @@
 // RUN: %verify --show-hints --allow-warnings "%s" > "%t"
 // RUN: %diff "%s.expect" "%t"
 
-// A substitution copies a quantifier that the trigger generator split or rewrote together with its parts, which the
-// verifier translates, so that the analyses of the translated formula below see them
+// The analyses below of the formula that the verifier translates see the parts of a quantifier that the trigger
+// generator split or rewrote, also where a substitution copied it
 
 module Induction {
   function Pow(n: nat): nat { if n == 0 then 1 else 2 * Pow(n - 1) }
@@ -63,7 +63,8 @@ module Callee {
     requires forall i :: 0 <= i < n ==> P(i)
 }
 
-// The precondition that {:autoReq} copies from another module is split already
+// {:autoReq} copies a precondition that another module split already, and this module splits the copy again, as it
+// splits a precondition of its own
 module Caller {
   import Callee
 

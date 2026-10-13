@@ -34,3 +34,22 @@ method Split(s: seq<int>, t: seq<int>)
 {
   var f := (k: int) => forall i | 0 <= i < |s| :: s[i] > 0 && 10 / s[(i + 1) % |s|] > t[i]; // error: division by zero
 }
+
+// {:autoReq} copies the callee's precondition into the caller's
+module Callee {
+  predicate P(x: int) { 0 <= x }
+
+  function F(m: int): int
+    requires forall j | 0 <= j < m && j != 1 && P(j) :: P(j + 10 / (j - 1)) || P(j)
+  {
+    0
+  }
+}
+
+module Caller {
+  import Callee
+
+  function {:autoReq} G(m: int): int {
+    Callee.F(m)
+  }
+}

@@ -27,6 +27,12 @@ namespace Microsoft.Dafny {
     /// </summary>
     public bool ReplaceSplitQuantifiers { get; init; }
 
+    /// <summary>
+    /// Whether such a quantifier is kept as written without its parts, as a copy that the trigger generator splits again
+    /// wants it.
+    /// </summary>
+    public bool DropSplitQuantifierParts { get; init; }
+
     private bool substitutingParts;
 
     public Substituter(Expression receiverReplacement, Dictionary<IVariable, Expression> substMap, Dictionary<TypeParameter, Type> typeMap, Label oldHeapLabel = null, SystemModuleManager systemModuleManager = null) {
@@ -1105,7 +1111,7 @@ namespace Microsoft.Dafny {
         substMap.Remove(bv);
       }
 
-      if (e is QuantifierExpr { SplitQuantifier: not null } splitQuantifier) {
+      if (e is QuantifierExpr { SplitQuantifier: not null } splitQuantifier && !DropSplitQuantifierParts) {
         // Only the verifier reads the parts, so a quantifier in them needs only its own parts
         substitutingParts = true;
         ((QuantifierExpr)newExpr).SplitQuantifier = splitQuantifier.SplitQuantifier.ConvertAll(Substitute);
