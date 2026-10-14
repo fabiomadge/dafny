@@ -26,7 +26,7 @@ class SplitPartTriggerWriter {
 
   private bool CouldSuppressLoops { get; set; }
 
-  // Whether the rewrite may name a term that CanBeNamed rejects, in a quantifier that is not verified
+  // Whether the rewrite may name any term, wherever it occurs, in a quantifier that is not verified
   private readonly bool nameAnyTerm;
 
   internal SplitPartTriggerWriter(ComprehensionExpr comprehension, bool nameAnyTerm = false) {
@@ -87,7 +87,7 @@ class SplitPartTriggerWriter {
       if (triggersCollector.IsPotentialTriggerCandidate(e) && triggersCollector.IsTriggerKiller(e)) {
         foreach (var sub in e.SubExpressions) {
           if (triggersCollector.IsTriggerKiller(sub) && (!triggersCollector.IsPotentialTriggerCandidate(sub))) {
-            if (!nameAnyTerm && !CanBeNamed(sub)) {
+            if (!nameAnyTerm && MayConflate(sub)) {
               // Naming only some of the terms that the loop runs through can leave no trigger
               return false;
             }
@@ -107,8 +107,8 @@ class SplitPartTriggerWriter {
       var s = new ExprSubstituter(substMap, reporter.Options);
       expr = s.Substitute(Comprehension) as QuantifierExpr;
       if (s.Replacements == 0 || (s.Failed && !nameAnyTerm)) {
-        // No range around a term has its variables in scope, or no term occurs as such, as in a let that the trigger
-        // generator looked through, so the rewrite would leave the loop
+        // A term cannot be defined where it occurs, or no term occurs as such, as in a let that the trigger generator
+        // looked through, so the rewrite would leave the loop
         return false;
       }
       NamedExpressions.AddRange(substMap);
@@ -137,38 +137,17 @@ class SplitPartTriggerWriter {
   }
 
   /// <summary>
-  /// The range defines the new variable outside the guards of the term's occurrences and possibly in another state
-  /// than theirs, as for an occurrence inside an "old" or a lambda, or in a forall statement's postcondition. So the
-  /// term must mean the same in every state, call no function, as its CanCall assumption would lose the guards, and
-  /// have a type that does not constrain the variable. A destructor's CanCall assumption can say that the receiver has
-  /// one of the destructor's constructors, and a constant's is that of its initializer, which is well-formed for a
-  /// static constant and for any non-null object, so the receiver of either must be a variable or this, and a
-  /// constant's one that cannot be null. The term equality may not tell the type arguments of a generic class apart.
+  /// Whether the term equality may take the term for one that means something else, as it ignores the labels of old
+  /// and of a two-state function's call, a call's type arguments, the fields in a lambda's reads clause, and the
+  /// difference between a static member's type arguments that are subset types of each other
   /// </summary>
-  private static bool CanBeNamed(Expression expr) {
+  private static bool MayConflate(Expression expr) {
     expr = expr.Resolved;
-    if (expr is IdentifierExpr or ThisExpr) {
-      return true;
-    }
-    if (expr is MemberSelectExpr { Member: ConstantField { IsStatic: true } } constant) {
-      return constant.TypeApplicationAtEnclosingClass.Count == 0;
-    }
-    if (expr is MemberSelectExpr { Member: ConstantField or DatatypeDestructor } select) {
-      return select.Obj.Resolved is IdentifierExpr or ThisExpr &&
-             (select.Member is not ConstantField || !select.Obj.Type.IsRefType || select.Obj.Type.IsNonNullRefType);
-    }
-    if (expr is MemberSelectExpr { Member: SpecialField { SpecialId: SpecialField.ID.ArrayLength } } length) {
-      return CanBeNamed(length.Obj);
-    }
-    return expr.Type.NormalizeExpandKeepConstraints() is IntType or RealType or BoolType or BitvectorType &&
-           expr switch {
-             LiteralExpr or ITEExpr or BinaryExpr => true,
-             UnaryOpExpr unary => unary.ResolvedOp is UnaryOpExpr.ResolvedOpcode.BoolNot or UnaryOpExpr.ResolvedOpcode.BVNot or
-               UnaryOpExpr.ResolvedOpcode.SeqLength or UnaryOpExpr.ResolvedOpcode.SetCard or
-               UnaryOpExpr.ResolvedOpcode.MultiSetCard or UnaryOpExpr.ResolvedOpcode.MapCard,
-             _ => false
-           } &&
-           expr.SubExpressions.All(CanBeNamed);
+    return expr is OldExpr or LambdaExpr or FunctionCallExpr { AtLabel: not null } ||
+           (expr is FunctionCallExpr call && (call.TypeApplication_AtEnclosingClass.Count != 0 || call.TypeApplication_JustFunction.Count != 0)) ||
+           (expr is MemberSelectExpr select && ((select.Member.IsStatic && select.TypeApplicationAtEnclosingClass.Count != 0) ||
+                                                select.TypeApplicationJustMember.Count != 0)) ||
+           expr.SubExpressions.Any(MayConflate);
   }
 
   // TODO Check whether this makes verification faster

@@ -1,4 +1,4 @@
-// RUN: %exits-with 4 %verify --show-hints "%s" > "%t"
+// RUN: %verify --show-hints "%s" > "%t"
 // RUN: %diff "%s.expect" "%t"
 
 ghost predicate P(i: int)
@@ -10,14 +10,14 @@ ghost predicate Q(i: int)
 lemma exists_0()
   requires P(0)
   ensures exists i {:split false} :: P(i) || (Q(i) ==> P(i+1)) {
-    // Fails: P(i) is not a trigger
+    // Works: the new variable for i+1 is defined only next to P(i+1), so the instance for P(0) and P(0) is a witness
 }
 
 lemma forall_0(i: int)
   requires forall j {:split false} :: j >= 0 ==> (P(j) && (Q(j) ==> P(j+1)))
   requires i >= 0
   ensures P(i) {
-    // Fails: P(i) is not a trigger
+    // Works: the new variable for j+1 is defined only next to P(j+1), so the instance for P(i) and P(i) gives P(i)
 }
 
 
