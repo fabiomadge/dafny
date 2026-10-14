@@ -9,11 +9,14 @@ namespace Microsoft.Dafny {
   /// rewritten around them. The variable v of a term t is defined next to each formula A that the quantifier's body
   /// reaches through connectives and that contains t: as "v == t ==> A" where A is positive in a forall or negative in
   /// an exists, and as "v == t && A" otherwise. For any other value of v, that makes a forall's body only weaker and an
-  /// exists's only stronger, so the quantifier keeps its meaning, and it evaluates t where it did if A evaluates t
-  /// whenever A is evaluated.
+  /// exists's only stronger, so the quantifier keeps its meaning. A term that may mean something else in another state
+  /// or outside its guards must be one that A evaluates whenever A is evaluated, so that its definition evaluates it
+  /// where it was.
   /// </summary>
   public class ExprSubstituter : Substituter {
     readonly List<Tuple<Expression, IdentifierExpr>> exprSubstMap;
+    // The terms that may mean something else in another state or outside their guards
+    readonly ISet<Tuple<Expression, IdentifierExpr>> local;
     readonly DafnyOptions options;
     readonly Stack<Frame> frames = new();
     // The variables in scope in the body of the innermost quantifier being rewritten
@@ -34,14 +37,16 @@ namespace Microsoft.Dafny {
 
     /// <summary>
     /// Whether a replaced term mentions a variable that a binder inside the quantifier binds, other than a quantifier
-    /// being rewritten, or occurs where the formula around it does not evaluate it whenever it is evaluated, or in
-    /// another state
+    /// being rewritten, or one that may mean something else in another state or outside its guards occurs where the
+    /// formula around it does not evaluate it whenever it is evaluated, or in another state
     /// </summary>
     public bool Failed { get; private set; }
 
-    public ExprSubstituter(List<Tuple<Expression, IdentifierExpr>> exprSubstMap, DafnyOptions options)
+    public ExprSubstituter(List<Tuple<Expression, IdentifierExpr>> exprSubstMap, ISet<Tuple<Expression, IdentifierExpr>> local,
+      DafnyOptions options)
       : base(null, new Dictionary<IVariable, Expression>(), new Dictionary<TypeParameter, Type>()) {
       this.exprSubstMap = exprSubstMap;
+      this.local = local;
       this.options = options;
     }
 
@@ -182,12 +187,13 @@ namespace Microsoft.Dafny {
     }
 
     /// <summary>
-    /// Fails if a term occurs in the formula where the formula does not evaluate it whenever it is evaluated, or in
-    /// another state
+    /// Fails if a term that may mean something else in another state or outside its guards occurs in the formula
+    /// where the formula does not evaluate it whenever it is evaluated, or in another state
     /// </summary>
     private void CheckOccurrences(Expression expr, bool unconditional) {
-      if (Named(expr) != null) {
-        Failed |= !unconditional;
+      var named = Named(expr);
+      if (named != null) {
+        Failed |= !unconditional && local.Contains(named);
         return;
       }
       switch (expr) {

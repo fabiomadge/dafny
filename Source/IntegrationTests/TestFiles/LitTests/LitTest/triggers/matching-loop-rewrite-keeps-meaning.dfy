@@ -210,6 +210,86 @@ method TypeArguments() {
   assert false;
 }
 
+function K(x: int): int
+
+// The term that the loop runs through calls TwoState without a label, which the term equality takes for a call with one
+method TwoStateUnlabeled(c: C)
+  requires c.f == 1
+  modifies c
+{
+  c.f := 0;
+  label L:
+  assume {:axiom} F(0) == 1 && F(1) == 0 && K(0) == 3;
+  assert forall i :: F(i) <= F(i + TwoState(c)) || K(i + TwoState@L(c)) == 7;
+}
+
+// It ignores the labels of fresh
+method FreshLabels() {
+  label A:
+  var o := new C;
+  label B:
+  assume {:axiom} F(0) == 1 && F(1) == 0;
+  assert forall i :: F(i) <= F(i + (if fresh@A(o) then 1 else 0)) || F(i + (if fresh@B(o) then 1 else 0)) == 7;
+}
+
+// And whether a string literal is verbatim: "\n" has one character, and @"\n" two
+method Verbatim() {
+  assume {:axiom} F(0) == 1 && F(1) == 0;
+  assert forall i :: F(i) <= F(i + |"\n"|) || F(i + |@"\n"|) == 7;
+}
+
+trait Animal {}
+class Cat extends Animal {}
+class Dog extends Animal {}
+
+// And the type that a type test tests
+method TypeTests(o: Animal)
+  requires o is Cat
+{
+  assume {:axiom} F(0) == 1 && F(1) == 0;
+  assert forall i :: F(i) <= F(i + (if o is Cat then 1 else 0)) || F(i + (if o is Dog then 1 else 0)) == 7;
+}
+
+// Two such terms in one formula would share the first one's definition, which makes even an assumption stronger
+method TypeTestsInOneFormula(o: Animal)
+  requires o is Cat
+{
+  assume {:axiom} F(0) == 1 && F(1) == 2 && Q(0);
+  assume {:axiom} forall i :: Q(i) ==> F(i) <= F(i + (if o is Cat then 1 else 0)) - F(i + (if o is Dog then 1 else 0));
+  assert false;
+}
+
+type Empty = x: int | false witness *
+
+// And it compares a comprehension's variables up to subset types
+method Comprehensions() {
+  assume {:axiom} F(0) == 1 && F(1) == 0;
+  assert forall i :: F(i) <= F(i + (if exists x: int :: true then 1 else 0)) || F(i + (if exists x: Empty :: true then 1 else 0)) == 7;
+}
+
+// i + 1 means the same everywhere, so a formula that evaluates it only sometimes may define its variable, and the
+// quantifier gets a trigger that matches F(n + 1)
+lemma IfBranch(c: bool, n: int)
+  requires c
+  requires forall i :: F(i) <= (if c then F(i + 1) else K(i))
+  ensures F(n) <= F(n + 1)
+{
+}
+
+// But a call's CanCall assumption would lose the guard
+method CallInBranch() {
+  assume {:axiom} F(0) == 0 && F(-1) == 0;
+  assume {:axiom} forall i :: F(i) <= (if NonNeg(i) then F(i + Half(i)) else F(i));
+  assert false;
+}
+
+// And b + 1 has a type that constrains its variable, which would have no value for b == 255
+method TypeInBranch() {
+  assume {:axiom} G(255) == 1;
+  assume {:axiom} forall b: Byte {:trigger G(b)} :: b < 255 ==> G(b) <= G(b + 1);
+  assert forall b: Byte :: G(b) <= (if b < 255 then G(b + 1) else 0);
+}
+
 // Each part of the split quantifier binds its own new variable, and neither part gets a trigger
 lemma SplitParts(s: seq<int>)
   requires forall i, j :: 0 <= j < |s| - 1 ==> F2(i, j) <= F2(i + 1, s[j + 1]) && F2(i, j) <= F2(i + 2, s[j + 1])

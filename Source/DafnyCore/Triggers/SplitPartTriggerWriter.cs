@@ -26,7 +26,7 @@ class SplitPartTriggerWriter {
 
   private bool CouldSuppressLoops { get; set; }
 
-  // Whether the rewrite may name any term, wherever it occurs, in a quantifier that is not verified
+  // Whether the rewrite may name a term that CanBeNamed rejects, in a quantifier that is not verified
   private readonly bool nameAnyTerm;
 
   internal SplitPartTriggerWriter(ComprehensionExpr comprehension, bool nameAnyTerm = false) {
@@ -82,12 +82,14 @@ class SplitPartTriggerWriter {
     // after:
     //    assert forall i,j :: j == i+1 ==> 0 <= i < a.Length-1 ==> a[i] <= a[j];
     var substMap = new List<Tuple<Expression, IdentifierExpr>>();
+    var local = new HashSet<Tuple<Expression, IdentifierExpr>>();
     foreach (var triggerMatch in loopingMatches) {
       var e = triggerMatch.OriginalExpr;
       if (triggersCollector.IsPotentialTriggerCandidate(e) && triggersCollector.IsTriggerKiller(e)) {
         foreach (var sub in e.SubExpressions) {
           if (triggersCollector.IsTriggerKiller(sub) && (!triggersCollector.IsPotentialTriggerCandidate(sub))) {
-            if (!nameAnyTerm && MayConflate(sub)) {
+            var safe = nameAnyTerm || CanBeNamed(sub);
+            if (!safe && MayConflate(sub)) {
               // Naming only some of the terms that the loop runs through can leave no trigger
               return false;
             }
@@ -95,7 +97,11 @@ class SplitPartTriggerWriter {
             if (entry == null) {
               var newBv = new BoundVar(sub.Origin, "_t#" + substMap.Count, sub.Type);
               var ie = new IdentifierExpr(sub.Origin, newBv.Name) { Var = newBv, Type = newBv.Type };
-              substMap.Add(new Tuple<Expression, IdentifierExpr>(sub, ie));
+              entry = new Tuple<Expression, IdentifierExpr>(sub, ie);
+              substMap.Add(entry);
+            }
+            if (!safe) {
+              local.Add(entry);
             }
           }
         }
@@ -104,7 +110,7 @@ class SplitPartTriggerWriter {
 
     var expr = (QuantifierExpr)Comprehension;
     if (substMap.Count > 0) {
-      var s = new ExprSubstituter(substMap, reporter.Options);
+      var s = new ExprSubstituter(substMap, local, reporter.Options);
       expr = s.Substitute(Comprehension) as QuantifierExpr;
       if (s.Replacements == 0 || (s.Failed && !nameAnyTerm)) {
         // A term cannot be defined where it occurs, or no term occurs as such, as in a let that the trigger generator
@@ -137,17 +143,55 @@ class SplitPartTriggerWriter {
   }
 
   /// <summary>
-  /// Whether the term equality may take the term for one that means something else, as it ignores the labels of old
-  /// and of a two-state function's call, a call's type arguments, the fields in a lambda's reads clause, and the
-  /// difference between a static member's type arguments that are subset types of each other
+  /// Whether the term means the same in every state and outside its guards, so that its variable may be defined next
+  /// to a formula that evaluates it only sometimes, or in another state, as inside an "old" or a lambda. So the term
+  /// must call no function, as its CanCall assumption would lose the guards, and have a type that does not constrain
+  /// the variable. A destructor's CanCall assumption can say that the receiver has
+  /// one of the destructor's constructors, and a constant's is that of its initializer, which is well-formed for a
+  /// static constant and for any non-null object, so the receiver of either must be a variable or this, and a
+  /// constant's one that cannot be null. The term equality may not tell the type arguments of a generic class apart.
+  /// </summary>
+  /// <summary>
+  /// Whether the term has an expression whose term equality ignores something that its meaning depends on: the labels
+  /// of old, fresh and two-state calls, the type that a type test tests, whether a string literal is verbatim, the
+  /// subset types of a comprehension's variables, and a call's type arguments or the subset types among a static
+  /// member's. Terms that the equality takes for each other have the same kinds of expressions in the same places, and
+  /// those call the same functions and select the same members, so checking one of them checks all.
   /// </summary>
   private static bool MayConflate(Expression expr) {
     expr = expr.Resolved;
-    return expr is OldExpr or LambdaExpr or FunctionCallExpr { AtLabel: not null } ||
+    return expr is OldExpr or FreshExpr or TypeTestExpr or StringLiteralExpr or ComprehensionExpr or
+             FunctionCallExpr { Function: TwoStateFunction } ||
            (expr is FunctionCallExpr call && (call.TypeApplication_AtEnclosingClass.Count != 0 || call.TypeApplication_JustFunction.Count != 0)) ||
            (expr is MemberSelectExpr select && ((select.Member.IsStatic && select.TypeApplicationAtEnclosingClass.Count != 0) ||
                                                 select.TypeApplicationJustMember.Count != 0)) ||
            expr.SubExpressions.Any(MayConflate);
+  }
+
+  private static bool CanBeNamed(Expression expr) {
+    expr = expr.Resolved;
+    if (expr is IdentifierExpr or ThisExpr) {
+      return true;
+    }
+    if (expr is MemberSelectExpr { Member: ConstantField { IsStatic: true } } constant) {
+      return constant.TypeApplicationAtEnclosingClass.Count == 0;
+    }
+    if (expr is MemberSelectExpr { Member: ConstantField or DatatypeDestructor } select) {
+      return select.Obj.Resolved is IdentifierExpr or ThisExpr &&
+             (select.Member is not ConstantField || !select.Obj.Type.IsRefType || select.Obj.Type.IsNonNullRefType);
+    }
+    if (expr is MemberSelectExpr { Member: SpecialField { SpecialId: SpecialField.ID.ArrayLength } } length) {
+      return CanBeNamed(length.Obj);
+    }
+    return expr.Type.NormalizeExpandKeepConstraints() is IntType or RealType or BoolType or BitvectorType &&
+           expr switch {
+             LiteralExpr or ITEExpr or BinaryExpr => true,
+             UnaryOpExpr unary => unary.ResolvedOp is UnaryOpExpr.ResolvedOpcode.BoolNot or UnaryOpExpr.ResolvedOpcode.BVNot or
+               UnaryOpExpr.ResolvedOpcode.SeqLength or UnaryOpExpr.ResolvedOpcode.SetCard or
+               UnaryOpExpr.ResolvedOpcode.MultiSetCard or UnaryOpExpr.ResolvedOpcode.MapCard,
+             _ => false
+           } &&
+           expr.SubExpressions.All(CanBeNamed);
   }
 
   // TODO Check whether this makes verification faster
