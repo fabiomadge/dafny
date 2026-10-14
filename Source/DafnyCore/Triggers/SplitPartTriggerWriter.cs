@@ -80,22 +80,23 @@ class SplitPartTriggerWriter {
     // before:
     //    assert forall i :: 0 <= i < a.Length-1 ==> a[i] <= a[i+1];
     // after:
-    //    assert forall i,j :: j == i+1 ==> 0 <= i < a.Length-1 ==> a[i] <= a[j];
+    //    assert forall i :: 0 <= i < a.Length-1 ==> forall j {:trigger a[j]} | j == i+1 :: a[i] <= a[j];
     var substMap = new List<Tuple<Expression, IdentifierExpr>>();
+    var local = new HashSet<Tuple<Expression, IdentifierExpr>>();
     foreach (var triggerMatch in loopingMatches) {
       var e = triggerMatch.OriginalExpr;
       if (triggersCollector.IsPotentialTriggerCandidate(e) && triggersCollector.IsTriggerKiller(e)) {
         foreach (var sub in e.SubExpressions) {
           if (triggersCollector.IsTriggerKiller(sub) && (!triggersCollector.IsPotentialTriggerCandidate(sub))) {
-            if (!nameAnyTerm && !CanBeNamed(sub)) {
-              // Naming only some of the terms that the loop runs through can leave no trigger
-              return false;
-            }
             var entry = substMap.Find(x => ExprExtensions.ExpressionEq(sub, x.Item1));
             if (entry == null) {
               var newBv = new BoundVar(sub.Origin, "_t#" + substMap.Count, sub.Type);
               var ie = new IdentifierExpr(sub.Origin, newBv.Name) { Var = newBv, Type = newBv.Type };
-              substMap.Add(new Tuple<Expression, IdentifierExpr>(sub, ie));
+              entry = new Tuple<Expression, IdentifierExpr>(sub, ie);
+              substMap.Add(entry);
+            }
+            if (!nameAnyTerm && !CanBeNamed(sub)) {
+              local.Add(entry);
             }
           }
         }
@@ -104,11 +105,11 @@ class SplitPartTriggerWriter {
 
     var expr = (QuantifierExpr)Comprehension;
     if (substMap.Count > 0) {
-      var s = new ExprSubstituter(substMap, reporter.Options);
-      expr = s.Substitute(Comprehension) as QuantifierExpr;
+      var s = new ExprSubstituter(substMap, local, triggersCollector, reporter.Options);
+      expr = s.Rewrite(expr);
       if (s.Replacements == 0 || (s.Failed && !nameAnyTerm)) {
-        // No range around a term has its variables in scope, or no term occurs as such, as in a let that the trigger
-        // generator looked through, so the rewrite would leave the loop
+        // An occurrence cannot be defined next to the formula around it, or its trigger term be a trigger there, or no
+        // trigger term would have a new variable as an argument, so the rewrite cannot break the loop
         return false;
       }
       NamedExpressions.AddRange(substMap);
@@ -137,21 +138,20 @@ class SplitPartTriggerWriter {
   }
 
   /// <summary>
-  /// The range defines the new variable outside the guards of the term's occurrences and possibly in another state
-  /// than theirs, as for an occurrence inside an "old" or a lambda, or in a forall statement's postcondition. So the
-  /// term must mean the same in every state, call no function, as its CanCall assumption would lose the guards, and
-  /// have a type that does not constrain the variable. A destructor's CanCall assumption can say that the receiver has
-  /// one of the destructor's constructors, and a constant's is that of its initializer, which is well-formed for a
-  /// static constant and for any non-null object, so the receiver of either must be a variable or this, and a
-  /// constant's one that cannot be null. The term equality may not tell the type arguments of a generic class apart.
+  /// Whether the term means the same in every state and outside its guards, so that its variable may be defined next
+  /// to a formula that evaluates it only sometimes, or in another state, as inside an "old" or a lambda. So the term
+  /// must call no function, as its CanCall assumption would lose the guards, and have a type that does not constrain
+  /// the variable. A destructor's CanCall assumption can say that the receiver has one of the destructor's
+  /// constructors, and a constant's is that of its initializer, which is well-formed for a static constant and for any
+  /// non-null object, so the receiver of either must be a variable or this, and a constant's one that cannot be null.
   /// </summary>
-  private static bool CanBeNamed(Expression expr) {
+  internal static bool CanBeNamed(Expression expr) {
     expr = expr.Resolved;
     if (expr is IdentifierExpr or ThisExpr) {
       return true;
     }
-    if (expr is MemberSelectExpr { Member: ConstantField { IsStatic: true } } constant) {
-      return constant.TypeApplicationAtEnclosingClass.Count == 0;
+    if (expr is MemberSelectExpr { Member: ConstantField { IsStatic: true } }) {
+      return true;
     }
     if (expr is MemberSelectExpr { Member: ConstantField or DatatypeDestructor } select) {
       return select.Obj.Resolved is IdentifierExpr or ThisExpr &&

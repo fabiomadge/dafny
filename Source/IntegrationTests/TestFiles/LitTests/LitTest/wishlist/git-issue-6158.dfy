@@ -3,7 +3,7 @@
 
 // The following program showed an unsoundness in the Dafny 4.10 / Boogie / Z3 4.12.1 tool stack: to
 // break a matching loop, Dafny replaced j + lsb(j) with a variable whose range assumed that lsb's
-// precondition holds for every j. Dafny keeps a term with a call, so the program fails to verify.
+// precondition holds for every j. Dafny defines that variable next to j + lsb(j), so the program fails to verify.
 
 function lsb(i: nat): nat
   requires i > 0
