@@ -21,7 +21,7 @@ public class ExistsExpr : QuantifierExpr, ICloneable<ExistsExpr> {
   public ExistsExpr(Cloner cloner, ExistsExpr existsExpr) : base(cloner, existsExpr) {
   }
 
-  public override Expression LogicalBody(bool bypassSplitQuantifier = false) {
+  public override Expression LogicalBody() {
     if (Range == null) {
       return Term;
     }
@@ -37,10 +37,6 @@ public class ExistsExpr : QuantifierExpr, ICloneable<ExistsExpr> {
   /// Assumes the expression has been resolved.
   /// </summary>
   public Expression AlphaRename(string prefix) {
-    if (SplitQuantifierExpression is ExistsExpr splitQuantifierExpression) {
-      return splitQuantifierExpression.AlphaRename(prefix);
-    }
-
     var substMap = new Dictionary<IVariable, Expression>();
     var bvars = new List<BoundVar>();
     foreach (var bv in BoundVars) {

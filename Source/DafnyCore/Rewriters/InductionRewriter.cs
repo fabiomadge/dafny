@@ -317,7 +317,7 @@ public class InductionRewriter : IRewriter {
     }
 
     protected override void VisitOneExpr(Expression expr) {
-      if (expr is QuantifierExpr { SplitQuantifier: null } q) {
+      if (expr is QuantifierExpr q) {
         var attributes = q.Attributes;
         IndRewriter.ComputeInductionVariables(q.Origin, q.BoundVars, q.LogicalBody(), null, ref attributes);
         q.Attributes = attributes;
