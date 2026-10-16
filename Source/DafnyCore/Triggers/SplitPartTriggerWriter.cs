@@ -15,6 +15,10 @@ class SplitPartTriggerWriter {
   private List<TriggerCandidate> RejectedCandidates { get; }
   public List<Tuple<Expression, IdentifierExpr>> NamedExpressions { get; }
   private List<TriggerMatch> loopingMatches;
+  // The part as written while the triggers are selected on the matching-loop rewrite's copy, and the copy's variables
+  // for the terms that it names, with their terms
+  private ComprehensionExpr asWritten;
+  private readonly List<(BoundVar Variable, Expression Term)> names = [];
 
   private bool AllowsLoops {
     get {
@@ -75,8 +79,8 @@ class SplitPartTriggerWriter {
     // rewrite quantifier to avoid matching loops
     // before:
     //    assert forall i :: 0 <= i < a.Length-1 ==> a[i] <= a[i+1];
-    // after:
-    //    assert forall i,j :: j == i+1 ==> 0 <= i < a.Length-1 ==> a[i] <= a[j];
+    // after, in the verifier's translation:
+    //    assert forall i,j {:trigger a[i], a[j]} :: j == i+1 ==> 0 <= i < a.Length-1 ==> a[i] <= a[j];
     var substMap = new List<Tuple<Expression, IdentifierExpr>>();
     foreach (var triggerMatch in loopingMatches) {
       var e = triggerMatch.OriginalExpr;
@@ -96,9 +100,28 @@ class SplitPartTriggerWriter {
 
     var expr = (QuantifierExpr)Comprehension;
     if (substMap.Count > 0) {
-      var s = new ExprSubstituter(substMap);
-      expr = s.Substitute(Comprehension) as QuantifierExpr;
-      NamedExpressions.AddRange(substMap);
+      // The copy only selects the triggers. The verifier binds a variable to each term in its translation of the part as
+      // written, so a term must not mention a variable that the part binds inside.
+      var inScope = FreeVariablesUtil.ComputeFreeVariables(reporter.Options, Comprehension);
+      inScope.UnionWith(Comprehension.BoundVars);
+      var s = new NamedTermSubstituter(substMap.FindAll(x =>
+        FreeVariablesUtil.ComputeFreeVariables(reporter.Options, x.Item1).IsSubsetOf(inScope)), reporter.Options);
+      var range = expr.Range == null ? null : s.Substitute(expr.Range);
+      var term = s.Substitute(expr.Term);
+      var used = substMap.FindAll(s.Used.Contains);
+      names.AddRange(used.Select(x => ((BoundVar)x.Item2.Var, x.Item1)));
+      // The verifier's translation defines the variables too, which keeps the terms' own subterms as candidates
+      foreach (var (named, variable) in used) {
+        var definition = new BinaryExpr(expr.Origin, BinaryExpr.ResolvedOpcode.EqCommon, variable, named);
+        range = range == null ? definition : new BinaryExpr(expr.Origin, BinaryExpr.ResolvedOpcode.And, definition, range);
+      }
+      var boundVars = expr.BoundVars.Concat(names.Select(x => x.Variable)).ToList();
+      var bounds = expr.Bounds?.Concat(names.Select(x => (BoundedPool)new ExactBoundedPool(x.Term))).ToList();
+      var attributes = TriggerUtils.CopyAttributes(expr.Attributes);
+      expr = expr is ForallExpr
+        ? new ForallExpr(expr.Origin, boundVars, range, term, attributes) { Type = expr.Type, Bounds = bounds }
+        : new ExistsExpr(expr.Origin, boundVars, range, term, attributes) { Type = expr.Type, Bounds = bounds };
+      NamedExpressions.AddRange(used);
     } else {
       // make a copy of the expr
       if (expr is ForallExpr) {
@@ -111,6 +134,7 @@ class SplitPartTriggerWriter {
     }
     var qq = expr;
 
+    asWritten = Comprehension;
     Comprehension = qq;
     Candidates.Clear();
     CandidateTerms.Clear();
@@ -121,6 +145,53 @@ class SplitPartTriggerWriter {
     // don't rewrite the quantifier if we are not auto generate triggers.
     // This is because rewriting introduces new boundvars and will cause
     // user provided triggers not mention all boundvars
+  }
+
+  /// <summary>
+  /// Puts back the part as written once the triggers are selected on the matching-loop rewrite's copy, which only the
+  /// trigger generator sees
+  /// </summary>
+  internal void RestoreAsWritten() {
+    if (asWritten != null) {
+      Comprehension = asWritten;
+      asWritten = null;
+    }
+  }
+
+  /// <summary>
+  /// Replaces each term with its variable, except a term that reads the heap inside an "old" or a lambda, where it reads
+  /// another heap and the verifier does not replace it either
+  /// </summary>
+  private class NamedTermSubstituter : Substituter {
+    private readonly List<Tuple<Expression, IdentifierExpr>> heapFree;
+    private List<Tuple<Expression, IdentifierExpr>> terms;
+    public readonly HashSet<Tuple<Expression, IdentifierExpr>> Used = [];
+
+    public NamedTermSubstituter(List<Tuple<Expression, IdentifierExpr>> terms, DafnyOptions options)
+      : base(null, new Dictionary<IVariable, Expression>(), new Dictionary<TypeParameter, Type>()) {
+      this.terms = terms;
+      heapFree = terms.FindAll(x => {
+        var usesHeap = false;
+        FreeVariablesUtil.ComputeFreeVariables(options, x.Item1, new HashSet<IVariable>(), ref usesHeap);
+        return !usesHeap;
+      });
+    }
+
+    public override Expression Substitute(Expression expr) {
+      var entry = terms.Find(x => ExprExtensions.ExpressionEq(expr, x.Item1));
+      if (entry != null) {
+        Used.Add(entry);
+        return entry.Item2;
+      }
+      if (expr is OldExpr or LambdaExpr) {
+        var outer = terms;
+        terms = heapFree;
+        var result = base.Substitute(expr);
+        terms = outer;
+        return result;
+      }
+      return base.Substitute(expr);
+    }
   }
 
   // TODO Check whether this makes verification faster
@@ -209,10 +280,16 @@ class SplitPartTriggerWriter {
   }
 
   private void AddTriggerAttribute(SystemModuleManager systemModuleManager) {
+    // A trigger has each named term where the copy has its variable, and the verifier binds a variable to it
+    var terms = new Substituter(null, names.ToDictionary(x => (IVariable)x.Variable, x => x.Term), new Dictionary<TypeParameter, Type>());
     foreach (var candidate in Candidates) {
       Comprehension.Attributes = new Attributes("trigger",
-        candidate.Terms.ConvertAll(t => Expression.WrapAsParsedStructureIfNecessary(t.Expr, systemModuleManager)),
+        candidate.Terms.ConvertAll(t =>
+          Expression.WrapAsParsedStructureIfNecessary(names.Count == 0 ? t.Expr : terms.Substitute(t.Expr), systemModuleManager)),
         Comprehension.Attributes);
+    }
+    if (Candidates.Count != 0 && names.Count != 0) {
+      Comprehension.Attributes = new Attributes("_named", names.ConvertAll(x => x.Term), Comprehension.Attributes);
     }
   }
 

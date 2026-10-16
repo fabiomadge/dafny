@@ -325,9 +325,12 @@ namespace Microsoft.Dafny {
                 ihBody = BplImp(less, ihBody);
                 List<Variable> bvars = [];
                 Bpl.Expr typeAntecedent = etran.TrBoundVariables(kvars, bvars);  // no need to use allocation antecedent here, because the well-founded less-than ordering assures kk are allocated
+                var ihNames = new NamedTerms(this, e.Attributes, substMap);
+                bvars.AddRange(ihNames.Variables);
                 Bpl.Expr ih;
-                var tr = TrTrigger(etran, e.Attributes, expr.Origin, substMap);
-                ih = new Bpl.ForallExpr(expr.Origin, bvars, tr, BplImp(typeAntecedent, ihBody));
+                var tr = TrTrigger(etran, e.Attributes, expr.Origin, substMap, names: ihNames);
+                ih = new Bpl.ForallExpr(expr.Origin, bvars, tr,
+                  BplImp(BplAnd(ihNames.Definitions(etran), typeAntecedent), ihNames.Replace(etran, ihBody)));
 
                 // More precisely now:
                 //   (forall n :: n-has-expected-type && (forall k :: k < n ==> P(k)) && case0(n)   ==> P(n))
@@ -361,13 +364,16 @@ namespace Microsoft.Dafny {
                 foreach (var kase in caseProduct) {
                   var ante = BplAnd(BplAnd(typeAntecedent, ih), kase);
                   var etranBody = etran.LayerOffset(1);
-                  var bdy = etranBody.TrExpr(e.LogicalBody());
+                  var names = new NamedTerms(this, e.Attributes);
+                  ante = BplAnd(names.Definitions(etranBody), ante);
+                  var bdy = names.Replace(etranBody, etranBody.TrExpr(e.LogicalBody()));
                   Bpl.Expr q;
-                  var trig = TrTrigger(etranBody, e.Attributes, expr.Origin);
+                  var trig = TrTrigger(etranBody, e.Attributes, expr.Origin, names: names);
+                  var caseVars = bvars.Concat(names.Variables).ToList();
                   if (position) {
-                    q = new Bpl.ForallExpr(kase.tok, bvars, trig, BplImp(ante, bdy));
+                    q = new Bpl.ForallExpr(kase.tok, caseVars, trig, BplImp(ante, bdy));
                   } else {
-                    q = new Bpl.ExistsExpr(kase.tok, bvars, trig, BplAnd(ante, bdy));
+                    q = new Bpl.ExistsExpr(kase.tok, caseVars, trig, BplAnd(ante, bdy));
                   }
                   splits.Add(ToSplitExprInfo(SplitExprInfo.K.Checked, q));
                 }
