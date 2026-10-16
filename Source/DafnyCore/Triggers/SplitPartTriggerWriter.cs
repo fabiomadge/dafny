@@ -19,6 +19,10 @@ class SplitPartTriggerWriter {
   // for the terms that it names, with their terms
   private ComprehensionExpr asWritten;
   private readonly List<(BoundVar Variable, Expression Term)> names = [];
+  // The terms that the rewrites of enclosing quantifiers' loops ask the part to name, and those of all parts that break
+  // their loops, which the trigger generator selects triggers for after the quantifiers that enclose them
+  private readonly List<Expression> requested = [];
+  private readonly Dictionary<Expression, List<Expression>> requests;
 
   private bool AllowsLoops {
     get {
@@ -30,11 +34,17 @@ class SplitPartTriggerWriter {
 
   private bool CouldSuppressLoops { get; set; }
 
-  internal SplitPartTriggerWriter(ComprehensionExpr comprehension) {
+  internal SplitPartTriggerWriter(ComprehensionExpr comprehension, Dictionary<Expression, List<Expression>> requests = null) {
     this.Comprehension = comprehension;
     this.RejectedCandidates = [];
     this.NamedExpressions = [];
+    this.requests = requests;
+    if (NeedsAutoTriggers() && WantsMatchingLoopRewrite()) {
+      requests?.TryAdd(comprehension, requested);
+    }
   }
+
+  internal bool HasRequests => requested.Count != 0;
 
   internal void TrimInvalidTriggers() {
     Contract.Requires(CandidateTerms != null);
@@ -82,55 +92,38 @@ class SplitPartTriggerWriter {
     // after, in the verifier's translation:
     //    assert forall i,j {:trigger a[i], a[j]} :: j == i+1 ==> 0 <= i < a.Length-1 ==> a[i] <= a[j];
     var substMap = new List<Tuple<Expression, IdentifierExpr>>();
+    void Name(Expression sub) {
+      if (substMap.Find(x => ExprExtensions.ExpressionEq(sub, x.Item1)) == null) {
+        var newBv = new BoundVar(sub.Origin, "_t#" + substMap.Count, sub.Type);
+        var ie = new IdentifierExpr(sub.Origin, newBv.Name) { Var = newBv, Type = newBv.Type };
+        substMap.Add(new Tuple<Expression, IdentifierExpr>(sub, ie));
+      }
+    }
     foreach (var triggerMatch in loopingMatches) {
       var e = triggerMatch.OriginalExpr;
       if (triggersCollector.IsPotentialTriggerCandidate(e) && triggersCollector.IsTriggerKiller(e)) {
         foreach (var sub in e.SubExpressions) {
           if (triggersCollector.IsTriggerKiller(sub) && (!triggersCollector.IsPotentialTriggerCandidate(sub))) {
-            var entry = substMap.Find(x => ExprExtensions.ExpressionEq(sub, x.Item1));
-            if (entry == null) {
-              var newBv = new BoundVar(sub.Origin, "_t#" + substMap.Count, sub.Type);
-              var ie = new IdentifierExpr(sub.Origin, newBv.Name) { Var = newBv, Type = newBv.Type };
-              substMap.Add(new Tuple<Expression, IdentifierExpr>(sub, ie));
-            }
+            Name(sub);
           }
         }
       }
     }
+    requested.ForEach(Name);
 
     var expr = (QuantifierExpr)Comprehension;
     if (substMap.Count > 0) {
       // The copy only selects the triggers. The verifier binds a variable to each term in its translation of the part as
-      // written, so a term must not mention a variable that the part binds inside.
-      var inScope = FreeVariablesUtil.ComputeFreeVariables(reporter.Options, Comprehension);
-      inScope.UnionWith(Comprehension.BoundVars);
-      var s = new NamedTermSubstituter(substMap.FindAll(x =>
-        FreeVariablesUtil.ComputeFreeVariables(reporter.Options, x.Item1).IsSubsetOf(inScope)), reporter.Options);
+      // written, or of the nested quantifier that the substituter asks to name the term.
+      var s = new NamedTermSubstituter(expr, substMap, requests, reporter.Options);
       var range = expr.Range == null ? null : s.Substitute(expr.Range);
       var term = s.Substitute(expr.Term);
-      var used = substMap.FindAll(s.Used.Contains);
+      var used = substMap.FindAll(x => s.Used.Contains(x.Item2));
       names.AddRange(used.Select(x => ((BoundVar)x.Item2.Var, x.Item1)));
-      // The verifier's translation defines the variables too, which keeps the terms' own subterms as candidates
-      foreach (var (named, variable) in used) {
-        var definition = new BinaryExpr(expr.Origin, BinaryExpr.ResolvedOpcode.EqCommon, variable, named);
-        range = range == null ? definition : new BinaryExpr(expr.Origin, BinaryExpr.ResolvedOpcode.And, definition, range);
-      }
-      var boundVars = expr.BoundVars.Concat(names.Select(x => x.Variable)).ToList();
-      var bounds = expr.Bounds?.Concat(names.Select(x => (BoundedPool)new ExactBoundedPool(x.Term))).ToList();
-      var attributes = TriggerUtils.CopyAttributes(expr.Attributes);
-      expr = expr is ForallExpr
-        ? new ForallExpr(expr.Origin, boundVars, range, term, attributes) { Type = expr.Type, Bounds = bounds }
-        : new ExistsExpr(expr.Origin, boundVars, range, term, attributes) { Type = expr.Type, Bounds = bounds };
       NamedExpressions.AddRange(used);
+      expr = Bind(expr, range, term, used);
     } else {
-      // make a copy of the expr
-      if (expr is ForallExpr) {
-        expr = new ForallExpr(expr.Origin, expr.BoundVars, expr.Range, expr.Term,
-          TriggerUtils.CopyAttributes(expr.Attributes)) { Type = expr.Type, Bounds = expr.Bounds };
-      } else {
-        expr = new ExistsExpr(expr.Origin, expr.BoundVars, expr.Range, expr.Term,
-          TriggerUtils.CopyAttributes(expr.Attributes)) { Type = expr.Type, Bounds = expr.Bounds };
-      }
+      expr = Bind(expr, expr.Range, expr.Term, []);
     }
     var qq = expr;
 
@@ -159,38 +152,143 @@ class SplitPartTriggerWriter {
   }
 
   /// <summary>
-  /// Replaces each term with its variable, except a term that reads the heap inside an "old" or a lambda, where it reads
-  /// another heap and the verifier does not replace it either
+  /// A copy of the quantifier with the range and term given that also binds each name's variable to its term, as the
+  /// verifier's translation does, which keeps the term's own subterms as candidates
+  /// </summary>
+  private static QuantifierExpr Bind(QuantifierExpr quantifier, Expression range, Expression term,
+    List<Tuple<Expression, IdentifierExpr>> names) {
+    foreach (var (named, variable) in names) {
+      var definition = new BinaryExpr(quantifier.Origin, BinaryExpr.ResolvedOpcode.EqCommon, variable, named);
+      range = range == null ? definition : new BinaryExpr(quantifier.Origin, BinaryExpr.ResolvedOpcode.And, definition, range);
+    }
+    var boundVars = quantifier.BoundVars.Concat(names.Select(x => (BoundVar)x.Item2.Var)).ToList();
+    var bounds = quantifier.Bounds?.Concat(names.Select(x => (BoundedPool)new ExactBoundedPool(x.Item1))).ToList();
+    var attributes = TriggerUtils.CopyAttributes(quantifier.Attributes);
+    return quantifier is ForallExpr
+      ? new ForallExpr(quantifier.Origin, boundVars, range, term, attributes) { Type = quantifier.Type, Bounds = bounds }
+      : new ExistsExpr(quantifier.Origin, boundVars, range, term, attributes) { Type = quantifier.Type, Bounds = bounds };
+  }
+
+  /// <summary>
+  /// Replaces each term with a variable bound where all of the term's variables are: the copy's own one, or else a fresh
+  /// one of the outermost quantifier nested in the part that binds the rest and that the substituter can ask to name the
+  /// term. A term that reads the heap is not replaced inside an "old" or a lambda, where it reads another heap and the
+  /// verifier does not replace it either.
   /// </summary>
   private class NamedTermSubstituter : Substituter {
-    private readonly List<Tuple<Expression, IdentifierExpr>> heapFree;
-    private List<Tuple<Expression, IdentifierExpr>> terms;
-    public readonly HashSet<Tuple<Expression, IdentifierExpr>> Used = [];
+    // Each term with its variables and whether it reads the heap, and the variable that replaces it where the
+    // substituter is
+    private readonly List<(Expression Term, ISet<IVariable> Variables, bool ReadsHeap)> terms = [];
+    private readonly Dictionary<Expression, IdentifierExpr> variables = [];
+    // The nested quantifiers that the substituter can ask to name terms: those that break their loops and that each
+    // instance of the part instantiates, as the solver gives the variables of the others a new value in each instance,
+    // and their terms with it continue the loop
+    private readonly HashSet<QuantifierExpr> askable = [];
+    private readonly Dictionary<Expression, List<Expression>> requests;
+    private ISet<IVariable> scope;
+    private bool otherHeap;
+    public readonly HashSet<IdentifierExpr> Used = [];
 
-    public NamedTermSubstituter(List<Tuple<Expression, IdentifierExpr>> terms, DafnyOptions options)
+    public NamedTermSubstituter(QuantifierExpr part, List<Tuple<Expression, IdentifierExpr>> substMap,
+      Dictionary<Expression, List<Expression>> requests, DafnyOptions options)
       : base(null, new Dictionary<IVariable, Expression>(), new Dictionary<TypeParameter, Type>()) {
-      this.terms = terms;
-      heapFree = terms.FindAll(x => {
-        var usesHeap = false;
-        FreeVariablesUtil.ComputeFreeVariables(options, x.Item1, new HashSet<IVariable>(), ref usesHeap);
-        return !usesHeap;
-      });
+      scope = FreeVariablesUtil.ComputeFreeVariables(options, part);
+      scope.UnionWith(part.BoundVars);
+      foreach (var (term, variable) in substMap) {
+        var termVariables = new HashSet<IVariable>();
+        var readsHeap = false;
+        FreeVariablesUtil.ComputeFreeVariables(options, term, termVariables, ref readsHeap);
+        terms.Add((term, termVariables, readsHeap));
+        if (termVariables.IsSubsetOf(scope)) {
+          variables.Add(term, variable);
+        }
+      }
+      this.requests = requests;
+      if (requests != null) {
+        AddAskable(part.Range, false);
+        AddAskable(part.Term, part is ForallExpr);
+      }
+    }
+
+    /// <summary>
+    /// Adds the askable quantifiers in expr, where a forall is universal wherever the part is if universalForall holds,
+    /// and an exists is if it does not
+    /// </summary>
+    private void AddAskable(Expression expr, bool universalForall) {
+      switch (expr) {
+        case QuantifierExpr { SplitQuantifier: not null } split:
+          AddAskable(split.SplitQuantifierExpression, universalForall);
+          break;
+        case QuantifierExpr nested:
+          if (nested is ForallExpr == universalForall && requests.ContainsKey(nested)) {
+            askable.Add(nested);
+          }
+          AddAskable(nested.Range, nested is ForallExpr ? !universalForall : universalForall);
+          AddAskable(nested.Term, universalForall);
+          break;
+        case UnaryOpExpr { ResolvedOp: UnaryOpExpr.ResolvedOpcode.BoolNot } not:
+          AddAskable(not.E, !universalForall);
+          break;
+        case BinaryExpr { ResolvedOp: BinaryExpr.ResolvedOpcode.And or BinaryExpr.ResolvedOpcode.Or or BinaryExpr.ResolvedOpcode.Imp } binary:
+          AddAskable(binary.E0, binary.ResolvedOp == BinaryExpr.ResolvedOpcode.Imp ? !universalForall : universalForall);
+          AddAskable(binary.E1, universalForall);
+          break;
+        case ITEExpr ite:
+          AddAskable(ite.Thn, universalForall);
+          AddAskable(ite.Els, universalForall);
+          break;
+        case LetExpr let:
+          AddAskable(let.Body, universalForall);
+          break;
+        case ConcreteSyntaxExpression syntax:
+          AddAskable(syntax.ResolvedExpression, universalForall);
+          break;
+      }
     }
 
     public override Expression Substitute(Expression expr) {
-      var entry = terms.Find(x => ExprExtensions.ExpressionEq(expr, x.Item1));
-      if (entry != null) {
-        Used.Add(entry);
-        return entry.Item2;
+      foreach (var (term, _, readsHeap) in terms) {
+        if (variables.TryGetValue(term, out var variable) && !(readsHeap && otherHeap) && ExprExtensions.ExpressionEq(expr, term)) {
+          Used.Add(variable);
+          return variable;
+        }
       }
-      if (expr is OldExpr or LambdaExpr) {
-        var outer = terms;
-        terms = heapFree;
-        var result = base.Substitute(expr);
-        terms = outer;
-        return result;
+      switch (expr) {
+        case OldExpr or LambdaExpr: {
+            var outer = otherHeap;
+            otherHeap = true;
+            var result = base.Substitute(expr);
+            otherHeap = outer;
+            return result;
+          }
+        case QuantifierExpr { SplitQuantifier: null } nested: {
+            var outer = scope;
+            scope = new HashSet<IVariable>(scope.Concat(nested.BoundVars));
+            var result = askable.Contains(nested) ? Ask(nested) : base.Substitute(expr);
+            scope = outer;
+            return result;
+          }
+        default:
+          return base.Substitute(expr);
       }
-      return base.Substitute(expr);
+    }
+
+    /// <summary>
+    /// A copy of the nested quantifier that binds a variable to each term that it uses and binds the rest of the
+    /// variables of, which the substituter asks the quantifier to name
+    /// </summary>
+    private QuantifierExpr Ask(QuantifierExpr nested) {
+      var fresh = terms.Where(t => !variables.ContainsKey(t.Term) && t.Variables.IsSubsetOf(scope))
+        .Select(t => new Tuple<Expression, IdentifierExpr>(t.Term,
+          new IdentifierExpr(t.Term.Origin, new BoundVar(t.Term.Origin, "_t", t.Term.Type))))
+        .ToList();
+      fresh.ForEach(x => variables.Add(x.Item1, x.Item2));
+      var range = nested.Range == null ? null : Substitute(nested.Range);
+      var term = Substitute(nested.Term);
+      fresh.ForEach(x => variables.Remove(x.Item1));
+      var names = fresh.FindAll(x => Used.Contains(x.Item2));
+      requests[nested].AddRange(names.Select(x => x.Item1));
+      return Bind(nested, range, term, names);
     }
   }
 

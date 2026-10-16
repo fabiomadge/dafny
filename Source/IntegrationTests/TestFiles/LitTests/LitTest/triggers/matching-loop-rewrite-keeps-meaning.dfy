@@ -361,12 +361,27 @@ ghost predicate NestedFirst(s: seq<int>) {
   forall i | 0 < i < |s| :: (forall m | 0 <= m < i :: s[m] <= s[i - 1]) || s[i - 1] <= s[i]
 }
 
-// The term mentions the nested quantifier's variable, so the enclosing quantifier cannot bind a variable to it
-ghost predicate InnerVariable() {
-  forall i :: F(i) <= 0 || (forall j :: P(j) ==> F(i + j) > 0)
+// The term mentions the nested quantifier's variable, so the enclosing quantifier's rewrite asks the nested quantifier to
+// bind a variable to it, defined by i + j for its j
+// CHECK: forall j: int \{:trigger F\(i \+ j\), P\(j\)\} /\*\{:_named i \+ j\}\*/ ::
+method InnerVariable() {
+  assume {:axiom} F(0) == 0 && F(1) == 1 && P(1);
+  assume {:axiom} forall i :: F(i) <= 0 || (forall j :: P(j) ==> F(i + j) > 1);
+  assert false;
 }
 
-// So does the term here, though the nested quantifier has a trigger of its own
+// But not an exists, as the solver gives j a new value in each instance of the enclosing quantifier, and F(i + j) with it
+// continues the loop
+ghost predicate InnerExists() {
+  forall i :: F(i) <= 0 || (exists j :: P(j) && F(i + j) > 0)
+}
+
+// Unless it is negated
+ghost predicate InnerNegatedExists() {
+  forall i :: F(i) <= 0 || !(exists j :: P(j) && F(i + j) <= 0)
+}
+
+// Nor a quantifier with a trigger of its own
 method InnerBinder() {
   assume {:axiom} P(0) && P(1);
   assume {:axiom} exists i :: forall j {:trigger P(j)} :: P(j) ==> F(i) <= F(i + j);

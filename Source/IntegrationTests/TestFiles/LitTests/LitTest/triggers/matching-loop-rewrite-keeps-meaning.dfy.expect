@@ -2,8 +2,8 @@ matching-loop-rewrite-keeps-meaning.dfy(72,18): Warning: Triggers were added to 
 matching-loop-rewrite-keeps-meaning.dfy(286,39): Warning: Could not find a trigger for this quantifier. Without a trigger, the quantifier may cause brittle verification. To silence this warning, add an explicit trigger using the {:trigger} attribute. For more information, see the section on quantifier instantiation rules in the reference manual.
 matching-loop-rewrite-keeps-meaning.dfy(286,90): Warning: Could not find a trigger for this quantifier. Without a trigger, the quantifier may cause brittle verification. To silence this warning, add an explicit trigger using the {:trigger} attribute. For more information, see the section on quantifier instantiation rules in the reference manual.
 matching-loop-rewrite-keeps-meaning.dfy(314,11): Warning: Could not find a trigger for this quantifier. Without a trigger, the quantifier may cause brittle verification. To silence this warning, add an explicit trigger using the {:trigger} attribute. For more information, see the section on quantifier instantiation rules in the reference manual.
-matching-loop-rewrite-keeps-meaning.dfy(366,2): Warning: Triggers were added to this quantifier that may introduce matching loops, which may cause brittle verification. To silence this warning, add an explicit trigger using the {:trigger} attribute. For more information, see the section on quantifier instantiation rules in the reference manual.
-matching-loop-rewrite-keeps-meaning.dfy(372,18): Warning: Triggers were added to this quantifier that may introduce matching loops, which may cause brittle verification. To silence this warning, add an explicit trigger using the {:trigger} attribute. For more information, see the section on quantifier instantiation rules in the reference manual.
+matching-loop-rewrite-keeps-meaning.dfy(376,2): Warning: Triggers were added to this quantifier that may introduce matching loops, which may cause brittle verification. To silence this warning, add an explicit trigger using the {:trigger} attribute. For more information, see the section on quantifier instantiation rules in the reference manual.
+matching-loop-rewrite-keeps-meaning.dfy(387,18): Warning: Triggers were added to this quantifier that may introduce matching loops, which may cause brittle verification. To silence this warning, add an explicit trigger using the {:trigger} attribute. For more information, see the section on quantifier instantiation rules in the reference manual.
 matching-loop-rewrite-keeps-meaning.dfy(336,21): Warning: Could not find a trigger for the induction hypothesis. Without a trigger, this may cause brittle verification. Change or remove the {:induction} attribute to generate a different induction hypothesis, or add {:nowarn} to silence this warning. For more information, see the section on quantifier instantiation rules in the reference manual.
 matching-loop-rewrite-keeps-meaning.dfy(35,2): Error: assertion could not be proved
 matching-loop-rewrite-keeps-meaning.dfy(42,2): Error: assertion could not be proved
@@ -31,8 +31,9 @@ matching-loop-rewrite-keeps-meaning.dfy(278,2): Error: assertion could not be pr
 matching-loop-rewrite-keeps-meaning.dfy(286,2): Error: assertion could not be proved
 matching-loop-rewrite-keeps-meaning.dfy(302,2): Error: assertion could not be proved
 matching-loop-rewrite-keeps-meaning.dfy(309,2): Error: assertion could not be proved
-matching-loop-rewrite-keeps-meaning.dfy(373,2): Error: assertion could not be proved
-matching-loop-rewrite-keeps-meaning.dfy(428,2): Error: assertion could not be proved
-matching-loop-rewrite-keeps-meaning.dfy(445,2): Error: assertion could not be proved
+matching-loop-rewrite-keeps-meaning.dfy(370,2): Error: assertion could not be proved
+matching-loop-rewrite-keeps-meaning.dfy(388,2): Error: assertion could not be proved
+matching-loop-rewrite-keeps-meaning.dfy(443,2): Error: assertion could not be proved
+matching-loop-rewrite-keeps-meaning.dfy(460,2): Error: assertion could not be proved
 
-Dafny program verifier finished with 32 verified, 29 errors
+Dafny program verifier finished with 32 verified, 30 errors
