@@ -14,3 +14,15 @@ lemma Sorted(a: array<int>, n: int)
   ensures a[n] <= a[n + 1]
 {
 }
+
+function F(x: int): int
+
+// So does the existence check of a :|, for the loop through F(x) and F(x + 1)
+// CHECK: \(exists \$as#x0#0: int, _t#[0-9]+: int ::
+// CHECK-NEXT: \{ _module.__default.F\(_t#[0-9]+\), _module.__default.F\(\$as#x0#0\) \}
+// CHECK-NEXT: _t#[0-9]+ == \$as#x0#0 \+ 1
+method SuchThat()
+  requires F(0) <= F(1)
+{
+  var x :| F(x) <= F(x + 1);
+}

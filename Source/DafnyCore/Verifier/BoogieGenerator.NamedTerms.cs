@@ -9,8 +9,8 @@ public partial class BoogieGenerator {
   /// <summary>
   /// The variables that the translation of a quantifier binds to the terms that the matching-loop rewrite named in it
   /// ({:_named}), so that its triggers can have a variable where they would have its term, which no trigger may
-  /// contain. A variable is defined by its term's translation and replaces just that Boogie term, outside an "old" and
-  /// the binders of the term's variables, so the translation means the same whatever the term is.
+  /// contain. A variable is defined by its term's translation and replaces just that Boogie term, outside the binders
+  /// of the term's variables, so the translation means the same whatever the term is.
   /// </summary>
   internal class NamedTerms {
     private readonly List<Expression> terms;
@@ -40,8 +40,9 @@ public partial class BoogieGenerator {
       if (terms.Count == 0) {
         return expr;
       }
-      var translations = Translations(etran);
-      return Mentions(translations, [expr]) ? (Bpl.Expr)new Replacer(translations).Visit(expr) : expr;
+      var replacer = new Replacer(Translations(etran));
+      var replaced = (Bpl.Expr)replacer.Visit(expr);
+      return replacer.Replaced ? replaced : expr;
     }
 
     /// <summary>
@@ -66,13 +67,6 @@ public partial class BoogieGenerator {
       return Variables.TrueForAll(variable => names.Names.Contains(variable.Name)) && !killers.Found;
     }
 
-    /// <summary>
-    /// Whether a trigger that the translator translated has one of the terms
-    /// </summary>
-    public bool Mentioned(ExpressionTranslator etran, List<Bpl.Expr> trigger) {
-      return terms.Count != 0 && Mentions(Translations(etran), trigger);
-    }
-
     private List<(Bpl.Expr Term, ISet<string> Names, Bpl.Variable Variable)> Translations(ExpressionTranslator etran) {
       return terms.Select((term, i) => {
         var translation = etran.TrExpr(term);
@@ -80,14 +74,6 @@ public partial class BoogieGenerator {
         names.Visit(translation);
         return (translation, (ISet<string>)names.Names, Variables[i]);
       }).ToList();
-    }
-
-    private static bool Mentions(List<(Bpl.Expr Term, ISet<string> Names, Bpl.Variable Variable)> translations, List<Bpl.Expr> trigger) {
-      return trigger.Exists(e => translations.Exists(t => {
-        var finder = new Finder(t.Term);
-        finder.Visit(e);
-        return finder.Found;
-      }));
     }
   }
 
@@ -116,10 +102,11 @@ public partial class BoogieGenerator {
   }
 
   /// <summary>
-  /// Replaces terms with variables, outside an "old" and binders of variables that a term mentions
+  /// Replaces terms with variables, outside binders of variables that a term mentions
   /// </summary>
   private class Replacer : Bpl.Duplicator {
     private List<(Bpl.Expr Term, ISet<string> Names, Bpl.Variable Variable)> terms;
+    public bool Replaced { get; private set; }
 
     public Replacer(List<(Bpl.Expr Term, ISet<string> Names, Bpl.Variable Variable)> terms) {
       this.terms = terms;
@@ -129,20 +116,12 @@ public partial class BoogieGenerator {
       if (node is Bpl.Expr expr) {
         foreach (var (term, _, variable) in terms) {
           if (SameTerm(term, expr)) {
+            Replaced = true;
             return new Bpl.IdentifierExpr(expr.tok, variable);
           }
         }
       }
       return base.Visit(node);
-    }
-
-    // The same expression may mean something else there
-    public override Bpl.Expr VisitOldExpr(Bpl.OldExpr node) {
-      return node;
-    }
-
-    public override Bpl.Expr VisitCodeExpr(Bpl.CodeExpr node) {
-      return node;
     }
 
     // Identifiers may refer to a binder's variables themselves
@@ -168,23 +147,6 @@ public partial class BoogieGenerator {
       var result = visit();
       terms = outer;
       return result;
-    }
-  }
-
-  private class Finder : Bpl.ReadOnlyVisitor {
-    private readonly Bpl.Expr term;
-    public bool Found { get; private set; }
-
-    public Finder(Bpl.Expr term) {
-      this.term = term;
-    }
-
-    public override Bpl.Absy Visit(Bpl.Absy node) {
-      if (node is Bpl.Expr expr && SameTerm(term, expr)) {
-        Found = true;
-        return node;
-      }
-      return base.Visit(node);
     }
   }
 

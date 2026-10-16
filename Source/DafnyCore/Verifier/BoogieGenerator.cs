@@ -4938,8 +4938,6 @@ namespace Microsoft.Dafny {
       Contract.Requires(etran != null);
       Contract.Requires(tok != null);
       var argsEtran = etran.WithNoLits();
-      // A trigger with a term that the matching-loop rewrite named needs the quantifier's variable for it
-      var unbound = names == null ? new NamedTerms(this, attribs, substMap) : null;
       Bpl.Trigger tr = null;
       foreach (var trigger in attribs.AsEnumerable().Where(aa => aa.Name == "trigger").Select(aa => aa.Args)) {
         List<Bpl.Expr> tt = [];
@@ -4952,7 +4950,7 @@ namespace Microsoft.Dafny {
           }
         }
 
-        if (tt.Count != 0 && (names?.Replace(argsEtran, tt) ?? !unbound.Mentioned(argsEtran, tt))) {
+        if (tt.Count != 0 && (names == null || names.Replace(argsEtran, tt))) {
           tr = new Bpl.Trigger(tok, true, tt, tr);
         }
       }
@@ -4964,8 +4962,6 @@ namespace Microsoft.Dafny {
       Contract.Requires(etran != null);
       Contract.Requires(tok != null);
       var argsEtran = etran.WithNoLits();
-      // A trigger with a term that the matching-loop rewrite named needs the quantifier's variable for it
-      var unbound = names == null ? new NamedTerms(this, attribs, substMap, typeMap) : null;
       Bpl.Trigger tr = null;
       var fueledTrigger = new Dictionary<List<Expression>, bool>();
       // translate the triggers once to see if fuel or the heap is used as quantifier boundvar
@@ -5001,7 +4997,7 @@ namespace Microsoft.Dafny {
         if (useHeapAsQuantifier) {
           tt.Add(FunctionCall(tok, BuiltinFunction.IsGoodHeap, null, argsEtran.HeapExpr));
         }
-        if (!(names?.Replace(argsEtran, tt) ?? !unbound.Mentioned(argsEtran, tt))) {
+        if (names != null && !names.Replace(argsEtran, tt)) {
           continue;
         }
         tr = new Bpl.Trigger(tok, true, tt, tr);

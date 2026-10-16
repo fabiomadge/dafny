@@ -443,10 +443,10 @@ method OtherFunction() {
   assert false;
 }
 
-// The existence check of a :| does not bind the variable for x + 1, so it drops the trigger with it
+// The existence check of a :| binds the variable for x + 1 too, and no x in 0..1 has F(x) <= F(x + 1)
 method SuchThat() {
-  assume {:axiom} F(0) <= F(1);
-  var x :| F(x) <= F(x + 1);
+  assume {:axiom} F(0) > F(1) && F(1) > F(2);
+  var x :| 0 <= x < 2 && F(x) <= F(x + 1);
 }
 
 // The let's right-hand side is evaluated where the let is, not where its variable occurs
