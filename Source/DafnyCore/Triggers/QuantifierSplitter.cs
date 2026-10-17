@@ -41,73 +41,108 @@ namespace Microsoft.Dafny.Triggers {
       return new UnaryOpExpr(expr.Origin, UnaryOpExpr.Opcode.Not, expr) { Type = expr.Type };
     }
 
-    private static IEnumerable<Expression> SplitExpr(Expression expr, BinaryExpr.Opcode separator) {
-      expr = expr.Resolved;
-      var binary = expr as BinaryExpr;
+    // The paths of the conjuncts of a quantifier as written, and of the expressions that they are in
+    private record Paths(ISet<BigInteger> Conjuncts) {
+      internal ISet<BigInteger> Prefixes { get; } = Conjuncts.SelectMany(Prefix).ToHashSet();
 
-      if (expr is UnaryOpExpr unary && unary.Op == UnaryOpExpr.Opcode.Not) {
-        foreach (var e in SplitExpr(unary.E, FlipOpcode(separator))) { yield return Not(e); }
-      } else if (binary != null && binary.Op == separator) {
-        if (Expression.IsBoolLiteral(binary.E0, out var b) && (binary.Op == BinaryExpr.Opcode.And ? b : !b)) {
-          // skip this unit element
-        } else {
-          foreach (var e in SplitExpr(binary.E0, separator)) { yield return e; }
+      private static IEnumerable<BigInteger> Prefix(BigInteger path) {
+        for (; path >= 1; path /= 2) {
+          yield return path;
         }
-        foreach (var e in SplitExpr(binary.E1, separator)) { yield return e; }
-      } else if (binary != null && binary.Op == BinaryExpr.Opcode.Imp && separator == BinaryExpr.Opcode.Or) {
-        foreach (var e in SplitExpr(Not(binary.E0), separator)) { yield return e; }
-        foreach (var e in SplitExpr(binary.E1, separator)) { yield return e; }
-      } else {
-        yield return expr;
       }
     }
 
-    internal static IEnumerable<Expression> SplitAndStitch(BinaryExpr pair, BinaryExpr.Opcode separator) {
-      foreach (var e1 in SplitExpr(pair.E1, separator)) {
+    /// <summary>
+    /// Adds the conjuncts of expr, or disjuncts, to conjuncts, each with its path: path for expr, the same for the
+    /// operand of a negation, and twice that of a binary expression for its first operand and one more for its second.
+    /// For a copy of the quantifier as written, which a substitution makes with the same binary expressions and
+    /// negations, it adds the subexpressions at the paths of the quantifier's conjuncts instead, and returns false if
+    /// the copy does not have those.
+    /// </summary>
+    private static bool SplitExpr(Expression expr, BinaryExpr.Opcode separator, BigInteger path,
+      List<(Expression Conjunct, BigInteger Path)> conjuncts, Paths asWritten) {
+      expr = expr.Resolved;
+      if (expr is UnaryOpExpr { Op: UnaryOpExpr.Opcode.Not } unary) {
+        var first = conjuncts.Count;
+        var split = SplitExpr(unary.E, FlipOpcode(separator), path, conjuncts, asWritten);
+        for (var i = first; i < conjuncts.Count; i++) {
+          conjuncts[i] = (Not(conjuncts[i].Conjunct), conjuncts[i].Path);
+        }
+        return split;
+      }
+      var binary = expr as BinaryExpr;
+      var isSeparator = binary != null && binary.Op == separator;
+      var isImplication = binary != null && binary.Op == BinaryExpr.Opcode.Imp && separator == BinaryExpr.Opcode.Or;
+      if (asWritten == null ? !isSeparator && !isImplication : asWritten.Conjuncts.Contains(path)) {
+        conjuncts.Add((expr, path));
+        return true;
+      }
+      if (!isSeparator && !isImplication) {
+        return false;
+      }
+      var unit = isSeparator && Expression.IsBoolLiteral(binary.E0, out var b) && (separator == BinaryExpr.Opcode.And ? b : !b);
+      if (asWritten?.Prefixes.Contains(2 * path) ?? !unit) {
+        if (!SplitExpr(isImplication ? Not(binary.E0) : binary.E0, separator, 2 * path, conjuncts, asWritten)) {
+          return false;
+        }
+      } else if (!unit) {
+        return false;
+      }
+      return SplitExpr(binary.E1, separator, 2 * path + 1, conjuncts, asWritten);
+    }
+
+    private static bool SplitAndStitch(BinaryExpr pair, BinaryExpr.Opcode separator,
+      List<(Expression Conjunct, BigInteger Path)> conjuncts, Paths asWritten) {
+      var first = conjuncts.Count;
+      var split = SplitExpr(pair.E1, separator, 1, conjuncts, asWritten);
+      for (var i = first; i < conjuncts.Count; i++) {
+        var (e1, path) = conjuncts[i];
         // Notice the token. This makes triggers/splitting-picks-the-right-tokens.dfy possible
         var nestedToken = new NestedOrigin(pair.Origin, e1.Origin);
-        yield return new BinaryExpr(nestedToken, pair.Op, pair.E0, e1) { ResolvedOp = pair.ResolvedOp, Type = pair.Type };
+        conjuncts[i] = (new BinaryExpr(nestedToken, pair.Op, pair.E0, e1) { ResolvedOp = pair.ResolvedOp, Type = pair.Type }, path);
       }
+      return split;
     }
 
-    private static IEnumerable<Expression> SplitQuantifier(ComprehensionExpr quantifier) {
+    /// <summary>
+    /// The quantifier's parts, one for each conjunct of a forall's body or disjunct of an exists's, with its path, or,
+    /// for a copy of the quantifier as written, one for each path of its conjuncts, or null if the copy does not have
+    /// those
+    /// </summary>
+    private static List<(QuantifierExpr Part, BigInteger Path)> SplitQuantifier(QuantifierExpr quantifier, Paths asWritten) {
       var body = quantifier.Term;
       var binary = body as BinaryExpr;
-
+      var conjuncts = new List<(Expression Conjunct, BigInteger Path)>();
+      bool split;
       if (quantifier is ForallExpr) {
-        IReadOnlyList<Expression> stream;
-        if (binary != null && (binary.Op == BinaryExpr.Opcode.Imp || binary.Op == BinaryExpr.Opcode.Or)) {
-          stream = SplitAndStitch(binary, BinaryExpr.Opcode.And).ToList();
-        } else {
-          stream = SplitExpr(body, BinaryExpr.Opcode.And).ToList();
-        }
-
-        foreach (var e in stream) {
-          yield return new ForallExpr(quantifier.Origin, quantifier.BoundVars, quantifier.Range, e, TriggerUtils.CopyAttributes(quantifier.Attributes)) { Type = quantifier.Type, Bounds = quantifier.Bounds };
-        }
-      } else if (quantifier is ExistsExpr) {
-        IReadOnlyList<Expression> stream;
-        if (binary != null && binary.Op == BinaryExpr.Opcode.And) {
-          stream = SplitAndStitch(binary, BinaryExpr.Opcode.Or).ToList();
-        } else {
-          stream = SplitExpr(body, BinaryExpr.Opcode.Or).ToList();
-        }
-        foreach (var e in stream) {
-          yield return new ExistsExpr(quantifier.Origin, quantifier.BoundVars, quantifier.Range, e, TriggerUtils.CopyAttributes(quantifier.Attributes)) { Type = quantifier.Type, Bounds = quantifier.Bounds };
-        }
+        split = binary != null && (binary.Op == BinaryExpr.Opcode.Imp || binary.Op == BinaryExpr.Opcode.Or)
+          ? SplitAndStitch(binary, BinaryExpr.Opcode.And, conjuncts, asWritten)
+          : SplitExpr(body, BinaryExpr.Opcode.And, 1, conjuncts, asWritten);
       } else {
-        yield return quantifier;
+        split = binary != null && binary.Op == BinaryExpr.Opcode.And
+          ? SplitAndStitch(binary, BinaryExpr.Opcode.Or, conjuncts, asWritten)
+          : SplitExpr(body, BinaryExpr.Opcode.Or, 1, conjuncts, asWritten);
       }
+      if (!split) {
+        return null;
+      }
+      return conjuncts.ConvertAll(conjunct => {
+        var attributes = TriggerUtils.CopyAttributes(quantifier.Attributes);
+        QuantifierExpr part = quantifier is ForallExpr
+          ? new ForallExpr(quantifier.Origin, quantifier.BoundVars, quantifier.Range, conjunct.Conjunct, attributes)
+          : new ExistsExpr(quantifier.Origin, quantifier.BoundVars, quantifier.Range, conjunct.Conjunct, attributes);
+        part.Type = quantifier.Type;
+        part.Bounds = quantifier.Bounds;
+        part.SetOrigin(new AutoGeneratedOrigin(part.Origin));
+        return (part, conjunct.Path);
+      });
     }
 
     /// <summary>
     /// The quantifier's parts, one for each conjunct of a forall's body or disjunct of an exists's
     /// </summary>
     internal static List<QuantifierExpr> Conjuncts(QuantifierExpr quantifier) {
-      return SplitQuantifier(quantifier).Select(e => {
-        e.SetOrigin(new AutoGeneratedOrigin(e.Origin));
-        return (QuantifierExpr)e;
-      }).ToList();
+      return SplitQuantifier(quantifier, null).ConvertAll(conjunct => conjunct.Part);
     }
 
     private static bool AllowsSplitting(ComprehensionExpr quantifier) {
@@ -161,12 +196,14 @@ namespace Microsoft.Dafny.Triggers {
 
     /// <summary>
     /// Records on the quantifier, from which the verifier makes its parts again, that its part #index has these
-    /// conjuncts and the attributes from the part's to those that it was given
+    /// conjuncts, by their paths, and the attributes from the part's to those that it was given
     /// </summary>
     internal static void RecordPart(QuantifierExpr quantifier, int index, List<int> conjuncts, Attributes attributes,
       Attributes given) {
+      var paths = SplitQuantifier(quantifier, null);
       quantifier.Attributes = new Attributes("_part",
-        conjuncts.Prepend(index).Select(i => Expression.CreateIntLiteral(quantifier.Origin, i)).ToList(), quantifier.Attributes);
+        conjuncts.Select(i => paths[i].Path).Prepend(index).Select(value => Literal(quantifier.Origin, value)).ToList(),
+        quantifier.Attributes);
       var added = new List<Attributes>();
       for (var attribute = attributes; attribute != given && attribute != null; attribute = attribute.Prev) {
         added.Add(attribute);
@@ -174,8 +211,12 @@ namespace Microsoft.Dafny.Triggers {
       added.Reverse();
       foreach (var attribute in added) {
         quantifier.Attributes = new Attributes("_part." + attribute.Name,
-          attribute.Args.Prepend(Expression.CreateIntLiteral(quantifier.Origin, index)).ToList(), quantifier.Attributes);
+          attribute.Args.Prepend(Literal(quantifier.Origin, index)).ToList(), quantifier.Attributes);
       }
+    }
+
+    private static Expression Literal(IOrigin origin, BigInteger value) {
+      return new LiteralExpr(origin, value) { Type = Type.Int };
     }
 
     internal static bool HasParts(QuantifierExpr quantifier) {
@@ -184,8 +225,8 @@ namespace Microsoft.Dafny.Triggers {
 
     /// <summary>
     /// The parts that the trigger generator split the quantifier into, each with the quantifier's attributes and its
-    /// own, or null if it did not split the quantifier. A copy whose substitution changed the conjuncts is one part
-    /// with the attributes of all.
+    /// own, or null if it did not split the quantifier. A copy without the conjuncts of the quantifier as written is
+    /// one part with the attributes of all.
     /// </summary>
     internal static List<QuantifierExpr> Parts(QuantifierExpr quantifier) {
       var parts = quantifier.Attributes.AsEnumerable().Where(attribute => attribute.Name == "_part")
@@ -194,21 +235,22 @@ namespace Microsoft.Dafny.Triggers {
       if (parts.Count == 0) {
         return null;
       }
-      var conjuncts = Conjuncts(quantifier);
-      if (conjuncts.Count != parts.Sum(part => part.Count)) {
+      var conjuncts = SplitQuantifier(quantifier, new Paths(parts.SelectMany(part => part).ToHashSet()))
+        ?.ToDictionary(conjunct => conjunct.Path, conjunct => conjunct.Part);
+      if (conjuncts == null) {
         var whole = Merge([quantifier]);
         whole.Attributes = PartAttributes(quantifier, null);
         return [whole];
       }
       return parts.Select((part, index) => {
-        var result = part.Count == 1 ? conjuncts[part[0]] : Merge(part.ConvertAll(i => (ComprehensionExpr)conjuncts[i]));
+        var result = part.Count == 1 ? conjuncts[part[0]] : Merge(part.ConvertAll(path => (ComprehensionExpr)conjuncts[path]));
         result.Attributes = PartAttributes(quantifier, index);
         return result;
       }).ToList();
     }
 
-    private static int Value(Expression literal) {
-      return (int)(BigInteger)((LiteralExpr)literal).Value;
+    private static BigInteger Value(Expression literal) {
+      return (BigInteger)((LiteralExpr)literal).Value;
     }
 
     /// <summary>
@@ -218,7 +260,7 @@ namespace Microsoft.Dafny.Triggers {
       Attributes attributes = null;
       foreach (var attribute in quantifier.Attributes.AsEnumerable().Reverse()) {
         if (attribute.Name.StartsWith("_part.")) {
-          if (index == null || Value(attribute.Args[0]) == index) {
+          if (index == null || Value(attribute.Args[0]) == index.Value) {
             attributes = new Attributes(attribute.Name["_part.".Length..], attribute.Args.Skip(1).ToList(), attributes);
           }
         } else if (attribute.Name != "_part") {

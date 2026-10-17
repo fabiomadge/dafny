@@ -54,19 +54,41 @@ method Joined()
 
 module Callee {
   ghost predicate P(x: int)
+  ghost predicate Q(x: int)
 
   function F(b: bool): int
     requires forall x :: P(x) ==> b
   {
     0
   }
+
+  function K(a: bool, b: bool): int
+    requires forall x :: a && (P(x) || !P(x)) && (Q(x) ==> P(x + 1)) && b
+  {
+    0
+  }
+
+  function E(a: bool, b: bool): int
+    requires exists x :: a || (P(x) && P(x + 1)) || Q(x) || b
+  {
+    0
+  }
+
+  // Without its precondition, the definition gives false
+  function Bad(n: int): int
+    requires n > 0
+  {
+    if n <= 0 then Bad(n) + 1 else 0
+  }
 }
 
-// {:autoReq} copies F's precondition, whose quantifier has one part, into G's for c && d, which has two conjuncts, so
-// the verifier takes the copy for one part. The trigger generator does not select the copy's triggers again.
+// {:autoReq} copies a callee's precondition into the caller's for the arguments. The verifier makes the parts of the
+// copy at the positions of the conjuncts of the callee's parts, whatever conjuncts the arguments have, and the trigger
+// generator does not select the copy's triggers again.
 module Caller {
   import Callee
 
+  // The part of the copy is P(x) ==> c && d
   function {:autoReq} G(c: bool, d: bool): int {
     Callee.F(c && d)
   }
@@ -75,5 +97,29 @@ module Caller {
     requires forall x :: Callee.P(x) ==> c
   {
     var y := G(c, false); // error: precondition might not hold
+  }
+
+  // A split of the copy would drop true and split c && Bad(n) == 0 in two, so its conjuncts are not where K's are, and
+  // the CanCall assumption of parts made from it would give Bad's definition where c does not hold, and so false
+  function {:autoReq} H(c: bool, n: int): int {
+    Callee.K(true, c && Callee.Bad(n) == 0)
+  }
+
+  method CallH()
+    requires forall x :: Callee.Q(x) ==> Callee.P(x + 1)
+    ensures false
+  {
+    var y := H(false, 0); // error: precondition might not hold
+  }
+
+  // A split of the copy would drop false and split c || d in two
+  function {:autoReq} I(c: bool, d: bool): int {
+    Callee.E(false, c || d)
+  }
+
+  method CallI()
+    requires Callee.Q(3)
+  {
+    var y := I(false, false);
   }
 }
