@@ -277,8 +277,8 @@ namespace Microsoft.Dafny {
 
             break;
           }
-        case QuantifierExpr quantifierExpr when quantifierExpr.SplitQuantifier != null:
-          return TrSplitExpr(context, quantifierExpr.SplitQuantifierExpression, splits, position, heightLimit, applyInduction, etran);
+        case QuantifierExpr quantifierExpr when quantifierExpr.PartsExpression() is { } parts:
+          return TrSplitExpr(context, parts, splits, position, heightLimit, applyInduction, etran);
         default: {
             if (((position && expr is ForallExpr) || (!position && expr is ExistsExpr))) {
               var e = (QuantifierExpr)expr;
@@ -618,9 +618,11 @@ namespace Microsoft.Dafny {
       }
 
       protected override void VisitOneExpr(Expression expr) {
-        if (expr is QuantifierExpr quantifierExpr && quantifierExpr.SplitQuantifier == null) {
-          foreach (var trigger in quantifierExpr.Attributes.AsEnumerable().Where(a => a.Name == "trigger").SelectMany(a => a.Args)) {
-            collector.Visit(trigger);
+        if (expr is QuantifierExpr quantifierExpr) {
+          foreach (var part in quantifierExpr.Parts() ?? [quantifierExpr]) {
+            foreach (var trigger in part.Attributes.AsEnumerable().Where(a => a.Name == "trigger").SelectMany(a => a.Args)) {
+              collector.Visit(trigger);
+            }
           }
         }
       }
