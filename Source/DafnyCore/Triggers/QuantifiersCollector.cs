@@ -14,6 +14,7 @@ namespace Microsoft.Dafny.Triggers {
   internal class QuantifierCollector : TopDownVisitor<OldExpr/*?*/> {
     readonly ErrorReporter reporter;
     private readonly HashSet<Expression> quantifiers = [];
+    private readonly Dictionary<Expression, List<Expression>> namingRequests = [];
     internal readonly Dictionary<Expression, HashSet<OldExpr>> exprsInOldContext = new Dictionary<Expression, HashSet<OldExpr>>();
     internal readonly List<ComprehensionTriggerGenerator> quantifierCollections = [];
 
@@ -34,10 +35,10 @@ namespace Microsoft.Dafny.Triggers {
       quantifiers.Add(comprehensionExpr);
       if (splitQuantifier != null) {
         var collection = splitQuantifier.OfType<ComprehensionExpr>();
-        quantifierCollections.Add(new ComprehensionTriggerGenerator(comprehensionExpr, collection, reporter));
+        quantifierCollections.Add(new ComprehensionTriggerGenerator(comprehensionExpr, collection, reporter, namingRequests));
         quantifiers.UnionWith(splitQuantifier);
       } else {
-        quantifierCollections.Add(new ComprehensionTriggerGenerator(comprehensionExpr, Enumerable.Repeat(comprehensionExpr, 1), reporter));
+        quantifierCollections.Add(new ComprehensionTriggerGenerator(comprehensionExpr, Enumerable.Repeat(comprehensionExpr, 1), reporter, namingRequests));
       }
     }
 

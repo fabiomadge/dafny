@@ -4934,7 +4934,7 @@ namespace Microsoft.Dafny {
     }
 
     Bpl.Trigger TrTrigger(ExpressionTranslator etran, Attributes attribs, IOrigin tok, Dictionary<IVariable, Expression> substMap = null,
-      List<BoundVar> keepOnlyThoseTermsThatMentionTheseVariables = null) {
+      List<BoundVar> keepOnlyThoseTermsThatMentionTheseVariables = null, NamedTerms names = null) {
       Contract.Requires(etran != null);
       Contract.Requires(tok != null);
       var argsEtran = etran.WithNoLits();
@@ -4950,14 +4950,15 @@ namespace Microsoft.Dafny {
           }
         }
 
-        if (tt.Count != 0) {
+        if (tt.Count != 0 && (names == null || names.Replace(argsEtran, tt))) {
           tr = new Bpl.Trigger(tok, true, tt, tr);
         }
       }
       return tr;
     }
 
-    Bpl.Trigger TrTrigger(ExpressionTranslator etran, Attributes attribs, IOrigin tok, List<Variable> bvars, Dictionary<IVariable, Expression> substMap, Dictionary<TypeParameter, Type> typeMap) {
+    Bpl.Trigger TrTrigger(ExpressionTranslator etran, Attributes attribs, IOrigin tok, List<Variable> bvars, Dictionary<IVariable, Expression> substMap, Dictionary<TypeParameter, Type> typeMap,
+      NamedTerms names = null) {
       Contract.Requires(etran != null);
       Contract.Requires(tok != null);
       var argsEtran = etran.WithNoLits();
@@ -4995,6 +4996,9 @@ namespace Microsoft.Dafny {
         }
         if (useHeapAsQuantifier) {
           tt.Add(FunctionCall(tok, BuiltinFunction.IsGoodHeap, null, argsEtran.HeapExpr));
+        }
+        if (names != null && !names.Replace(argsEtran, tt)) {
+          continue;
         }
         tr = new Bpl.Trigger(tok, true, tt, tr);
       }

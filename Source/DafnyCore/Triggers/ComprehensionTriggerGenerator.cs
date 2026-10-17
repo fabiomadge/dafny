@@ -22,21 +22,27 @@ namespace Microsoft.Dafny.Triggers {
     private readonly ComprehensionExpr comprehension;  //  the expression where the splits are originated from
     private List<SplitPartTriggerWriter> partWriters;
 
-    internal ComprehensionTriggerGenerator(ComprehensionExpr comprehension, IEnumerable<ComprehensionExpr> quantifiers, ErrorReporter reporter) {
+    internal ComprehensionTriggerGenerator(ComprehensionExpr comprehension, IEnumerable<ComprehensionExpr> quantifiers, ErrorReporter reporter,
+      Dictionary<Expression, List<Expression>> namingRequests = null) {
       Contract.Requires(quantifiers.All(q => !(q is QuantifierExpr) || ((QuantifierExpr)q).SplitQuantifier == null));
       this.reporter = reporter;
       this.comprehension = comprehension;
-      partWriters = quantifiers.Select(q => new SplitPartTriggerWriter(q)).ToList();
+      partWriters = quantifiers.Select(q => new SplitPartTriggerWriter(q, namingRequests)).ToList();
     }
 
     internal void ComputeTriggers(TriggersCollector triggersCollector) {
       CollectAndShareTriggers(triggersCollector);
       TrimInvalidTriggers();
       BuildDependenciesGraph();
-      if (DetectAndFilterLoopingCandidates() && RewriteMatchingLoop(triggersCollector.ForModule)) {
+      // A part names the terms that the rewrites of enclosing quantifiers' loops ask it to also without loops of its own
+      if ((DetectAndFilterLoopingCandidates() || partWriters.Exists(writer => writer.HasRequests)) &&
+          RewriteMatchingLoop(triggersCollector.ForModule)) {
         CollectWithoutShareTriggers(triggersCollector);
         TrimInvalidTriggers();
         DetectAndFilterLoopingCandidates();
+        foreach (var triggerWriter in partWriters) {
+          triggerWriter.RestoreAsWritten();
+        }
       }
       FilterWeakerTriggers();
       CombineSplitQuantifier();
@@ -133,17 +139,13 @@ namespace Microsoft.Dafny.Triggers {
     }
 
     private bool RewriteMatchingLoop(ModuleDefinition module) {
-      if (comprehension is QuantifierExpr unSplitQuantifier) {
-        bool rewritten = false;
+      bool rewritten = false;
+      if (comprehension is QuantifierExpr) {
         foreach (var triggerWriter in partWriters) {
           rewritten |= triggerWriter.RewriteMatchingLoop(reporter, module);
         }
-        if (rewritten) {
-          unSplitQuantifier.SplitQuantifier = partWriters.Select(q => (Expression)q.Comprehension).ToList();
-          return true;
-        }
       }
-      return false;
+      return rewritten;
     }
 
     void FilterWeakerTriggers() {
