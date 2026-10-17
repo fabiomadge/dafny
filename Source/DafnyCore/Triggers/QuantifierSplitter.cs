@@ -241,28 +241,41 @@ namespace Microsoft.Dafny.Triggers {
 
     /// <summary>
     /// The parts that the trigger generator split the quantifier into, each with the quantifier's attributes and its
-    /// own, or null if it did not split the quantifier. A copy without the conjuncts of the quantifier as written is
-    /// one part with the attributes of all.
+    /// own, or null if it did not split the quantifier. In order, they are in the order of the quantifier as written,
+    /// with a part for each run of consecutive conjuncts of one part. A copy without the conjuncts of the quantifier as
+    /// written is one part with the attributes of all.
     /// </summary>
-    internal static List<QuantifierExpr> Parts(QuantifierExpr quantifier) {
+    internal static List<QuantifierExpr> Parts(QuantifierExpr quantifier, bool inOrder = false) {
       var parts = quantifier.Attributes.AsEnumerable().Where(attribute => attribute.Name == "_part")
         .Select(attribute => attribute.Args.ConvertAll(Value)).OrderBy(args => args[0])
         .Select(args => args.Skip(1).ToList()).ToList();
       if (parts.Count == 0) {
         return null;
       }
-      var conjuncts = SplitQuantifier(quantifier, new Paths(parts.SelectMany(part => part).ToHashSet()))
-        ?.ToDictionary(conjunct => conjunct.Path, conjunct => conjunct.Part);
+      var conjuncts = SplitQuantifier(quantifier, new Paths(parts.SelectMany(part => part).ToHashSet()));
       if (conjuncts == null) {
         var whole = Merge([quantifier]);
         whole.Attributes = PartAttributes(quantifier, _ => true);
         return [whole];
       }
-      return parts.Select((part, index) => {
-        var result = part.Count == 1 ? conjuncts[part[0]] : Merge(part.ConvertAll(path => (ComprehensionExpr)conjuncts[path]));
-        result.Attributes = PartAttributes(quantifier, other => other == index);
+      var runs = new List<(int Index, List<ComprehensionExpr> Conjuncts)>();
+      if (inOrder) {
+        foreach (var (conjunct, path) in conjuncts) {
+          var index = parts.FindIndex(part => part.Contains(path));
+          if (runs.Count == 0 || runs[^1].Index != index) {
+            runs.Add((index, []));
+          }
+          runs[^1].Conjuncts.Add(conjunct);
+        }
+      } else {
+        var byPath = conjuncts.ToDictionary(conjunct => conjunct.Path, conjunct => (ComprehensionExpr)conjunct.Part);
+        runs = parts.Select((part, index) => (index, part.ConvertAll(path => byPath[path]))).ToList();
+      }
+      return runs.ConvertAll(run => {
+        var result = run.Conjuncts.Count == 1 ? (QuantifierExpr)run.Conjuncts[0] : Merge(run.Conjuncts);
+        result.Attributes = PartAttributes(quantifier, other => other == run.Index);
         return result;
-      }).ToList();
+      });
     }
 
     private static BigInteger Value(Expression literal) {

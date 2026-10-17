@@ -25,10 +25,12 @@ public abstract class QuantifierExpr : ComprehensionExpr, TypeParameter.ParentTy
   }
 
   /// <summary>
-  /// The conjunction of the parts, for a forall, or their disjunction
+  /// The conjunction of the parts, for a forall, or their disjunction. In order, a part that the trigger generator joined
+  /// from conjuncts with others between them is a part for each run of its consecutive conjuncts, as the CanCall
+  /// assumption needs, since the conjuncts between them can guard their calls.
   /// </summary>
-  internal Expression? PartsExpression() {
-    var parts = Parts();
+  internal Expression? PartsExpression(bool inOrder = false) {
+    var parts = Triggers.QuantifierSplitter.Parts(this, inOrder);
     if (parts == null) {
       return null;
     }
