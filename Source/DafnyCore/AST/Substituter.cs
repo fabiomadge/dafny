@@ -809,7 +809,10 @@ namespace Microsoft.Dafny {
       } else if (stmt is IfStmt) {
         var s = (IfStmt)stmt;
         var guard = s.IsBindingGuard ? SubstituteComprehensionExpr((ExistsExpr)s.Guard, false) : Substitute(s.Guard);
-        r = new IfStmt(s.Origin, s.IsBindingGuard, guard, SubstBlockStmt(s.Thn), SubstStmt(s.Els));
+        var renamed = s.IsBindingGuard ? MapRenamedGuardVariables((ExistsExpr)s.Guard, guard) : [];
+        var thn = SubstBlockStmt(s.Thn);
+        renamed.ForEach(bv => substMap.Remove(bv));
+        r = new IfStmt(s.Origin, s.IsBindingGuard, guard, thn, SubstStmt(s.Els));
       } else if (stmt is AlternativeStmt) {
         var s = (AlternativeStmt)stmt;
         r = new AlternativeStmt(s.Origin, s.Alternatives.ConvertAll(SubstGuardedAlternative), s.UsesOptionalBraces);
@@ -942,7 +945,26 @@ namespace Microsoft.Dafny {
     protected GuardedAlternative SubstGuardedAlternative(GuardedAlternative alt) {
       Contract.Requires(alt != null);
       var guard = alt.IsBindingGuard ? SubstituteComprehensionExpr((ExistsExpr)alt.Guard, false) : Substitute(alt.Guard);
-      return new GuardedAlternative(alt.Origin, alt.IsBindingGuard, guard, alt.Body.ConvertAll(SubstStmt));
+      var renamed = alt.IsBindingGuard ? MapRenamedGuardVariables((ExistsExpr)alt.Guard, guard) : [];
+      var body = alt.Body.ConvertAll(SubstStmt);
+      renamed.ForEach(bv => substMap.Remove(bv));
+      return new GuardedAlternative(alt.Origin, alt.IsBindingGuard, guard, body);
+    }
+
+    /// <summary>
+    /// Maps each variable of a binding guard that the guard's copy renamed, since the substitution changed its type, to
+    /// the copy's, for the statements that the guard guards, and returns these variables, for the caller to remove
+    /// </summary>
+    private List<IVariable> MapRenamedGuardVariables(ExistsExpr guard, Expression copy) {
+      var copyVars = ((ComprehensionExpr)copy).BoundVars;
+      var renamed = new List<IVariable>();
+      for (var i = 0; i < guard.BoundVars.Count; i++) {
+        if (copyVars[i] != guard.BoundVars[i]) {
+          substMap.Add(guard.BoundVars[i], new IdentifierExpr(copyVars[i].Origin, copyVars[i]));
+          renamed.Add(guard.BoundVars[i]);
+        }
+      }
+      return renamed;
     }
 
     protected AttributedExpression SubstMayBeFreeExpr(AttributedExpression expr) {
@@ -1080,7 +1102,10 @@ namespace Microsoft.Dafny {
           Contract.Assert(false); // unexpected ComprehensionExpr
         }
 
-        ((ComprehensionExpr)newExpr).Bounds = newBounds;
+        var copy = (ComprehensionExpr)newExpr;
+        // Substitute sets the type of what it returns, but a statement's binding guard comes here directly
+        copy.Type = e.Type.Subst(typeMap);
+        copy.Bounds = newBounds;
       }
 
       // undo any changes to substMap (could be optimized to do this only if newBoundVars != e.BoundVars)
