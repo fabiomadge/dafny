@@ -48,7 +48,8 @@ public class ExistsExpr : QuantifierExpr, ICloneable<ExistsExpr> {
     var s = new Substituter(null, substMap, new Dictionary<TypeParameter, Type>());
     var range = Range == null ? null : s.Substitute(Range);
     var term = s.Substitute(Term);
-    var attrs = s.SubstAttributes(Attributes);
+    // The verifier assumes the renamed guard's CanCall assumption, which for several parts is weaker than the guard's
+    var attrs = s.SubstAttributes(Triggers.QuantifierSplitter.WithoutSeveralParts(this));
 
     var ex = new ExistsExpr(Origin, bvars, range, term, attrs) {
       Type = Type.Bool,

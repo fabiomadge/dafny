@@ -239,12 +239,12 @@ namespace Microsoft.Dafny.Triggers {
         ?.ToDictionary(conjunct => conjunct.Path, conjunct => conjunct.Part);
       if (conjuncts == null) {
         var whole = Merge([quantifier]);
-        whole.Attributes = PartAttributes(quantifier, null);
+        whole.Attributes = PartAttributes(quantifier, _ => true);
         return [whole];
       }
       return parts.Select((part, index) => {
         var result = part.Count == 1 ? conjuncts[part[0]] : Merge(part.ConvertAll(path => (ComprehensionExpr)conjuncts[path]));
-        result.Attributes = PartAttributes(quantifier, index);
+        result.Attributes = PartAttributes(quantifier, other => other == index);
         return result;
       }).ToList();
     }
@@ -254,13 +254,21 @@ namespace Microsoft.Dafny.Triggers {
     }
 
     /// <summary>
-    /// The quantifier's attributes without those of its parts, and then those of part #index, or of all
+    /// The quantifier's attributes, without those of its parts if it has several
     /// </summary>
-    private static Attributes PartAttributes(QuantifierExpr quantifier, int? index) {
+    internal static Attributes WithoutSeveralParts(QuantifierExpr quantifier) {
+      var parts = quantifier.Attributes.AsEnumerable().Count(attribute => attribute.Name == "_part");
+      return parts > 1 ? PartAttributes(quantifier, _ => false) : quantifier.Attributes;
+    }
+
+    /// <summary>
+    /// The quantifier's attributes without those of its parts, and then those of the parts whose index it selects
+    /// </summary>
+    private static Attributes PartAttributes(QuantifierExpr quantifier, Func<BigInteger, bool> selects) {
       Attributes attributes = null;
       foreach (var attribute in quantifier.Attributes.AsEnumerable().Reverse()) {
         if (attribute.Name.StartsWith("_part.")) {
-          if (index == null || Value(attribute.Args[0]) == index.Value) {
+          if (selects(Value(attribute.Args[0]))) {
             attributes = new Attributes(attribute.Name["_part.".Length..], attribute.Args.Skip(1).ToList(), attributes);
           }
         } else if (attribute.Name != "_part") {

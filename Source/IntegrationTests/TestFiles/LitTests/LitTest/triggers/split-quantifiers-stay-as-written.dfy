@@ -42,6 +42,17 @@ ghost predicate Parts() {
   forall x :: P(x) && H(x) <= H(x + 1)
 }
 
+predicate Big(x: int) { x > 10 }
+
+// The case assumes the CanCall assumption of the guard as written, which gives Big's definition at each x where P(x)
+// does not hold, and not that of its parts, which gives it only if P(x) holds for no x
+method Guard() {
+  if
+  case x :| P(x) || (Big(x) && Big(x + 1)) =>
+    assert P(x) || x > 10;
+  case true =>
+}
+
 function G(x: int): int
 
 // The trigger generator joins the two parts again, as they get the same trigger, and the verifier makes the joined part
