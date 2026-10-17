@@ -318,9 +318,19 @@ public class InductionRewriter : IRewriter {
 
     protected override void VisitOneExpr(Expression expr) {
       if (expr is QuantifierExpr q) {
-        var attributes = q.Attributes;
-        IndRewriter.ComputeInductionVariables(q.Origin, q.BoundVars, q.LogicalBody(), null, ref attributes);
-        q.Attributes = attributes;
+        var parts = q.Parts();
+        if (parts == null) {
+          var attributes = q.Attributes;
+          IndRewriter.ComputeInductionVariables(q.Origin, q.BoundVars, q.LogicalBody(), null, ref attributes);
+          q.Attributes = attributes;
+        } else {
+          // The verifier translates each part, with its own induction variables
+          for (var index = 0; index < parts.Count; index++) {
+            var attributes = parts[index].Attributes;
+            IndRewriter.ComputeInductionVariables(parts[index].Origin, parts[index].BoundVars, parts[index].LogicalBody(), null, ref attributes);
+            Triggers.QuantifierSplitter.RecordPartAttributes(q, index, attributes, parts[index].Attributes);
+          }
+        }
       }
     }
   }

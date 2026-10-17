@@ -204,6 +204,14 @@ namespace Microsoft.Dafny.Triggers {
       quantifier.Attributes = new Attributes("_part",
         conjuncts.Select(i => paths[i].Path).Prepend(index).Select(value => Literal(quantifier.Origin, value)).ToList(),
         quantifier.Attributes);
+      RecordPartAttributes(quantifier, index, attributes, given);
+    }
+
+    /// <summary>
+    /// Records on the quantifier that its part #index has the attributes from the part's to those that it was given
+    /// </summary>
+    internal static void RecordPartAttributes(QuantifierExpr quantifier, int index, Attributes attributes,
+      Attributes given) {
       var added = new List<Attributes>();
       for (var attribute = attributes; attribute != given && attribute != null; attribute = attribute.Prev) {
         added.Add(attribute);
