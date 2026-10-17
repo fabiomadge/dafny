@@ -5,6 +5,10 @@
 // The trigger generator splits these quantifiers at their conjunctions and disjunctions, but only the verifier's
 // translation has the parts, so a copy that a substitution makes is the quantifier as written
 
+// The printer prints a quantifier as its parts, and a binding guard as written, without the attributes that record the
+// parts
+// CHECK-NOT: _part
+
 // The lambda's body reaches the well-formedness check through a substitution. Given the first part, which holds for
 // every i, the second is well-formed, but the quantifier as written is not.
 method WellFormedness(s: seq<int>, t: seq<int>)
@@ -38,6 +42,7 @@ function H(x: int): int
 // CHECK: \(forall x: int \{:trigger P\(x\)\} ::
 // CHECK-NEXT: P\(x\)\) &&
 // CHECK-NEXT: forall x: int \{:trigger H\(x \+ 1\), H\(x\)\} /\*\{:_named x \+ 1\}\*/ ::
+// CHECK-NOT: _part
 ghost predicate Parts() {
   forall x :: P(x) && H(x) <= H(x + 1)
 }

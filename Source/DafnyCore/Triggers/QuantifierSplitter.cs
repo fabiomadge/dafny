@@ -223,6 +223,10 @@ namespace Microsoft.Dafny.Triggers {
       return Attributes.Contains(quantifier.Attributes, "_part");
     }
 
+    internal static bool IsPartAttribute(Attributes attribute) {
+      return attribute.Name == "_part" || attribute.Name.StartsWith("_part.");
+    }
+
     /// <summary>
     /// The parts that the trigger generator split the quantifier into, each with the quantifier's attributes and its
     /// own, or null if it did not split the quantifier. A copy without the conjuncts of the quantifier as written is
