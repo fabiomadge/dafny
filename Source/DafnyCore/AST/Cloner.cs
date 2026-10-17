@@ -314,25 +314,31 @@ namespace Microsoft.Dafny {
     }
 
     public Attributes CloneAttributes(Attributes attrs) {
+      // The trigger generator's triggers mean something only with the terms that it names for them
+      return CloneAttributes(attrs, !CloneResolvedFields && Attributes.Contains(attrs, "_named"));
+    }
+
+    private Attributes CloneAttributes(Attributes attrs, bool withoutSelectedTriggers) {
       if (attrs == null) {
         return null;
-      } else if (!CloneResolvedFields && attrs.Name.StartsWith("_")) {
+      } else if (!CloneResolvedFields && attrs.Name.StartsWith("_") ||
+                 withoutSelectedTriggers && attrs.Name == "trigger" && attrs is not UserSuppliedAttributes) {
         // skip this attribute, since it would have been produced during resolution
-        return CloneAttributes(attrs.Prev);
+        return CloneAttributes(attrs.Prev, withoutSelectedTriggers);
       } else if (attrs is UserSuppliedAttributes usa) {
         return new UserSuppliedAttributes(Origin(usa.Origin), Origin(usa.OpenBrace), Origin(usa.CloseBrace),
-          attrs.Args.ConvertAll(CloneExpr), CloneAttributes(attrs.Prev));
+          attrs.Args.ConvertAll(CloneExpr), CloneAttributes(attrs.Prev, withoutSelectedTriggers));
       } else if (attrs is UserSuppliedAtAttribute usaa) {
         var arg = CloneExpr(usaa.Arg);
         if (usaa.Arg.Type != null) { // The attribute has already been expanded
           arg.Type = usaa.Arg.Type;
           arg.PreType = usaa.Arg.PreType;
         }
-        return new UserSuppliedAtAttribute(Origin(usaa.Origin), arg, CloneAttributes(usaa.Prev)) {
+        return new UserSuppliedAtAttribute(Origin(usaa.Origin), arg, CloneAttributes(usaa.Prev, withoutSelectedTriggers)) {
           Builtin = usaa.Builtin
         };
       } else {
-        var result = new Attributes(attrs.Name, attrs.Args.ConvertAll(CloneExpr), CloneAttributes(attrs.Prev));
+        var result = new Attributes(attrs.Name, attrs.Args.ConvertAll(CloneExpr), CloneAttributes(attrs.Prev, withoutSelectedTriggers));
         result.SetOrigin(Origin(attrs.Origin));
         return result;
       }
