@@ -105,11 +105,10 @@ namespace Microsoft.Dafny.Triggers {
     }
 
     /// <summary>
-    /// The quantifier's parts, one for each conjunct of a forall's body or disjunct of an exists's, with its path, or,
-    /// for a copy of the quantifier as written, one for each path of its conjuncts, or null if the copy does not have
-    /// those
+    /// The conjuncts of a forall's body, or disjuncts of an exists's, with their paths, or, for a copy of the quantifier
+    /// as written, the subexpressions at the paths of its conjuncts, or null if the copy does not have those
     /// </summary>
-    private static List<(QuantifierExpr Part, BigInteger Path)> SplitQuantifier(QuantifierExpr quantifier, Paths asWritten) {
+    private static List<(Expression Conjunct, BigInteger Path)> SplitBody(QuantifierExpr quantifier, Paths asWritten) {
       var body = quantifier.Term;
       var binary = body as BinaryExpr;
       var conjuncts = new List<(Expression Conjunct, BigInteger Path)>();
@@ -123,11 +122,16 @@ namespace Microsoft.Dafny.Triggers {
           ? SplitAndStitch(binary, BinaryExpr.Opcode.Or, conjuncts, asWritten)
           : SplitExpr(body, BinaryExpr.Opcode.Or, 1, conjuncts, asWritten);
       }
-      if (!split) {
-        return null;
-      }
-      return conjuncts.ConvertAll(conjunct => {
-        var attributes = TriggerUtils.CopyAttributes(quantifier.Attributes);
+      return split ? conjuncts : null;
+    }
+
+    /// <summary>
+    /// A part for each conjunct that SplitBody gives, with the quantifier's attributes, but without attributes for a
+    /// copy of the quantifier as written, whose parts get those recorded for them
+    /// </summary>
+    private static List<(QuantifierExpr Part, BigInteger Path)> SplitQuantifier(QuantifierExpr quantifier, Paths asWritten) {
+      return SplitBody(quantifier, asWritten)?.ConvertAll(conjunct => {
+        var attributes = asWritten == null ? TriggerUtils.CopyAttributes(quantifier.Attributes) : null;
         QuantifierExpr part = quantifier is ForallExpr
           ? new ForallExpr(quantifier.Origin, quantifier.BoundVars, quantifier.Range, conjunct.Conjunct, attributes)
           : new ExistsExpr(quantifier.Origin, quantifier.BoundVars, quantifier.Range, conjunct.Conjunct, attributes);
@@ -200,7 +204,7 @@ namespace Microsoft.Dafny.Triggers {
     /// </summary>
     internal static void RecordPart(QuantifierExpr quantifier, int index, List<int> conjuncts, Attributes attributes,
       Attributes given) {
-      var paths = SplitQuantifier(quantifier, null);
+      var paths = SplitBody(quantifier, null);
       quantifier.Attributes = new Attributes("_part",
         conjuncts.Select(i => paths[i].Path).Prepend(index).Select(value => Literal(quantifier.Origin, value)).ToList(),
         quantifier.Attributes);
