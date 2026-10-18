@@ -59,4 +59,19 @@ public class ClonerTest {
     Assert.IsType<InferredTypeProxy>(clone.ElementType);
     Assert.NotSame(original.ElementType, clone.ElementType);
   }
+
+  [Fact]
+  public void ClonerKeepsFieldTypeAliasedToExplicitType() {
+    var original = new Field(Token.NoToken, new Name("f"), false, new UserDefinedType(Token.NoToken, "C", null), null);
+    var clone = new Field(new Cloner(), original);
+    Assert.Same(clone.ExplicitType, clone.Type);
+  }
+
+  [Fact]
+  public void ClonerGivesAnInferredFieldTypeItsOwnProxy() {
+    var original = new Field(Token.NoToken, new Name("f"), false, null, null);
+    var clone = new Field(new Cloner(), original);
+    Assert.IsType<InferredTypeProxy>(clone.Type);
+    Assert.NotSame(original.Type, clone.Type);
+  }
 }
