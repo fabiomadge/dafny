@@ -66,9 +66,13 @@ See [docs/dev/news/](docs/dev/news/).
 
 - Made the language server compliant with the LSP protocol so that it can be used with other editors, such as Helix (https://github.com/dafny-lang/dafny/pull/6172)
 
+- Prevent an exception that could occur when using includes and top level members (https://github.com/dafny-lang/dafny/pull/6192)
+
 - No more compilation issue when using bitvector shifts in Rust with the new resolver (https://github.com/dafny-lang/dafny/pull/6196)
 
 - Fix handling of opaque blocks in the Dafny IDE (https://github.com/dafny-lang/dafny/pull/6203)
+
+- Modifies clauses in opaque blocks now work as intended (https://github.com/dafny-lang/dafny/pull/6217)
 
 - JSON serialization now properly encodes unicode characters with 0 pre-pend instead of space-append.
   Also, string literals ending with escaped characters are now supported as well.
@@ -88,6 +92,8 @@ See [docs/dev/news/](docs/dev/news/).
 
 ## New features
 
+- The default `--verification-time-limit` is now 30 seconds per assertion batch instead of 0 (no limit). Use `--verification-time-limit 0` to restore the previous behavior. (https://github.com/dafny-lang/dafny/pull/6028)
+
 - Support for code actions in the language server to:
   - Insert failing implicit assertions in a "by" clause by preference.
   - Insert forall statement for any forall expressions that could not be proved
@@ -99,6 +105,14 @@ See [docs/dev/news/](docs/dev/news/).
 - The option --iterations for the command `measure-complexity`, has been renamed to `--mutations`. The option `--progress VerificationJob` has been renamed to `--progress Batch`. (https://github.com/dafny-lang/dafny/pull/6078)
 
 ## Bug fixes
+
+- Fix C#, Java and Go generated code when a datatype contains a method named 'Default' (https://github.com/dafny-lang/dafny/pull/3809)
+
+- Fix C# generated code when a module contains a type with the same name (https://github.com/dafny-lang/dafny/pull/5746)
+
+- Fix soundness bug that could occur for opaque blocks with empty modifies clauses (https://github.com/dafny-lang/dafny/pull/6006)
+
+- Fix Java generated code when a module contains a type with the same name (https://github.com/dafny-lang/dafny/pull/6014)
 
 - By clauses for assign-such-that statements (:|), are now never ignored. (https://github.com/dafny-lang/dafny/pull/6024)
 

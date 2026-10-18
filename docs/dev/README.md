@@ -1,8 +1,8 @@
 # Latest Dafny changes
 
-Each file in the `news/` folder describes one change in Dafny since the latest release.
+Each file in [`docs/dev/news/`](news/) describes one change in Dafny since the latest release.
 
-Files in this directory are named `<issue number>.<kind>` (e.g. `1234.fix`) or `<description>.kind` (`assign-such-that-null.fix`) and each contains release notes for one merged PR.  `kind` is `break` (for breaking changes), `feat` (for new features and enhancements) or `fix` (for bug fixes).  
+These files are named `<issue number>.<kind>` (e.g. `1234.fix`) or `<description>.<kind>` (`assign-such-that-null.fix`) and each contains release notes for one merged PR.  `kind` is `break` (for breaking changes), `feat` (for new features and enhancements) or `fix` (for bug fixes).  
 
 No need to include a link to a PR or issue in the file: it will be added automatically.  Specifically:
 
