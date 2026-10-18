@@ -621,7 +621,7 @@ namespace Microsoft.Dafny {
         if (expr is QuantifierExpr quantifierExpr) {
           foreach (var part in quantifierExpr.Parts() ?? [quantifierExpr]) {
             var named = Attributes.FindExpressions(part.Attributes, "_named") ?? [];
-            foreach (var trigger in part.Attributes.AsEnumerable().Where(a => a.Name == "trigger").SelectMany(a => a.Args)) {
+            foreach (var trigger in part.Attributes.AsEnumerable().Where(a => a.Name is "trigger" or "_trigger").SelectMany(a => a.Args)) {
               Collect(trigger, named);
             }
           }

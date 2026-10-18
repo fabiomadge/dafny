@@ -372,11 +372,12 @@ class SplitPartTriggerWriter {
   }
 
   private void AddTriggerAttribute(SystemModuleManager systemModuleManager) {
-    // A trigger has each named term where the copy has its variable, and the verifier binds a variable to it
+    // A trigger has each named term where the copy has its variable. Only a translation that binds a variable to each
+    // term can use such a trigger, so it is internal, as the terms are
     var terms = new Substituter(null, NamedExpressions.ToDictionary(x => x.Item2.Var, x => x.Item1),
       new Dictionary<TypeParameter, Type>());
     foreach (var candidate in Candidates) {
-      Comprehension.Attributes = new Attributes("trigger",
+      Comprehension.Attributes = new Attributes(NamedExpressions.Count == 0 ? "trigger" : "_trigger",
         candidate.Terms.ConvertAll(t => Expression.WrapAsParsedStructureIfNecessary(
           NamedExpressions.Count == 0 ? t.Expr : terms.Substitute(t.Expr), systemModuleManager)),
         Comprehension.Attributes);
@@ -392,7 +393,8 @@ class SplitPartTriggerWriter {
   }
 
   private bool NeedsAutoTriggers() {
-    return !Attributes.Contains(Comprehension.Attributes, "trigger") && WantsAutoTriggers();
+    return !Attributes.Contains(Comprehension.Attributes, "trigger") && !Attributes.Contains(Comprehension.Attributes, "_trigger") &&
+           WantsAutoTriggers();
   }
 
   bool WantsMatchingLoopRewrite() {

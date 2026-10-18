@@ -656,11 +656,7 @@ public partial class BoogieGenerator {
         List<bool> freeOfAlloc = BoundedPool.HasBounds(bounds, BoundedPool.PoolVirtues.IndependentOfAlloc_or_ExplicitAlloc);
         var bvs = new List<Variable>();
         var typeAntecedent = etran.TrBoundVariables(undetermined, bvs, false, freeOfAlloc);
-        // Without the trigger generator's triggers for the terms that it named, which need all the terms of a loop, the
-        // solver's own patterns can find a witness from one of them
-        var triggers = Attributes.Contains(triggerAttributes, "_named")
-          ? null
-          : TrTrigger(etran, triggerAttributes, tok, substMap, undetermined);
+        var triggers = TrTrigger(etran, triggerAttributes, tok, substMap, undetermined);
         body = new Bpl.ExistsExpr(tok, bvs, triggers, BplAnd(typeAntecedent, body));
       }
       w = BplOr(body, w);

@@ -8,9 +8,9 @@ namespace Microsoft.Dafny;
 public partial class BoogieGenerator {
   /// <summary>
   /// The variables that the translation of a quantifier binds to the terms that the matching-loop rewrite named in it
-  /// ({:_named}), so that its triggers can have a variable where they would have its term, which no trigger may
-  /// contain. A variable is defined by its term's translation and replaces just that Boogie term, outside the binders
-  /// of the term's variables, so the translation means the same whatever the term is.
+  /// ({:_named}), so that its triggers ({:_trigger}) can have a variable where they would have its term, which no
+  /// trigger may contain. A variable is defined by its term's translation and replaces just that Boogie term, outside
+  /// the binders of the term's variables, so the translation means the same whatever the term is.
   /// </summary>
   internal class NamedTerms {
     private readonly List<Expression> terms;

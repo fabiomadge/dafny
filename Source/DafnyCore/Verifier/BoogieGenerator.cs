@@ -4939,7 +4939,8 @@ namespace Microsoft.Dafny {
       Contract.Requires(tok != null);
       var argsEtran = etran.WithNoLits();
       Bpl.Trigger tr = null;
-      foreach (var trigger in attribs.AsEnumerable().Where(aa => aa.Name == "trigger").Select(aa => aa.Args)) {
+      foreach (var trigger in attribs.AsEnumerable().Where(aa => aa.Name == "trigger" || names != null && aa.Name == "_trigger")
+                 .Select(aa => aa.Args)) {
         List<Bpl.Expr> tt = [];
         foreach (var arg in trigger) {
           var term = substMap == null ? arg : Substitute(arg, null, substMap);
@@ -4966,7 +4967,7 @@ namespace Microsoft.Dafny {
       var fueledTrigger = new Dictionary<List<Expression>, bool>();
       // translate the triggers once to see if fuel or the heap is used as quantifier boundvar
       foreach (var aa in attribs.AsEnumerable()) {
-        if (aa.Name == "trigger") {
+        if (aa.Name is "trigger" or "_trigger") {
           int fuelCount = argsEtran.Statistics_CustomLayerFunctionCount;
           foreach (var arg in aa.Args) {
             argsEtran.TrExpr(arg);
@@ -4983,7 +4984,7 @@ namespace Microsoft.Dafny {
       }
 
       // now translate it with the correct layer and heapExpr
-      foreach (var trigger in attribs.AsEnumerable().Where(aa => aa.Name == "trigger")) {
+      foreach (var trigger in attribs.AsEnumerable().Where(aa => aa.Name is "trigger" or "_trigger")) {
         List<Bpl.Expr> tt = [];
         foreach (var arg in trigger.Args) {
           Bpl.Expr term;
