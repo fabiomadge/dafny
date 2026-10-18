@@ -15,6 +15,7 @@ from xml.etree import ElementTree
 from typing import Any, Callable, Dict, List, Optional, TypeVar, NamedTuple
 
 SKIP_ALL_CHECKS = False
+DRY_RUN = False
 
 class CannotReleaseError(Exception):
     pass
@@ -49,6 +50,9 @@ def assert_one(msg: str, condition: Callable[[], Any]):
 def run_one(msg: str, operation: Callable[[], None]):
     assert msg.endswith("...")
     progress(msg + " ", end="")
+    if DRY_RUN:
+        progress("skipped (dry run).")
+        return
     with_error(operation)
     progress("done.")
 
@@ -90,7 +94,7 @@ class NewsFragment(NamedTuple):
 
     @property
     def sortkey(self):
-        return self.pr, self.path
+        return self.pr is None, self.pr, self.path
 
 class NewsFragments:
     r"""A collection of release note entries.
@@ -161,7 +165,7 @@ class NewsFragments:
             for fr in sorted(self.fragments[ext], key=lambda f: f.sortkey):
                 contents = fr.contents.strip()
                 sep = "\n" if fr.link and "\n" in contents else " "
-                entry = indent(f"- {contents}{sep}{fr.link}", "  ").lstrip()
+                entry = indent(f"- {contents}{sep}{fr.link}".rstrip(), "  ").lstrip()
                 rendered.append(entry)
         return "\n\n".join(rendered)
 
@@ -214,9 +218,6 @@ class Release:
     @staticmethod
     def _in_git_root() -> bool:
         return Path(".git").exists()
-
-    def _has_origin(self) -> bool:
-        return git("remote", "url", self.REMOTE).returncode == 0
 
     @staticmethod
     def _has_git() -> bool:
@@ -274,7 +275,7 @@ class Release:
 
     @classmethod
     def _head_up_to_date(cls) -> bool:
-        git("fetch")
+        git("fetch", check=True)
         return "behind" not in git("status", "--short", "--branch").stdout
 
     @staticmethod
@@ -296,7 +297,7 @@ class Release:
         return git("rev-parse", "--quiet", "--verify", self.release_branch_path).returncode == 1
 
     def _no_release_tag(self) -> bool:
-        return git("tag", "--verify", self.tag).returncode == 1
+        return git("rev-parse", "--quiet", "--verify", f"refs/tags/{self.tag}").returncode == 1
 
     def _update_build_props_file(self) -> None:
         vernum = Version.from_string(self.version)
@@ -375,7 +376,7 @@ class Release:
                    self._is_release_branch)
         assert_one("Is repo clean (all changes committed)?",
                    self._is_repo_clean)
-        assert_one("Is HEAD is up to date?",
+        assert_one("Is HEAD up to date?",
                    self._head_up_to_date)
         assert_one("Are all release-blocking issues closed in both dafny and ide-vscode?",
                    self._no_release_blocking_issues)
@@ -430,29 +431,9 @@ class Release:
         progress("You can merge this branch by opening a PR at\n"
                  f"<{PR_URL}>.")
 
-class DryRunRelease(Release):
-    def _create_release_branch(self):
-        pass
-    def _consolidate_news_fragments(self):
-        pass
-    def _delete_news_fragments(self):
-        pass
-    def _commit_changes(self):
-        pass
-    def _push_release_branch(self):
-        pass
-    def _create_release_branch(self):
-        pass
-    def _tag_release(self):
-        pass
-    def _push_release_tag(self):
-        pass
-    def _push_release_tag(self):
-        pass
-
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Dafny release helper")
-    parser.add_argument("--dry-run", help="Do not make any modifications (no file updates, no git commands).",
+    parser.add_argument("--dry-run", help="Run only the checks.",
                         action="store_true")
     parser.add_argument("--source-branch", help="Which branch to release from (optional, defaults to 'master')", default="master")
     parser.add_argument("version", help="Version number for this release (A.B.C-xyz)")
@@ -461,9 +442,11 @@ def parse_arguments() -> argparse.Namespace:
     return parser.parse_args()
 
 def main() -> None:
+    global DRY_RUN # pylint: disable=global-statement
     args = parse_arguments()
+    DRY_RUN = args.dry_run
     try:
-        release = (DryRunRelease if args.dry_run else Release)(args.version, args.source_branch)
+        release = Release(args.version, args.source_branch)
         {"prepare": release.prepare,
          "set-next-version": release.set_next_version,
          "release": release.release}[args.action]()

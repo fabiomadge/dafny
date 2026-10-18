@@ -1,5 +1,8 @@
 """Tests for `prepare_release.py`, run in a throwaway repository shaped like this one."""
 
+# pylint: disable=protected-access
+
+import doctest
 import os
 import subprocess
 import sys
@@ -11,7 +14,7 @@ from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import prepare_release  # pylint: disable=wrong-import-position
-from prepare_release import Release  # pylint: disable=wrong-import-position
+from prepare_release import NewsFragments, Release  # pylint: disable=wrong-import-position
 
 BUILD_PROPS = """<Project>
   <PropertyGroup>
@@ -67,6 +70,26 @@ class ReleaseTest(unittest.TestCase):
             patcher.start()
             self.addCleanup(patcher.stop)
 
+    def test_render_puts_a_note_without_pr_number_last(self) -> None:
+        self.write_note("unattributed.fix", "Fix another thing")
+        self.commit("A commit without a PR number")
+
+        rendered = NewsFragments.from_directory(Release.NEWSFRAGMENTS_PATH).render()
+
+        self.assertTrue(rendered.endswith("\n- Fix another thing"), rendered)
+        self.assertIn("- Fix the thing (https://github.com/dafny-lang/dafny/pull/1234)", rendered)
+
+    def test_no_release_tag_is_false_for_an_annotated_tag(self) -> None:
+        release = Release("4.12.0", "master")
+        self.assertTrue(release._no_release_tag())
+        git("tag", "--annotate", "--message=Dafny v4.12.0", "v4.12.0", cwd=self.repo)
+        self.assertFalse(release._no_release_tag())
+
+    def test_head_up_to_date_fails_when_fetch_fails(self) -> None:
+        git("remote", "add", "origin", str(self.tmp / "no-such-repo"), cwd=self.repo)
+        with self.assertRaises(subprocess.CalledProcessError):
+            Release("4.12.0", "master")._head_up_to_date()
+
     def test_prepare_commits_the_release_notes_on_a_release_branch(self) -> None:
         self.offline()
         with mock.patch.object(Release, "_push_release_branch"):
@@ -89,6 +112,24 @@ class ReleaseTest(unittest.TestCase):
         with self.assertRaises(prepare_release.CannotReleaseError):
             Release("4.12.0", "master").prepare()
         self.assertEqual(git("branch", "--show-current", cwd=self.repo), "master")
+
+    def test_dry_run_changes_nothing(self) -> None:
+        self.offline()
+        head = git("rev-parse", "HEAD", cwd=self.repo)
+        for action in ("prepare", "set-next-version", "release"):
+            with self.subTest(action):
+                argv = ["prepare_release.py", "--dry-run", "4.12.0", action]
+                with mock.patch.object(sys, "argv", argv), mock.patch.object(prepare_release, "DRY_RUN", False):
+                    prepare_release.main()
+
+                self.assertEqual(git("rev-parse", "HEAD", cwd=self.repo), head)
+                self.assertEqual(git("branch", "--show-current", cwd=self.repo), "master")
+                self.assertEqual(git("status", "--porcelain", "--untracked-files=all", cwd=self.repo), "")
+                self.assertEqual(git("tag", cwd=self.repo), "")
+
+def load_tests(loader, tests, ignore):  # pylint: disable=unused-argument
+    tests.addTests(doctest.DocTestSuite(prepare_release))
+    return tests
 
 if __name__ == "__main__":
     unittest.main()
