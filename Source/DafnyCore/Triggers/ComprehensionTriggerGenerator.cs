@@ -4,12 +4,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Diagnostics.Contracts;
 using DafnyCore.Generic;
 
 namespace Microsoft.Dafny.Triggers {
 
-  record QuantifierGroup(SplitPartTriggerWriter Quantifier, List<ComprehensionExpr> Expressions, List<int> Conjuncts);
+  record QuantifierGroup(SplitPartTriggerWriter Quantifier, List<int> Conjuncts);
 
   /// <summary>
   /// For a comprehension that has been split into parts, determine triggers for each part.
@@ -42,7 +41,7 @@ namespace Microsoft.Dafny.Triggers {
       CollectAndShareTriggers(triggersCollector);
       TrimInvalidTriggers();
       BuildDependenciesGraph();
-      // A part names the terms that the rewrites of enclosing quantifiers' loops ask it to also without loops of its own
+      // A part names the terms that the rewrites of enclosing quantifiers' loops ask it to name, also if it has no loops
       if ((DetectAndFilterLoopingCandidates() || partWriters.Exists(writer => writer.HasRequests)) &&
           RewriteMatchingLoop(triggersCollector.ForModule)) {
         CollectWithoutShareTriggers(triggersCollector);
@@ -166,13 +165,12 @@ namespace Microsoft.Dafny.Triggers {
     private void CombineSplitQuantifier() {
       if (partWriters.Count > 1) {
         var groups = new List<QuantifierGroup>();
-        groups.Add(new QuantifierGroup(partWriters[0], [partWriters[0].Comprehension], [0]));
+        groups.Add(new QuantifierGroup(partWriters[0], [0]));
         for (int i = 1; i < partWriters.Count; i++) {
           bool found = false;
           for (int j = 0; j < groups.Count; j++) {
             if (HasSameTriggers(partWriters[i], groups[j].Quantifier)) {
               // belong to the same group
-              groups[j].Expressions.Add(partWriters[i].Comprehension);
               groups[j].Conjuncts.Add(i);
               found = true;
               break;
@@ -180,7 +178,7 @@ namespace Microsoft.Dafny.Triggers {
           }
           if (!found) {
             // start a new group
-            groups.Add(new QuantifierGroup(partWriters[i], [partWriters[i].Comprehension], [i]));
+            groups.Add(new QuantifierGroup(partWriters[i], [i]));
           }
         }
         if (groups.Count == partWriters.Count) {
@@ -189,7 +187,8 @@ namespace Microsoft.Dafny.Triggers {
         }
         // merge expressions in each group back to one quantifier.
         foreach (var group in groups) {
-          group.Quantifier.Comprehension = QuantifierSplitter.Merge(group.Expressions);
+          group.Quantifier.Comprehension =
+            QuantifierSplitter.Merge(group.Conjuncts.ConvertAll(i => partWriters[i].Comprehension));
         }
         partWriters = groups.ConvertAll(group => group.Quantifier);
         conjuncts = groups.ConvertAll(group => group.Conjuncts);

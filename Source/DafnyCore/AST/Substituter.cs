@@ -952,8 +952,9 @@ namespace Microsoft.Dafny {
     }
 
     /// <summary>
-    /// Maps each variable of a binding guard that the guard's copy renamed, since the substitution changed its type, to
-    /// the copy's, for the statements that the guard guards, and returns these variables, for the caller to remove
+    /// Maps each variable of a binding guard that the guard's copy replaced, as a substitution that changes its type or
+    /// renames bound variables does, to the copy's, for the statements that the guard guards, and returns these
+    /// variables, for the caller to remove
     /// </summary>
     private List<IVariable> MapRenamedGuardVariables(ExistsExpr guard, Expression copy) {
       var copyVars = ((ComprehensionExpr)copy).BoundVars;

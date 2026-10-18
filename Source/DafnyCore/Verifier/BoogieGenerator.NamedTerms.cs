@@ -16,10 +16,10 @@ public partial class BoogieGenerator {
     private readonly List<Expression> terms;
     public List<Bpl.Variable> Variables { get; }
 
-    public NamedTerms(BoogieGenerator generator, Attributes attributes, Dictionary<IVariable, Expression> substMap = null,
-      Dictionary<TypeParameter, Type> typeMap = null) {
+    public NamedTerms(BoogieGenerator generator, Attributes attributes,
+      Dictionary<IVariable, Expression> substMap = null) {
       terms = (Attributes.FindExpressions(attributes, "_named") ?? []).ConvertAll(term =>
-        substMap == null && typeMap == null ? term : Substitute(term, null, substMap ?? new Dictionary<IVariable, Expression>(), typeMap));
+        substMap == null ? term : Substitute(term, null, substMap));
       Variables = terms.ConvertAll(term => (Bpl.Variable)new Bpl.BoundVariable(term.Origin,
         new Bpl.TypedIdent(term.Origin, generator.CurrentIdGenerator.FreshId("_t#"), generator.TrType(term.Type))));
     }
@@ -47,10 +47,10 @@ public partial class BoogieGenerator {
 
     /// <summary>
     /// Replaces the terms in a trigger that the translator translated with the variables, and tells whether the trigger
-    /// then is one for a quantifier of the bound variables and the variables: whether it mentions each of them, and has
-    /// no term that is just a variable and no operation that no trigger may contain. An occurrence that is not replaced,
-    /// as one in another state, can leave such an operation, and a term whose translation is a bound variable, or
-    /// another term of the trigger, can leave just its variable.
+    /// then is one for a quantifier of the bound variables, among them the variables: whether it mentions each of them,
+    /// and has no term that is just a variable and no operation that no trigger may contain. An occurrence that is not
+    /// replaced, as one in another state, can leave such an operation, and a term whose translation is a bound
+    /// variable, or another term of the trigger, can leave just its variable.
     /// </summary>
     public bool Replace(ExpressionTranslator etran, List<Bpl.Expr> trigger, List<Bpl.Variable> bound) {
       if (terms.Count == 0) {
@@ -60,20 +60,20 @@ public partial class BoogieGenerator {
       for (var i = 0; i < trigger.Count; i++) {
         trigger[i] = (Bpl.Expr)replacer.Visit(trigger[i]);
       }
-      var names = new NameCollector();
+      var names = new VariableNameVisitor();
       var killers = new KillerFinder();
       trigger.ForEach(term => {
         names.Visit(term);
         killers.Visit(term);
       });
-      return bound.Concat(Variables).All(variable => names.Names.Contains(variable.Name)) && !killers.Found &&
+      return bound.All(variable => names.Names.Contains(variable.Name)) && !killers.Found &&
              !trigger.Exists(term => term is Bpl.IdentifierExpr);
     }
 
     private List<(Bpl.Expr Term, ISet<string> Names, Bpl.Variable Variable)> Translations(ExpressionTranslator etran) {
       return terms.Select((term, i) => {
         var translation = etran.TrExpr(term);
-        var names = new NameCollector();
+        var names = new VariableNameVisitor();
         names.Visit(translation);
         return (translation, (ISet<string>)names.Names, Variables[i]);
       }).ToList();
@@ -162,15 +162,6 @@ public partial class BoogieGenerator {
     public override Bpl.Expr VisitNAryExpr(Bpl.NAryExpr node) {
       Found |= node.Fun is Bpl.UnaryOperator or Bpl.BinaryOperator or Bpl.IfThenElse or Bpl.ArithmeticCoercion;
       return base.VisitNAryExpr(node);
-    }
-  }
-
-  private class NameCollector : Bpl.ReadOnlyVisitor {
-    public readonly HashSet<string> Names = [];
-
-    public override Bpl.Expr VisitIdentifierExpr(Bpl.IdentifierExpr node) {
-      Names.Add(node.Name);
-      return base.VisitIdentifierExpr(node);
     }
   }
 }

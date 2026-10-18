@@ -173,7 +173,6 @@ public partial class BoogieGenerator {
       Bpl.Expr typeAndAdditionalAntecedents;
       Bpl.Expr post = Bpl.Expr.True;
       Bpl.Trigger tr;
-      var names = new NamedTerms(this, null);
       if (forallExpressions != null) {
         // translate based on the forallExpressions since the triggers are computed based on it already.
         QuantifierExpr expr = (QuantifierExpr)forallExpressions[0];
@@ -185,7 +184,8 @@ public partial class BoogieGenerator {
         if (additionalRange != null) {
           typeAndAdditionalAntecedents = BplAnd(typeAndAdditionalAntecedents, additionalRange(substMap, initEtran));
         }
-        names = new NamedTerms(this, expr.Attributes, substMap);
+        var names = new NamedTerms(this, expr.Attributes, substMap);
+        bvars.AddRange(names.Variables);
         tr = TrTrigger(callEtran, expr.Attributes, expr.Origin, bvars, substMap, s0.MethodSelect.TypeArgumentSubstitutionsWithParents(), names);
 
         var p = Substitute(expr.Range, null, substMap);
@@ -196,7 +196,6 @@ public partial class BoogieGenerator {
         post = BplAnd(post, callEtran.TrExpr(p));
         post = names.Replace(callEtran, post);
         typeAndAdditionalAntecedents = BplAnd(names.Definitions(callEtran), typeAndAdditionalAntecedents);
-        bvars.AddRange(names.Variables);
       } else {
         typeAndAdditionalAntecedents = initEtran.TrBoundVariablesRename(boundVars, bvars, out substMap);
         if (additionalRange != null) {

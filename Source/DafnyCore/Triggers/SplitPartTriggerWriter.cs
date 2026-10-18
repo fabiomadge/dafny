@@ -15,10 +15,8 @@ class SplitPartTriggerWriter {
   private List<TriggerCandidate> RejectedCandidates { get; }
   public List<Tuple<Expression, IdentifierExpr>> NamedExpressions { get; }
   private List<TriggerMatch> loopingMatches;
-  // The part as written while the triggers are selected on the matching-loop rewrite's copy, and the copy's variables
-  // for the terms that it names, with their terms
+  // The part as written while the triggers are selected on the matching-loop rewrite's copy
   private ComprehensionExpr asWritten;
-  private readonly List<(BoundVar Variable, Expression Term)> names = [];
   // The terms that the rewrites of enclosing quantifiers' loops ask the part's quantifier to name, and those of every
   // quantifier that breaks its loops, which the trigger generator selects triggers for after the ones that enclose it
   private readonly List<Expression> requested;
@@ -33,12 +31,12 @@ class SplitPartTriggerWriter {
 
   private bool CouldSuppressLoops { get; set; }
 
-  internal SplitPartTriggerWriter(ComprehensionExpr comprehension, List<Expression> requested = null,
-    Dictionary<Expression, List<Expression>> requests = null) {
+  internal SplitPartTriggerWriter(ComprehensionExpr comprehension, List<Expression> requested,
+    Dictionary<Expression, List<Expression>> requests) {
     this.Comprehension = comprehension;
     this.RejectedCandidates = [];
     this.NamedExpressions = [];
-    this.requested = requested ?? [];
+    this.requested = requested;
     this.requests = requests;
   }
 
@@ -80,7 +78,7 @@ class SplitPartTriggerWriter {
   }
 
   public bool RewriteMatchingLoop(ErrorReporter reporter, ModuleDefinition module) {
-    if (!NeedsAutoTriggers() || !WantsMatchingLoopRewrite()) {
+    if (!BreaksLoops) {
       return false;
     }
 
@@ -119,7 +117,6 @@ class SplitPartTriggerWriter {
       var range = expr.Range == null ? null : s.Substitute(expr.Range);
       var term = s.Substitute(expr.Term);
       var used = substMap.FindAll(x => s.Used.Contains(x.Item2));
-      names.AddRange(used.Select(x => ((BoundVar)x.Item2.Var, x.Item1)));
       NamedExpressions.AddRange(used);
       expr = Bind(expr, range, term, used);
     } else {
@@ -376,15 +373,16 @@ class SplitPartTriggerWriter {
 
   private void AddTriggerAttribute(SystemModuleManager systemModuleManager) {
     // A trigger has each named term where the copy has its variable, and the verifier binds a variable to it
-    var terms = new Substituter(null, names.ToDictionary(x => (IVariable)x.Variable, x => x.Term), new Dictionary<TypeParameter, Type>());
+    var terms = new Substituter(null, NamedExpressions.ToDictionary(x => x.Item2.Var, x => x.Item1),
+      new Dictionary<TypeParameter, Type>());
     foreach (var candidate in Candidates) {
       Comprehension.Attributes = new Attributes("trigger",
-        candidate.Terms.ConvertAll(t =>
-          Expression.WrapAsParsedStructureIfNecessary(names.Count == 0 ? t.Expr : terms.Substitute(t.Expr), systemModuleManager)),
+        candidate.Terms.ConvertAll(t => Expression.WrapAsParsedStructureIfNecessary(
+          NamedExpressions.Count == 0 ? t.Expr : terms.Substitute(t.Expr), systemModuleManager)),
         Comprehension.Attributes);
     }
-    if (Candidates.Count != 0 && names.Count != 0) {
-      Comprehension.Attributes = new Attributes("_named", names.ConvertAll(x => x.Term), Comprehension.Attributes);
+    if (Candidates.Count != 0 && NamedExpressions.Count != 0) {
+      Comprehension.Attributes = new Attributes("_named", NamedExpressions.ConvertAll(x => x.Item1), Comprehension.Attributes);
     }
   }
 

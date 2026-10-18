@@ -35,11 +35,8 @@ namespace Microsoft.Dafny.Triggers {
 
     public void AddComprehension(ComprehensionExpr comprehensionExpr, [CanBeNull] List<QuantifierExpr> parts) {
       quantifiers.Add(comprehensionExpr);
-      if (parts != null) {
-        quantifierCollections.Add(new ComprehensionTriggerGenerator(comprehensionExpr, parts, reporter, namingRequests));
-      } else {
-        quantifierCollections.Add(new ComprehensionTriggerGenerator(comprehensionExpr, Enumerable.Repeat(comprehensionExpr, 1), reporter, namingRequests));
-      }
+      quantifierCollections.Add(new ComprehensionTriggerGenerator(comprehensionExpr,
+        parts ?? Enumerable.Repeat(comprehensionExpr, 1), reporter, namingRequests));
     }
 
     protected override bool VisitOneExpr(Expression expr, ref OldExpr/*?*/ enclosingOldContext) {
