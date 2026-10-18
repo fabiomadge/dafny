@@ -2,7 +2,7 @@
 We only allow squash merging and GH suggests the PR details as a default commit message. -->
 
 ### What was changed?
-<!-- Is this a user-visible change?  Remember to update RELEASE_NOTES.md -->
+<!-- Is this a user-visible change?  Add a release note to docs/dev/news/ (see docs/dev/news/README.md) -->
 
 ### How has this been tested?
 <!-- Tests can be added to `Source/IntegrationTests/TestFiles/LitTests/LitTest/` or to `Source/*.Test/…` and run with `dotnet test` -->
