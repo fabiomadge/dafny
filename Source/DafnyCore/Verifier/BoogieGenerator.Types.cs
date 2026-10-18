@@ -656,8 +656,11 @@ public partial class BoogieGenerator {
         List<bool> freeOfAlloc = BoundedPool.HasBounds(bounds, BoundedPool.PoolVirtues.IndependentOfAlloc_or_ExplicitAlloc);
         var bvs = new List<Variable>();
         var typeAntecedent = etran.TrBoundVariables(undetermined, bvs, false, freeOfAlloc);
-        var triggers = TrTrigger(etran, triggerAttributes, tok, substMap, undetermined);
-        body = new Bpl.ExistsExpr(tok, bvs, triggers, BplAnd(typeAntecedent, body));
+        var names = new NamedTerms(this, triggerAttributes, substMap);
+        bvs.AddRange(names.Variables);
+        var triggers = TrTrigger(etran, triggerAttributes, tok, substMap, undetermined, names, bvs);
+        body = new Bpl.ExistsExpr(tok, bvs, triggers,
+          BplAnd(names.Definitions(etran), names.Replace(etran, BplAnd(typeAntecedent, body))));
       }
       w = BplOr(body, w);
     }

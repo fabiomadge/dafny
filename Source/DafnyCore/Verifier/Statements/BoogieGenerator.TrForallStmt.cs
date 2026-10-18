@@ -184,7 +184,9 @@ public partial class BoogieGenerator {
         if (additionalRange != null) {
           typeAndAdditionalAntecedents = BplAnd(typeAndAdditionalAntecedents, additionalRange(substMap, initEtran));
         }
-        tr = TrTrigger(callEtran, expr.Attributes, expr.Origin, bvars, substMap, s0.MethodSelect.TypeArgumentSubstitutionsWithParents());
+        var names = new NamedTerms(this, expr.Attributes, substMap);
+        bvars.AddRange(names.Variables);
+        tr = TrTrigger(callEtran, expr.Attributes, expr.Origin, bvars, substMap, s0.MethodSelect.TypeArgumentSubstitutionsWithParents(), names);
 
         var p = Substitute(expr.Range, null, substMap);
         anteCanCalls = initEtran.CanCallAssumption(p);
@@ -192,6 +194,8 @@ public partial class BoogieGenerator {
         p = Substitute(expr.Term, null, substMap);
         post = BplAnd(post, callEtran.CanCallAssumption(p));
         post = BplAnd(post, callEtran.TrExpr(p));
+        post = names.Replace(callEtran, post);
+        typeAndAdditionalAntecedents = BplAnd(names.Definitions(callEtran), typeAndAdditionalAntecedents);
       } else {
         typeAndAdditionalAntecedents = initEtran.TrBoundVariablesRename(boundVars, bvars, out substMap);
         if (additionalRange != null) {
@@ -467,8 +471,9 @@ public partial class BoogieGenerator {
 
     Bpl.Trigger tr = null;
     var argsEtran = etran.WithNoLits();
+    // The trigger generator's triggers need the variables for the terms that it named, which this translation does not bind
     foreach (var aa in attributes.AsEnumerable()) {
-      if (aa.Name == "trigger") {
+      if (aa.Name == "trigger" && !Attributes.Contains(attributes, "_named")) {
         List<Bpl.Expr> tt = [];
         foreach (var arg in aa.Args) {
           if (arg == lhs) {
