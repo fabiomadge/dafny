@@ -26,9 +26,14 @@
    is already set for the next release. However, if you wish to change the
    minor or major version, see [VERSIONBUMP.md](VERSIONBUMP.md)
 
+1. Pushing the release branch starts the "Release branch deep tests"
+   workflow, which runs the tests that the release tag will have to pass.
+   Wait for its run on the last commit of the branch to pass; `prepare`
+   prints a link to the runs.
+
 1. Run `./Scripts/prepare_release.py $VER
    release` from the root of the repository. The script will tag the
-   current commit and push it. A
+   release branch and push the tag. A
    GitHub action will automatically run in reaction to the tag being
    pushed, which will run the deep integration test suite,
    build the artifacts and reference manual,
@@ -49,7 +54,7 @@
 1. We are going to merge the release branch into master to take into account
    any fix that was implemented there, and also update the version number.
    With the release branch checked out, run `./Scripts/prepare_release.py
-   $NEXT_VER set-next version` to set the version number for the next
+   $NEXT_VER set-next-version` to set the version number for the next
    release, where `$NEXT_VER` is `$VER` with the patch incremented.
    Then follow the instructions [VERSIONBUMP.md](VERSIONBUMP.md) to keep Dafny
    up-to-date with the new version number.
@@ -81,18 +86,23 @@
    code. It will just install Dafny from Homebrew and run it on some
    examples.
 
-If something goes wrong with the `prepare` step:
+1. Announce the new release to the world.
 
-- Remove the release commit (`git reset --hard HEAD~1`)
+### If something goes wrong
+
+With the `prepare` step:
+
+- If `prepare` failed after its checks passed, undo its changes:
+  `git reset --hard HEAD~1` if `git log -1` shows the `Release Dafny $VER`
+  commit, and `git reset --hard` otherwise.
 - Commit fixes
 - Re-run the `prepare` step; the script will recognize the `release-` branch and will not recreate it.
 
-If something goes wrong with the `release` step:
+With the `release` step:
+
 - Delete the local tag: `git tag -d vA.B.C`
 - Delete the remote tag: `git push --delete origin vA.B.C`
 - Return to the `prepare` step.
-
-1. Announce the new release to the world.
 
 ## Updating Dafny on Homebrew
 
@@ -130,8 +140,8 @@ with git commands and concepts is helpful.
     --sha256 <sha256 of the source .tar.gz for the release>
 ```
 
-3. Expect comments from the reviewers. If changes are needed, do 4-6
-   again. Eventually the reviewers will accept and merge the PR.
+3. Expect comments from the reviewers. If changes are needed, push them to the
+   pull request's branch. Eventually the reviewers will accept and merge the PR.
 
 4. Test the installation by running
 

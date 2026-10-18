@@ -334,9 +334,6 @@ class Release:
         run_one(f"Updating `{self.build_props_path}`...",
                 self._update_build_props_file)
 
-    # Still TODO:
-    # - Run deep test as part of release workflow
-
     def prepare(self):
         assert_one("Can we run `git`?",
                    self._has_git)
@@ -387,11 +384,11 @@ class Release:
         progress("Done!")
         progress()
 
-        DEEPTESTS_URL = "https://github.com/dafny-lang/dafny/actions/workflows/nightly-build.yml"
-        progress(f"Now, start a deep-tests workflow manually for branch {self.release_branch_name} at\n"
+        DEEPTESTS_URL = ("https://github.com/dafny-lang/dafny/actions/workflows/release-branch-deep-tests.yml"
+                         f"?query=branch%3A{self.release_branch_name}")
+        progress(f"Pushing {self.release_branch_name} starts its deep tests:\n"
                  f"<{DEEPTESTS_URL}>\n"
-                 f"To do so, click Run workflow, use workflow from {self.release_branch_name},\n"
-                 f"Once it completes, just re-run this script as `./Scripts/prepare_release.py {self.version} release` to tag the branch and push it to trigger the release.")
+                 f"Once they pass, just re-run this script as `./Scripts/prepare_release.py {self.version} release` to tag the branch and push it to trigger the release.")
         progress()
 
     def _tag_release(self):

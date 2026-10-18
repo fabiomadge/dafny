@@ -10,6 +10,7 @@ env:
   dotnet-version: 8.0.x # SDK Version for building Dafny
 
 jobs:
+  # release-branch-deep-tests.yml runs the same tests on the release branch before tagging.
   deep-integration-tests:
     if: github.repository_owner == 'dafny-lang'
     uses: ./.github/workflows/integration-tests-reusable.yml
