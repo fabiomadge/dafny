@@ -81,20 +81,47 @@ public partial class BoogieGenerator {
   }
 
   /// <summary>
-  /// Whether two Boogie expressions that are not resolved yet are the same term. Function calls compare by name, as
-  /// their functions are not resolved, and an expression with a binder is the same as no other.
+  /// Whether two Boogie expressions that are not resolved yet are the same term, up to the names of the variables that
+  /// they bind, which bound maps from a's to b's. Function calls compare by name, as their functions are not resolved.
   /// </summary>
-  private static bool SameTerm(Bpl.Expr a, Bpl.Expr b) {
+  private static bool SameTerm(Bpl.Expr a, Bpl.Expr b, Dictionary<string, string> bound = null) {
+    bound ??= [];
     return (a, b) switch {
       (Bpl.LiteralExpr x, Bpl.LiteralExpr y) => Equals(x.Val, y.Val),
-      (Bpl.IdentifierExpr x, Bpl.IdentifierExpr y) => x.Name == y.Name && x.Decl == y.Decl,
+      (Bpl.IdentifierExpr x, Bpl.IdentifierExpr y) => bound.TryGetValue(x.Name, out var name)
+        ? name == y.Name
+        : x.Name == y.Name && x.Decl == y.Decl && !bound.ContainsValue(y.Name),
       (Bpl.NAryExpr x, Bpl.NAryExpr y) => SameFunction(x.Fun, y.Fun) && x.Args.Count == y.Args.Count &&
-                                          x.Args.Zip(y.Args).All(args => SameTerm(args.First, args.Second)),
-      (Bpl.OldExpr x, Bpl.OldExpr y) => SameTerm(x.Expr, y.Expr),
-      (Bpl.BvExtractExpr x, Bpl.BvExtractExpr y) => x.Start == y.Start && x.End == y.End && SameTerm(x.Bitvector, y.Bitvector),
-      (Bpl.BvConcatExpr x, Bpl.BvConcatExpr y) => SameTerm(x.E0, y.E0) && SameTerm(x.E1, y.E1),
+                                          x.Args.Zip(y.Args).All(args => SameTerm(args.First, args.Second, bound)),
+      (Bpl.OldExpr x, Bpl.OldExpr y) => SameTerm(x.Expr, y.Expr, bound),
+      (Bpl.BvExtractExpr x, Bpl.BvExtractExpr y) => x.Start == y.Start && x.End == y.End &&
+                                                    SameTerm(x.Bitvector, y.Bitvector, bound),
+      (Bpl.BvConcatExpr x, Bpl.BvConcatExpr y) => SameTerm(x.E0, y.E0, bound) && SameTerm(x.E1, y.E1, bound),
+      (Bpl.BinderExpr x, Bpl.BinderExpr y) => x.GetType() == y.GetType() && x.TypeParameters.Count == 0 &&
+                                              y.TypeParameters.Count == 0 &&
+                                              Binding(bound, x.Dummies, y.Dummies) is { } inner &&
+                                              SameTerm(x.Body, y.Body, inner),
+      (Bpl.LetExpr x, Bpl.LetExpr y) => x.Rhss.Count == y.Rhss.Count &&
+                                         x.Rhss.Zip(y.Rhss).All(rhss => SameTerm(rhss.First, rhss.Second, bound)) &&
+                                         Binding(bound, x.Dummies, y.Dummies) is { } inner && SameTerm(x.Body, y.Body, inner),
       _ => false
     };
+  }
+
+  /// <summary>
+  /// The map of the bound variables inside binders of these variables, if they are as many and of the same types
+  /// </summary>
+  private static Dictionary<string, string> Binding(Dictionary<string, string> bound, List<Bpl.Variable> a,
+    List<Bpl.Variable> b) {
+    if (a.Count != b.Count || a.Zip(b).Any(dummies => !Equals(dummies.First.TypedIdent.Type, dummies.Second.TypedIdent.Type))) {
+      return null;
+    }
+    // b's variables hide those of enclosing binders with their names
+    var inner = bound.Where(pair => !b.Exists(dummy => dummy.Name == pair.Value)).ToDictionary();
+    foreach (var (x, y) in a.Zip(b)) {
+      inner[x.Name] = y.Name;
+    }
+    return inner;
   }
 
   private static bool SameFunction(Bpl.IAppliable f, Bpl.IAppliable g) {

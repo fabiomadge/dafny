@@ -26,3 +26,17 @@ method SuchThat()
 {
   var x :| F(x) <= F(x + 1);
 }
+
+// A named term can have binders, which the verifier compares up to the names of their variables, as each translation
+// of a set comprehension names its lambda's variable anew
+method Let(k: int)
+  requires forall x :: F(x) <= F(x + (var z := k; z))
+{
+  assert F(3) <= F(3 + (var z := k; z));
+}
+
+method SetComprehension(S: set<int>)
+  requires forall x :: F(x) <= F(x + |set j | j in S && j > 0|)
+{
+  assert F(3) <= F(3 + |set j | j in S && j > 0|);
+}
