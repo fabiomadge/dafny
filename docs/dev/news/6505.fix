@@ -1,0 +1,1 @@
+`--cores:50.5%` no longer depends on the locale, and `--cores` rejects values it cannot use, such as `-50%`, `NaN%` or `3000000000`, instead of misreading them or crashing
