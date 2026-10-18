@@ -48,9 +48,9 @@ public partial class BoogieGenerator {
     /// <summary>
     /// Replaces the terms in a trigger that the translator translated with the variables, and tells whether the trigger
     /// then is one for a quantifier of the bound variables, among them the variables: whether it mentions each of them,
-    /// and has no term that is just a variable and no operation that no trigger may contain. An occurrence that is not
-    /// replaced, as one in another state, can leave such an operation, and a term whose translation is a bound
-    /// variable, or another term of the trigger, can leave just its variable.
+    /// and has no term that is just a variable and no operation that no trigger may contain. A term whose translation is
+    /// a bound variable leaves the trigger without it; a term whose translation is a whole term of the trigger, or an
+    /// occurrence that the replacement misses, would leave a variable or an operation, which Boogie rejects.
     /// </summary>
     public bool Replace(ExpressionTranslator etran, List<Bpl.Expr> trigger, List<Bpl.Variable> bound) {
       if (terms.Count == 0) {
