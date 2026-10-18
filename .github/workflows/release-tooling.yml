@@ -1,0 +1,24 @@
+name: Release tooling
+
+on:
+  workflow_dispatch:
+  pull_request:
+  merge_group:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    steps:
+    - name: Checkout Dafny
+      uses: actions/checkout@v7
+    - name: Check that release notes are where the release script reads them
+      run: python3 Scripts/check_news_fragments.py
+    - name: Test the release scripts
+      run: python3 -m unittest discover --buffer --start-directory Scripts --pattern 'test_*.py'
