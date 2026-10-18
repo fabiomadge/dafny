@@ -22,13 +22,17 @@ namespace Microsoft.Dafny.Triggers {
     private List<SplitPartTriggerWriter> partWriters;
     // The conjuncts of each part, if the parts are copies, which the verifier makes again from the comprehension
     private List<List<int>> conjuncts;
+    // The terms that the rewrites of enclosing quantifiers' loops ask the comprehension to name, and those asked of every
+    // quantifier that breaks its loops, which the trigger generator selects triggers for after the ones that enclose it
+    private readonly List<Expression> requested = [];
+    private readonly Dictionary<Expression, List<Expression>> namingRequests;
 
     internal ComprehensionTriggerGenerator(ComprehensionExpr comprehension, IEnumerable<ComprehensionExpr> quantifiers, ErrorReporter reporter,
       Dictionary<Expression, List<Expression>> namingRequests = null) {
       this.reporter = reporter;
       this.comprehension = comprehension;
-      List<Expression> requested = [];
-      partWriters = quantifiers.Select(q => new SplitPartTriggerWriter(q, requested, namingRequests)).ToList();
+      this.namingRequests = namingRequests;
+      partWriters = quantifiers.Select(q => new SplitPartTriggerWriter(q)).ToList();
       if (partWriters[0].Comprehension != comprehension) {
         conjuncts = partWriters.Select((_, i) => new List<int> { i }).ToList();
       }
@@ -41,14 +45,15 @@ namespace Microsoft.Dafny.Triggers {
       CollectAndShareTriggers(triggersCollector);
       TrimInvalidTriggers();
       BuildDependenciesGraph();
+      var asWritten = partWriters.ConvertAll(writer => writer.Comprehension);
       // A part names the terms that the rewrites of enclosing quantifiers' loops ask it to name, also if it has no loops
-      if ((DetectAndFilterLoopingCandidates() || partWriters.Exists(writer => writer.HasRequests)) &&
-          RewriteMatchingLoop(triggersCollector.ForModule)) {
+      if ((DetectAndFilterLoopingCandidates() || requested.Count != 0) && RewriteMatchingLoop(triggersCollector.ForModule)) {
         CollectWithoutShareTriggers(triggersCollector);
         TrimInvalidTriggers();
         DetectAndFilterLoopingCandidates();
-        foreach (var triggerWriter in partWriters) {
-          triggerWriter.RestoreAsWritten();
+        // The rewrite's copies, which only the trigger generator sees, have selected the triggers of the parts as written
+        for (var i = 0; i < partWriters.Count; i++) {
+          partWriters[i].Comprehension = asWritten[i];
         }
       }
       FilterWeakerTriggers();
@@ -149,7 +154,7 @@ namespace Microsoft.Dafny.Triggers {
       bool rewritten = false;
       if (comprehension is QuantifierExpr) {
         foreach (var triggerWriter in partWriters) {
-          rewritten |= triggerWriter.RewriteMatchingLoop(reporter, module);
+          rewritten |= triggerWriter.RewriteMatchingLoop(reporter, module, requested, namingRequests);
         }
       }
       return rewritten;

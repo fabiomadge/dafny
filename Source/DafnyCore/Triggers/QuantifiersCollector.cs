@@ -14,17 +14,19 @@ namespace Microsoft.Dafny.Triggers {
   internal class QuantifierCollector : TopDownVisitor<OldExpr/*?*/> {
     readonly ErrorReporter reporter;
     private readonly HashSet<Expression> quantifiers = [];
-    private readonly ISet<QuantifierExpr> splittable;
+    // The trigger generator selects the triggers of a quantifier whose attributes allow splitting part by part, except
+    // for a binding guard of an if statement or expression, an existential made for a :|, and one in a prefix declaration
+    private readonly HashSet<Expression> unsplit = [];
+    internal bool InPrefixDeclaration { get; set; }
     private readonly Dictionary<Expression, List<Expression>> namingRequests = [];
     internal readonly Dictionary<Expression, HashSet<OldExpr>> exprsInOldContext = new Dictionary<Expression, HashSet<OldExpr>>();
     internal readonly List<ComprehensionTriggerGenerator> quantifierCollections = [];
 
     private readonly List<Action> ActionsOnSelectedTriggers = new();
 
-    public QuantifierCollector(ErrorReporter reporter, ISet<QuantifierExpr> splittable = null) {
+    public QuantifierCollector(ErrorReporter reporter) {
       Contract.Requires(reporter != null);
       this.reporter = reporter;
-      this.splittable = splittable;
     }
 
     public void ApplyPostActions() {
@@ -40,6 +42,9 @@ namespace Microsoft.Dafny.Triggers {
     }
 
     protected override bool VisitOneExpr(Expression expr, ref OldExpr/*?*/ enclosingOldContext) {
+      if (expr is ITEExpr { IsBindingGuard: true } iteExpr) {
+        unsplit.Add(iteExpr.Test);
+      }
       if (expr is LetExpr { Exact: false } letExpr) {
         // create a corresponding exists quantifier
         Contract.Assert(letExpr.RHSs.Count == 1); // let-such-that expressions have exactly 1 RHS
@@ -53,6 +58,7 @@ namespace Microsoft.Dafny.Triggers {
         ActionsOnSelectedTriggers.Add(() => {
           letExpr.Attributes = existsExpr.Attributes;
         });
+        unsplit.Add(existsExpr);
         expr = existsExpr;
       }
 
@@ -63,7 +69,8 @@ namespace Microsoft.Dafny.Triggers {
         if (e is SetComprehension or MapComprehension) {
           AddComprehension(e, null);
         } else if (e is QuantifierExpr quantifier) {
-          AddComprehension(quantifier, splittable != null && splittable.Contains(quantifier) ? QuantifierSplitter.Conjuncts(quantifier) : null);
+          var split = !InPrefixDeclaration && !unsplit.Contains(quantifier) && QuantifierSplitter.AllowsSplitting(quantifier);
+          AddComprehension(quantifier, split ? QuantifierSplitter.Conjuncts(quantifier) : null);
         }
       }
 
@@ -84,6 +91,9 @@ namespace Microsoft.Dafny.Triggers {
     }
 
     protected override bool VisitOneStmt(Statement stmt, ref OldExpr/*?*/ st) {
+      if (stmt is IfStmt { IsBindingGuard: true } ifStmt) {
+        unsplit.Add(ifStmt.Guard);
+      }
       if (stmt is ForallStmt { EffectiveEnsuresClauses: { } effectiveEnsuresClauses }) {
         foreach (var expr in effectiveEnsuresClauses) {
           VisitOneExpr(expr, ref st);
@@ -116,6 +126,7 @@ namespace Microsoft.Dafny.Triggers {
           assignSuchThatStmt.Attributes = updatedAttributes;
         });
 
+        unsplit.Add(existsExpr);
         VisitOneExpr(existsExpr, ref st);
       }
 

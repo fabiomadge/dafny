@@ -15,12 +15,6 @@ class SplitPartTriggerWriter {
   private List<TriggerCandidate> RejectedCandidates { get; }
   public List<Tuple<Expression, IdentifierExpr>> NamedExpressions { get; }
   private List<TriggerMatch> loopingMatches;
-  // The part as written while the triggers are selected on the matching-loop rewrite's copy
-  private ComprehensionExpr asWritten;
-  // The terms that the rewrites of enclosing quantifiers' loops ask the part's quantifier to name, and those of every
-  // quantifier that breaks its loops, which the trigger generator selects triggers for after the ones that enclose it
-  private readonly List<Expression> requested;
-  private readonly Dictionary<Expression, List<Expression>> requests;
 
   private bool AllowsLoops {
     get {
@@ -31,16 +25,11 @@ class SplitPartTriggerWriter {
 
   private bool CouldSuppressLoops { get; set; }
 
-  internal SplitPartTriggerWriter(ComprehensionExpr comprehension, List<Expression> requested,
-    Dictionary<Expression, List<Expression>> requests) {
+  internal SplitPartTriggerWriter(ComprehensionExpr comprehension) {
     this.Comprehension = comprehension;
     this.RejectedCandidates = [];
     this.NamedExpressions = [];
-    this.requested = requested;
-    this.requests = requests;
   }
-
-  internal bool HasRequests => requested.Count != 0;
 
   internal bool BreaksLoops => NeedsAutoTriggers() && WantsMatchingLoopRewrite();
 
@@ -77,7 +66,10 @@ class SplitPartTriggerWriter {
     return looping.Count > 0;
   }
 
-  public bool RewriteMatchingLoop(ErrorReporter reporter, ModuleDefinition module) {
+  // Also names the terms requested of the part's quantifier, and asks the nested quantifiers that the requests have to
+  // name others
+  public bool RewriteMatchingLoop(ErrorReporter reporter, ModuleDefinition module, List<Expression> requested,
+    Dictionary<Expression, List<Expression>> requests) {
     if (!BreaksLoops) {
       return false;
     }
@@ -124,7 +116,6 @@ class SplitPartTriggerWriter {
     }
     var qq = expr;
 
-    asWritten = Comprehension;
     Comprehension = qq;
     Candidates.Clear();
     CandidateTerms.Clear();
@@ -135,17 +126,6 @@ class SplitPartTriggerWriter {
     // don't rewrite the quantifier if we are not auto generate triggers.
     // This is because rewriting introduces new boundvars and will cause
     // user provided triggers not mention all boundvars
-  }
-
-  /// <summary>
-  /// Puts back the part as written once the triggers are selected on the matching-loop rewrite's copy, which only the
-  /// trigger generator sees
-  /// </summary>
-  internal void RestoreAsWritten() {
-    if (asWritten != null) {
-      Comprehension = asWritten;
-      asWritten = null;
-    }
   }
 
   /// <summary>

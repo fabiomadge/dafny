@@ -12,14 +12,7 @@ namespace Microsoft.Dafny.Triggers {
   /// See section 2.3 of "Trigger Selection Strategies to Stabilize Program Verifiers" to learn
   /// why we split quantifiers
   /// </summary>
-  class QuantifierSplitter : BottomUpVisitor {
-    // The quantifiers whose triggers the trigger generator selects part by part
-    private readonly ISet<QuantifierExpr> splittable;
-
-    internal QuantifierSplitter(ISet<QuantifierExpr> splittable) {
-      this.splittable = splittable;
-    }
-
+  static class QuantifierSplitter {
     private static BinaryExpr.Opcode FlipOpcode(BinaryExpr.Opcode opCode) {
       if (opCode == BinaryExpr.Opcode.And) {
         return BinaryExpr.Opcode.Or;
@@ -151,35 +144,10 @@ namespace Microsoft.Dafny.Triggers {
         [conjunct.Conjunct], TriggerUtils.CopyAttributes(quantifier.Attributes)));
     }
 
-    private static bool AllowsSplitting(ComprehensionExpr quantifier) {
+    internal static bool AllowsSplitting(ComprehensionExpr quantifier) {
       // allow split if attributes doesn't contains "split" or it is "split: true" and it is not an empty QuantifierExpr (boundvar.count>0)
       bool splitAttr = true;
       return (!Attributes.ContainsBool(quantifier.Attributes, "split", ref splitAttr) || splitAttr) && (quantifier.BoundVars.Count > 0);
-    }
-
-    protected override void VisitOneExpr(Expression expr) {
-      if (expr is QuantifierExpr quantifier && AllowsSplitting(quantifier)) {
-        splittable.Add(quantifier);
-      }
-
-      if (expr is ITEExpr { IsBindingGuard: true } iteExpr) {
-        splittable.Remove((ExistsExpr)iteExpr.Test);
-      }
-    }
-
-    protected override void VisitOneStmt(Statement stmt) {
-      if (stmt is ForallStmt) {
-        ForallStmt s = (ForallStmt)stmt;
-        if (s.EffectiveEnsuresClauses != null) {
-          foreach (Expression expr in s.EffectiveEnsuresClauses) {
-            VisitOneExpr(expr);
-          }
-        }
-      }
-
-      if (stmt is IfStmt ifStatement && ifStatement.IsBindingGuard) {
-        splittable.Remove((ExistsExpr)ifStatement.Guard);
-      }
     }
 
     /// <summary>

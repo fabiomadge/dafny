@@ -1,22 +1,19 @@
-using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 
 namespace Microsoft.Dafny;
 
 public class TriggerGeneratingRewriter : IRewriter {
   private readonly SystemModuleManager systemModuleManager;
-  private readonly ISet<QuantifierExpr> splittable;
-  internal TriggerGeneratingRewriter(ErrorReporter reporter, SystemModuleManager systemModuleManager,
-    ISet<QuantifierExpr> splittable) : base(reporter) {
+  internal TriggerGeneratingRewriter(ErrorReporter reporter, SystemModuleManager systemModuleManager) : base(reporter) {
     Contract.Requires(reporter != null);
     this.systemModuleManager = systemModuleManager;
-    this.splittable = splittable;
   }
 
   internal override void PostCyclicityResolve(ModuleDefinition definition) {
-    var finder = new Triggers.QuantifierCollector(Reporter, splittable);
+    var finder = new Triggers.QuantifierCollector(Reporter);
 
     foreach (var decl in ModuleDefinition.AllCallablesIncludingPrefixDeclarations(definition.TopLevelDecls)) {
+      finder.InPrefixDeclaration = decl is PrefixPredicate or PrefixLemma;
       finder.Visit(decl, null);
     }
 
