@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Transactions;
@@ -21,8 +22,17 @@ public static class BoogieOptionBag {
 
     var value = result.Tokens[^1].Value;
     if (value.EndsWith('%')) {
-      if (double.TryParse(value.Substring(0, value.Length - 1), out var percentage)) {
-        return Math.Max(1U, (uint)(percentage / 100.0 * Environment.ProcessorCount));
+      // Float, unlike the default style, rejects thousands separators, so "50,5%" is not read as 505%.
+      if (double.TryParse(value.Substring(0, value.Length - 1), NumberStyles.Float,
+            CultureInfo.InvariantCulture, out var percentage)) {
+        var cores = percentage / 100.0 * Environment.ProcessorCount;
+        // Also excludes NaN. Outside this range, the result of the (uint) cast depends on the platform.
+        if (cores is >= 0 and <= uint.MaxValue) {
+          return Math.Max(1U, (uint)cores);
+        }
+
+        result.ErrorMessage = $"Percentage {value} does not denote a usable number of cores on this machine";
+        return 1;
       }
 
       result.ErrorMessage = $"Could not parse percentage {value}";

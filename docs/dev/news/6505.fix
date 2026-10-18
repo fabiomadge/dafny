@@ -1,0 +1,1 @@
+`--cores:<XX>%` no longer depends on the locale or platform: `50.5%` means 50.5% everywhere, and a percentage that yields no usable core count, such as `-50%` or `NaN%`, is an error
