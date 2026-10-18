@@ -1,0 +1,1 @@
+A `--cores` count above 2147483647, such as `--cores:3000000000`, no longer crashes the verifier

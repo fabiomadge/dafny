@@ -5,6 +5,7 @@
 // RUN: ! %baredafny verify --show-snippets:false --use-basename-for-filename --cores=1 "%s" >> "%t"
 // RUN: ! %baredafny verify --show-snippets:false --use-basename-for-filename --cores=0% "%s" >> "%t"
 // RUN: ! %baredafny verify --show-snippets:false --use-basename-for-filename --cores=50% "%s" >> "%t"
+// RUN: ! %baredafny verify --show-snippets:false --use-basename-for-filename --cores=4294967295 "%s" >> "%t"
 // RUN: %diff "%s.expect" "%t"
 
 method Foo() ensures false {

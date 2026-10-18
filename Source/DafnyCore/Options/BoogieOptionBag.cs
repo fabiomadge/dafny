@@ -106,7 +106,7 @@ public static class BoogieOptionBag {
       }
     });
     DafnyOptions.RegisterLegacyBinding(Cores,
-      (o, f) => o.VcsCores = f == 0 ? (1 + System.Environment.ProcessorCount) / 2 : (int)f);
+      (o, f) => o.VcsCores = f == 0 ? (1 + System.Environment.ProcessorCount) / 2 : (int)Math.Min(f, int.MaxValue));
     DafnyOptions.RegisterLegacyBinding(NoVerify, (options, dotNotVerify) => {
       var shouldVerify = !dotNotVerify && !options.Get(HiddenNoVerify);
       options.Verify = shouldVerify; // Boogie won't verify
