@@ -1,0 +1,24 @@
+# Runs the deep tests that publish-release.yml runs on a release tag, on the
+# release branch before the tag exists. Keep the inputs the same as there.
+
+name: Release branch deep tests
+
+on:
+  push:
+    branches:
+      - 'release-[0-9]*'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deep-integration-tests:
+    if: github.repository_owner == 'dafny-lang'
+    permissions:
+      contents: read
+    uses: ./.github/workflows/integration-tests-reusable.yml
+    with:
+      ref: ${{ github.sha }}
+      all_platforms: true
+      num_shards: 5
