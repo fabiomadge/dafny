@@ -41,7 +41,7 @@ function H(x: int): int
 // The verifier translates each part with its own triggers
 // CHECK: \(forall x: int \{:trigger P\(x\)\} ::
 // CHECK-NEXT: P\(x\)\) &&
-// CHECK-NEXT: forall x: int \{:trigger H\(x \+ 1\), H\(x\)\} /\*\{:_named x \+ 1\}\*/ ::
+// CHECK-NEXT: forall x: int /\*\{:trigger H\(x \+ 1\), H\(x\)\}\*/ /\*\{:_named x \+ 1\}\*/ ::
 // CHECK-NOT: _part
 ghost predicate Parts() {
   forall x :: P(x) && H(x) <= H(x + 1)

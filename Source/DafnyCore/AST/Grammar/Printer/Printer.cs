@@ -874,8 +874,12 @@ NoGhost - disable printing of functions, ghost methods, and proof
     /// Use an indent of -1 to put just a space after the @-Attribute
     /// </summary>
     public void PrintAttributes(Attributes a, bool atAttributes, int indent = -1) {
+      PrintAttributes(a, atAttributes, indent, Attributes.Contains(a, "_named"));
+    }
+
+    private void PrintAttributes(Attributes a, bool atAttributes, int indent, bool named) {
       if (a != null) {
-        PrintAttributes(a.Prev, atAttributes, indent);
+        PrintAttributes(a.Prev, atAttributes, indent, named);
         if (a is UserSuppliedAtAttribute usaa && atAttributes) {
           PrintOneAtAttribute(usaa);
           if (indent >= 0) {
@@ -886,7 +890,8 @@ NoGhost - disable printing of functions, ghost methods, and proof
           }
         } else if (!(a is UserSuppliedAtAttribute) && !atAttributes && !Triggers.QuantifierSplitter.IsPartAttribute(a)) {
           wr.Write(" ");
-          PrintOneAttribute(a);
+          // The trigger generator's triggers mean something only with the internal terms that it names for them
+          PrintOneAttribute(a, isInternal: named && a.Name == "trigger" && a is not UserSuppliedAttributes);
         }
       }
     }
@@ -903,10 +908,10 @@ NoGhost - disable printing of functions, ghost methods, and proof
       wr.Write(UserSuppliedAtAttribute.AtName);
       PrintExpression(usaa.Arg, false, -1);
     }
-    public void PrintOneAttribute(Attributes a, string nameSubstitution = null) {
+    public void PrintOneAttribute(Attributes a, string nameSubstitution = null, bool isInternal = false) {
       Contract.Requires(a != null);
       var name = nameSubstitution ?? a.Name;
-      var usAttribute = name.StartsWith("_") || (options.DisallowExterns && name == "extern");
+      var usAttribute = isInternal || name.StartsWith("_") || (options.DisallowExterns && name == "extern");
       wr.Write("{1}{{:{0}", name, usAttribute ? "/*" : "");
       if (a.Args != null) {
         PrintAttributeArgs(a.Args, false);

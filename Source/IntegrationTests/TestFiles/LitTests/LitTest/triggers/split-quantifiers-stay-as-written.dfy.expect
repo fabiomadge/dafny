@@ -17,8 +17,8 @@ split-quantifiers-stay-as-written.dfy(88,13): Info: Part #2 is 'Q(x)'
 split-quantifiers-stay-as-written.dfy(94,11): Info: decreases n
 split-quantifiers-stay-as-written.dfy(108,22): Info: auto requires post forall x: int {:trigger P(x)} :: P(x) ==> c && d;
 split-quantifiers-stay-as-written.dfy(120,22): Info: auto requires post c ==> n > 0;
- auto requires post (forall x: int :: true && c && Callee.Bad(n) == 0) && (forall x: int {:trigger P(x)} :: P(x) || !P(x)) && forall x: int {:trigger P(x + 1), Q(x)} /*{:_named x + 1}*/ :: Q(x) ==> P(x + 1);
-split-quantifiers-stay-as-written.dfy(132,22): Info: auto requires post (exists x: int :: false || c || d) || (exists x: int {:trigger P(x + 1), P(x)} /*{:_named x + 1}*/ :: P(x) && P(x + 1)) || exists x: int {:trigger Q(x)} :: Q(x);
+ auto requires post (forall x: int :: true && c && Callee.Bad(n) == 0) && (forall x: int {:trigger P(x)} :: P(x) || !P(x)) && forall x: int /*{:trigger P(x + 1), Q(x)}*/ /*{:_named x + 1}*/ :: Q(x) ==> P(x + 1);
+split-quantifiers-stay-as-written.dfy(132,22): Info: auto requires post (exists x: int :: false || c || d) || (exists x: int /*{:trigger P(x + 1), P(x)}*/ /*{:_named x + 1}*/ :: P(x) && P(x + 1)) || exists x: int {:trigger Q(x)} :: Q(x);
 split-quantifiers-stay-as-written.dfy(113,13): Info: Selected triggers: {Callee.P(x)}
 split-quantifiers-stay-as-written.dfy(125,13): Info: Selected triggers: {Callee.Q(x)}
 split-quantifiers-stay-as-written.dfy(55,2): Info: ghost if

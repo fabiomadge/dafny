@@ -24,7 +24,7 @@ ghost predicate P(j: int)
 ghost predicate Q(j: int)
 
 // old reads c.f in another state
-// CHECK: assume \{:axiom\} forall i: int \{:trigger F\(i \+ c\.f\), F\(i\)\} /\*\{:_named i \+ c\.f\}\*/ ::
+// CHECK: assume \{:axiom\} forall i: int /\*\{:trigger F\(i \+ c\.f\), F\(i\)\}\*/ /\*\{:_named i \+ c\.f\}\*/ ::
 method InOld(c: C)
   requires c.f == 0
   modifies c
@@ -363,7 +363,7 @@ ghost predicate NestedFirst(s: seq<int>) {
 
 // The term mentions the nested quantifier's variable, so the enclosing quantifier's rewrite asks the nested quantifier to
 // bind a variable to it, defined by i + j for its j
-// CHECK: forall j: int \{:trigger F\(i \+ j\), P\(j\)\} /\*\{:_named i \+ j\}\*/ ::
+// CHECK: forall j: int /\*\{:trigger F\(i \+ j\), P\(j\)\}\*/ /\*\{:_named i \+ j\}\*/ ::
 method InnerVariable() {
   assume {:axiom} F(0) == 0 && F(1) == 1 && P(1);
   assume {:axiom} forall i :: F(i) <= 0 || (forall j :: P(j) ==> F(i + j) > 1);
