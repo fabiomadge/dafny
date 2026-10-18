@@ -43,4 +43,20 @@ public class ClonerTest {
     Assert.Equal(2, dummyDecl2.Ins[1].StartToken.line);
     Assert.False(dummyDecl2.Ins[1].IsTypeExplicit);
   }
+
+  [Fact]
+  public void ClonerKeepsElementTypeAliasedToExplicitType() {
+    var original = new AllocateArray(Token.NoToken, new UserDefinedType(Token.NoToken, "C", null),
+      [new LiteralExpr(Token.NoToken, 10)], null);
+    var clone = original.Clone(new Cloner());
+    Assert.Same(clone.ExplicitType, clone.ElementType);
+  }
+
+  [Fact]
+  public void ClonerGivesAnInferredElementTypeItsOwnProxy() {
+    var original = new AllocateArray(Token.NoToken, null, [new LiteralExpr(Token.NoToken, 10)], null);
+    var clone = original.Clone(new Cloner());
+    Assert.IsType<InferredTypeProxy>(clone.ElementType);
+    Assert.NotSame(original.ElementType, clone.ElementType);
+  }
 }
