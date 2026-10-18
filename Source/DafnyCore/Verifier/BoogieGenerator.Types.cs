@@ -658,7 +658,7 @@ public partial class BoogieGenerator {
         var typeAntecedent = etran.TrBoundVariables(undetermined, bvs, false, freeOfAlloc);
         var names = new NamedTerms(this, triggerAttributes, substMap);
         bvs.AddRange(names.Variables);
-        var triggers = TrTrigger(etran, triggerAttributes, tok, substMap, undetermined, names);
+        var triggers = TrTrigger(etran, triggerAttributes, tok, substMap, undetermined, names, bvs);
         body = new Bpl.ExistsExpr(tok, bvs, triggers,
           BplAnd(names.Definitions(etran), names.Replace(etran, BplAnd(typeAntecedent, body))));
       }

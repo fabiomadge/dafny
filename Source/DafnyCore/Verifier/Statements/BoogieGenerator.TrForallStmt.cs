@@ -472,8 +472,9 @@ public partial class BoogieGenerator {
 
     Bpl.Trigger tr = null;
     var argsEtran = etran.WithNoLits();
+    // The trigger generator's triggers need the variables for the terms that it named, which this translation does not bind
     foreach (var aa in attributes.AsEnumerable()) {
-      if (aa.Name == "trigger") {
+      if (aa.Name == "trigger" && !Attributes.Contains(attributes, "_named")) {
         List<Bpl.Expr> tt = [];
         foreach (var arg in aa.Args) {
           if (arg == lhs) {

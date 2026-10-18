@@ -1988,7 +1988,8 @@ BplBoundVar(varNameGen.FreshId(string.Format("#{0}#", bv.Name)), Predef.BoxType,
           bvarsAndAntecedents.InsertRange(0, names.VariablesAndDefinitions(this));
           canCall = names.Replace(this, canCall);
           // Produce the quantified CanCall expression, with a suitably reduced set of bound variables
-          var tr = BoogieGenerator.TrTrigger(this, e.Attributes, expr.Origin, names: names);
+          var tr = BoogieGenerator.TrTrigger(this, e.Attributes, expr.Origin, names: names,
+            boundVariables: bvarsAndAntecedents.ConvertAll(x => x.Item1));
           return BplForallTrim(bvarsAndAntecedents, tr, canCall);
 
         } else if (expr is StmtExpr) {

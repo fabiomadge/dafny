@@ -46,11 +46,13 @@ public partial class BoogieGenerator {
     }
 
     /// <summary>
-    /// Replaces the terms in a trigger that the translator translated with the variables, and tells whether the
-    /// trigger then mentions every variable and has no operation that no trigger may contain, which an occurrence that
-    /// is not replaced, as one in another state, would leave
+    /// Replaces the terms in a trigger that the translator translated with the variables, and tells whether the trigger
+    /// then is one for a quantifier of the bound variables and the variables: whether it mentions each of them, and has
+    /// no term that is just a variable and no operation that no trigger may contain. An occurrence that is not replaced,
+    /// as one in another state, can leave such an operation, and a term whose translation is a bound variable, or
+    /// another term of the trigger, can leave just its variable.
     /// </summary>
-    public bool Replace(ExpressionTranslator etran, List<Bpl.Expr> trigger) {
+    public bool Replace(ExpressionTranslator etran, List<Bpl.Expr> trigger, List<Bpl.Variable> bound) {
       if (terms.Count == 0) {
         return true;
       }
@@ -64,7 +66,8 @@ public partial class BoogieGenerator {
         names.Visit(term);
         killers.Visit(term);
       });
-      return Variables.TrueForAll(variable => names.Names.Contains(variable.Name)) && !killers.Found;
+      return bound.Concat(Variables).All(variable => names.Names.Contains(variable.Name)) && !killers.Found &&
+             !trigger.Exists(term => term is Bpl.IdentifierExpr);
     }
 
     private List<(Bpl.Expr Term, ISet<string> Names, Bpl.Variable Variable)> Translations(ExpressionTranslator etran) {

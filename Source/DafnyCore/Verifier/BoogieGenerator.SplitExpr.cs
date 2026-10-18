@@ -328,7 +328,7 @@ namespace Microsoft.Dafny {
                 var ihNames = new NamedTerms(this, e.Attributes, substMap);
                 bvars.AddRange(ihNames.Variables);
                 Bpl.Expr ih;
-                var tr = TrTrigger(etran, e.Attributes, expr.Origin, substMap, names: ihNames);
+                var tr = TrTrigger(etran, e.Attributes, expr.Origin, substMap, names: ihNames, boundVariables: bvars);
                 ih = new Bpl.ForallExpr(expr.Origin, bvars, tr,
                   BplImp(BplAnd(ihNames.Definitions(etran), typeAntecedent), ihNames.Replace(etran, ihBody)));
 
@@ -368,8 +368,8 @@ namespace Microsoft.Dafny {
                   ante = BplAnd(names.Definitions(etranBody), ante);
                   var bdy = names.Replace(etranBody, etranBody.TrExpr(e.LogicalBody()));
                   Bpl.Expr q;
-                  var trig = TrTrigger(etranBody, e.Attributes, expr.Origin, names: names);
                   var caseVars = bvars.Concat(names.Variables).ToList();
+                  var trig = TrTrigger(etranBody, e.Attributes, expr.Origin, names: names, boundVariables: caseVars);
                   if (position) {
                     q = new Bpl.ForallExpr(kase.tok, caseVars, trig, BplImp(ante, bdy));
                   } else {
