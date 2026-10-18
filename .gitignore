@@ -69,9 +69,6 @@ Source/.vs
 node_modules/
 package.json
 package-lock.json
-docs/dev/*.fix
-docs/dev/*.feat
-docs/dev/*.break
 
 Source/IntegrationTests/TestFiles/LitTests/LitTest/server/*.bvd
 /Source/IntegrationTests/TestFiles/LitTests/LitTest/separate-verification/Inputs/wrappers3.doo
@@ -92,3 +89,4 @@ Source/IntegrationTests/TestFiles/LitTests/LitTest/**/*.csproj
 /Source/DafnyCore/Prelude/Sequences.bpl
 /venv
 /Source/DafnyCore/Prelude/Output
+__pycache__/

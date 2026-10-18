@@ -119,6 +119,14 @@ class NewsFragments:
     KNOWN_EXTENSIONS = {".break": "Breaking changes",
                         ".feat": "New features",
                         ".fix": "Bug fixes"}
+    KIND_FIRST = re.compile("(" + "|".join(ext[1:] for ext in KNOWN_EXTENSIONS) + r")\.[0-9]+")
+
+    @classmethod
+    def misplaced(cls, root: Path, newsdir: Path) -> List[str]:
+        """Tracked notes outside `newsdir`, which no release reads."""
+        files = git("ls-files", "-z", cwd=root, check=True).stdout.split("\0")
+        return [f for f in files if f and Path(f).parent != newsdir
+                and (Path(f).suffix in cls.KNOWN_EXTENSIONS or cls.KIND_FIRST.fullmatch(Path(f).name))]
 
     def __init__(self) -> None:
         self.fragments: Dict[str, List[NewsFragment]] = {}
@@ -217,6 +225,11 @@ class Release:
     def _has_news(self) -> bool:
         self.newsfragments.check()
         return bool(self.newsfragments.fragments)
+
+    def _no_misplaced_news(self) -> bool:
+        if misplaced := NewsFragments.misplaced(Path("."), Path(self.NEWSFRAGMENTS_PATH)):
+            progress(f"{', '.join(misplaced)} would be left out;", end=" ")
+        return not misplaced
 
     def _build_props_file_exists(self) -> bool:
         return self.build_props_path.is_file()
@@ -356,6 +369,8 @@ class Release:
                    self._version_number_is_fresh)
         assert_one(f"Do we have news in {self.NEWSFRAGMENTS_PATH}?",
                    self._has_news)
+        assert_one(f"Are all release notes in {self.NEWSFRAGMENTS_PATH}?",
+                   self._no_misplaced_news)
         assert_one(f"Is the current branch `{self.source_branch_name}` or `{self.release_branch_name}`?",
                    self._is_release_branch)
         assert_one("Is repo clean (all changes committed)?",
