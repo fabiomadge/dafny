@@ -40,3 +40,15 @@ method SetComprehension(S: set<int>)
 {
   assert F(3) <= F(3 + |set j | j in S && j > 0|);
 }
+
+// The trigger has the formal k only in the named term, which the translation binds, so the verifier inlines P also
+// for an argument that no trigger may contain
+ghost predicate P(k: int, n: nat) {
+  if n == 0 then forall i :: F(i) <= F(i + k) else P(k, n - 1)
+}
+
+method Inlined(c: int)
+  requires forall i :: F(i) <= F(i + (c + 1))
+{
+  assert P(c + 1, 1);
+}

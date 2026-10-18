@@ -620,9 +620,22 @@ namespace Microsoft.Dafny {
       protected override void VisitOneExpr(Expression expr) {
         if (expr is QuantifierExpr quantifierExpr) {
           foreach (var part in quantifierExpr.Parts() ?? [quantifierExpr]) {
+            var named = Attributes.FindExpressions(part.Attributes, "_named") ?? [];
             foreach (var trigger in part.Attributes.AsEnumerable().Where(a => a.Name == "trigger").SelectMany(a => a.Args)) {
-              collector.Visit(trigger);
+              Collect(trigger, named);
             }
+          }
+        }
+      }
+
+      // The translation binds a variable to each named term, which then takes the term's place in the trigger, whatever
+      // is substituted for the term's variables
+      private void Collect(Expression term, List<Expression> named) {
+        if (term is IdentifierExpr) {
+          collector.Visit(term);
+        } else if (!named.Exists(namedTerm => Triggers.ExprExtensions.ExpressionEq(namedTerm, term))) {
+          foreach (var subterm in term.SubExpressions) {
+            Collect(subterm, named);
           }
         }
       }
