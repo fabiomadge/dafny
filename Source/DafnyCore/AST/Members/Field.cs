@@ -15,9 +15,12 @@ public class Field : MemberDecl, ICanFormat, IHasDocstring {
 
   public PreType? PreType;
 
-  public Type Type;
+  public readonly Type? ExplicitType;
 
-  public Type? ExplicitType;
+  private readonly Type? inferredType;
+
+  // Resolution resolves Type in place, so it must be ExplicitType itself, not a copy.
+  public Type Type => ExplicitType ?? inferredType!;
 
   [ContractInvariantMethod]
   void ObjectInvariant() {
@@ -30,8 +33,7 @@ public class Field : MemberDecl, ICanFormat, IHasDocstring {
 
   public Field(Cloner cloner, Field original) : base(cloner, original) {
     ExplicitType = cloner.CloneType(original.ExplicitType);
-    // This is set even before resolution
-    Type = cloner.CloneType(original.Type);
+    inferredType = cloner.CloneType(original.inferredType);
   }
 
   [SyntaxConstructor]
@@ -40,7 +42,7 @@ public class Field : MemberDecl, ICanFormat, IHasDocstring {
     Contract.Requires(origin != null);
     Contract.Requires(nameNode != null);
     ExplicitType = explicitType;
-    Type = ExplicitType ?? new InferredTypeProxy();
+    inferredType = explicitType == null ? new InferredTypeProxy() : null;
   }
 
   public bool SetIndent(int indentBefore, TokenNewIndentCollector formatter) {
