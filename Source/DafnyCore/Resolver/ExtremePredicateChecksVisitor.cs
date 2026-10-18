@@ -4,6 +4,7 @@ namespace Microsoft.Dafny;
 
 class ExtremePredicateChecksVisitor : FindFriendlyCallsVisitor {
   readonly ExtremePredicate context;
+  Type unboundedVariableType; // the type of the variable that made the enclosing quantifier non-friendly, if any
   public ExtremePredicateChecksVisitor(ErrorReporter reporter, ExtremePredicate context)
     : base(reporter, context is GreatestPredicate, context.KNat) {
     Contract.Requires(reporter != null);
@@ -25,9 +26,8 @@ class ExtremePredicateChecksVisitor : FindFriendlyCallsVisitor {
           if (ContinuityIsImportant && cp == CallingPosition.Neither) {
             // this may be inside an non-friendly quantifier
             msg += $" and cannot sit inside an unbounded {quantifier} quantifier";
-          } else if (EnumeratedOrdinalType != null && cp == CallingPosition.Neither) {
-            // it is inside one, and that quantifier enumerates a type as large as the ordinals
-            msg += $" and cannot sit inside an unbounded {quantifier} quantifier over '{EnumeratedOrdinalType}'," +
+          } else if (unboundedVariableType != null) {
+            msg += $" and cannot sit inside an unbounded {quantifier} quantifier over '{unboundedVariableType}'," +
                    $" because values of that type may involve ORDINAL";
           } else {
             // we don't care about the continuity restriction or
@@ -42,6 +42,16 @@ class ExtremePredicateChecksVisitor : FindFriendlyCallsVisitor {
       // do the sub-parts with cp := Neither
       cp = CallingPosition.Neither;
       return true;
+    } else if (expr is QuantifierExpr e && !ContinuityIsImportant && IsNonFriendlyQuantifier(e, cp)) {
+      // The prefix-predicate axioms assume that the approximations reach the fixpoint at some ORDINAL,
+      // which a quantifier over as many values as there are ordinals can prevent
+      var bv = BoundedPool.MissingBounds(e.BoundVars, e.Bounds, BoundedPool.PoolVirtues.Finite).Find(v => v.Type.MayInvolveOrdinal);
+      if (bv != null) {
+        unboundedVariableType = bv.Type;
+        Visit(e.LogicalBody(), CallingPosition.Neither);
+        unboundedVariableType = null;
+        return false;
+      }
     }
     return base.VisitOneExpr(expr, ref cp);
   }
