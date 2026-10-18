@@ -3803,7 +3803,9 @@ greatest predicates, no other kinds of functions.
 [^fn-copredicate-restriction]: To be specific, Dafny has two forms of
 extreme predicates and lemmas, one in which `_k` has type `nat` and one in
 which it has type `ORDINAL` (the default). The continuous restriction
-applies only when `_k` is `nat`. Also, higher-order function support in Dafny is
+applies only when `_k` is `nat`. When `_k` is `ORDINAL`, the range needs to be
+finite only if the type of the quantified variable may involve `ORDINAL`, as a
+datatype with an `ORDINAL` field or a type parameter may. Also, higher-order function support in Dafny is
     rather modest and typical reasoning patterns do not involve them, so this
     restriction is not as limiting as it would have been in, e.g., Coq.
 
