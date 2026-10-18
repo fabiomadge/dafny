@@ -1,12 +1,19 @@
 // RUN: %verify --allow-warnings "%s" > "%t"
 // RUN: %diff "%s.expect" "%t"
 
-// A substitution gives its copy of a binding guard a type, and lets the statements that the guard guards use the copy's
-// variables
+// A substitution copies a binding guard as written, gives the copy a type, and lets the statements that the guard
+// guards use the copy's variables
 
 predicate A(x: int) { x % 2 == 0 }
+predicate B(x: int) { x % 3 == 0 }
 predicate P(x: int)
 predicate Q<T(!new)>(y: T)
+
+// The lambda's body reaches the verifier through a substitution, and the trigger generator splits the guard
+method InLambda() {
+  var f := (k: int) => forall n | 0 <= n < k ::
+    calc { A(2 * n); { if case x :| B(x) || (A(x) && A(x + 1)) => case true => } true; } B(3 * n);
+}
 
 function Guarded(n: int): int
   requires (assert true by { if x :| A(x) { } if case x :| A(x) => case true => } n >= 0)

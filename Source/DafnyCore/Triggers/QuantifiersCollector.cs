@@ -14,15 +14,17 @@ namespace Microsoft.Dafny.Triggers {
   internal class QuantifierCollector : TopDownVisitor<OldExpr/*?*/> {
     readonly ErrorReporter reporter;
     private readonly HashSet<Expression> quantifiers = [];
+    private readonly ISet<QuantifierExpr> splittable;
     private readonly Dictionary<Expression, List<Expression>> namingRequests = [];
     internal readonly Dictionary<Expression, HashSet<OldExpr>> exprsInOldContext = new Dictionary<Expression, HashSet<OldExpr>>();
     internal readonly List<ComprehensionTriggerGenerator> quantifierCollections = [];
 
     private readonly List<Action> ActionsOnSelectedTriggers = new();
 
-    public QuantifierCollector(ErrorReporter reporter) {
+    public QuantifierCollector(ErrorReporter reporter, ISet<QuantifierExpr> splittable = null) {
       Contract.Requires(reporter != null);
       this.reporter = reporter;
+      this.splittable = splittable;
     }
 
     public void ApplyPostActions() {
@@ -31,15 +33,10 @@ namespace Microsoft.Dafny.Triggers {
       }
     }
 
-    public void AddComprehension(ComprehensionExpr comprehensionExpr, [CanBeNull] List<Expression> splitQuantifier) {
+    public void AddComprehension(ComprehensionExpr comprehensionExpr, [CanBeNull] List<QuantifierExpr> parts) {
       quantifiers.Add(comprehensionExpr);
-      if (splitQuantifier != null) {
-        var collection = splitQuantifier.OfType<ComprehensionExpr>();
-        quantifierCollections.Add(new ComprehensionTriggerGenerator(comprehensionExpr, collection, reporter, namingRequests));
-        quantifiers.UnionWith(splitQuantifier);
-      } else {
-        quantifierCollections.Add(new ComprehensionTriggerGenerator(comprehensionExpr, Enumerable.Repeat(comprehensionExpr, 1), reporter, namingRequests));
-      }
+      quantifierCollections.Add(new ComprehensionTriggerGenerator(comprehensionExpr,
+        parts ?? Enumerable.Repeat(comprehensionExpr, 1), reporter, namingRequests));
     }
 
     protected override bool VisitOneExpr(Expression expr, ref OldExpr/*?*/ enclosingOldContext) {
@@ -59,12 +56,14 @@ namespace Microsoft.Dafny.Triggers {
         expr = existsExpr;
       }
 
-      // only consider quantifiers that are not empty (Bound.Vars.Count > 0)
-      if (expr is ComprehensionExpr e && e.BoundVars.Count > 0 && !quantifiers.Contains(e)) {
+      // only consider quantifiers that are not empty (Bound.Vars.Count > 0), and none whose parts another module
+      // selected triggers for, as in a copy that {:autoReq} or a forall statement makes
+      if (expr is ComprehensionExpr e && e.BoundVars.Count > 0 && !quantifiers.Contains(e) &&
+          !(e is QuantifierExpr selected && QuantifierSplitter.HasParts(selected))) {
         if (e is SetComprehension or MapComprehension) {
           AddComprehension(e, null);
         } else if (e is QuantifierExpr quantifier) {
-          AddComprehension(quantifier, quantifier.SplitQuantifier);
+          AddComprehension(quantifier, splittable != null && splittable.Contains(quantifier) ? QuantifierSplitter.Conjuncts(quantifier) : null);
         }
       }
 
