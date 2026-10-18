@@ -17,14 +17,13 @@ class SplitPartTriggerWriter {
   private List<TriggerMatch> loopingMatches;
   // The part as written while the triggers are selected on the matching-loop rewrite's copy
   private ComprehensionExpr asWritten;
-  // The terms that the rewrites of enclosing quantifiers' loops ask the part to name, and those of all parts that break
-  // their loops, which the trigger generator selects triggers for after the quantifiers that enclose them
-  private readonly List<Expression> requested = [];
+  // The terms that the rewrites of enclosing quantifiers' loops ask the part's quantifier to name, and those of every
+  // quantifier that breaks its loops, which the trigger generator selects triggers for after the ones that enclose it
+  private readonly List<Expression> requested;
   private readonly Dictionary<Expression, List<Expression>> requests;
 
   private bool AllowsLoops {
     get {
-      Contract.Requires(!(Comprehension is QuantifierExpr) || ((QuantifierExpr)Comprehension).SplitQuantifier == null); // Don't call this on a quantifier with a Split clause: it's not a real quantifier
       // This is different from nowarn: it won't remove loops at all, even if another trigger is available.
       return Attributes.Contains(Comprehension.Attributes, "matchingloop");
     }
@@ -32,17 +31,18 @@ class SplitPartTriggerWriter {
 
   private bool CouldSuppressLoops { get; set; }
 
-  internal SplitPartTriggerWriter(ComprehensionExpr comprehension, Dictionary<Expression, List<Expression>> requests = null) {
+  internal SplitPartTriggerWriter(ComprehensionExpr comprehension, List<Expression> requested,
+    Dictionary<Expression, List<Expression>> requests) {
     this.Comprehension = comprehension;
     this.RejectedCandidates = [];
     this.NamedExpressions = [];
+    this.requested = requested;
     this.requests = requests;
-    if (NeedsAutoTriggers() && WantsMatchingLoopRewrite()) {
-      requests?.TryAdd(comprehension, requested);
-    }
   }
 
   internal bool HasRequests => requested.Count != 0;
+
+  internal bool BreaksLoops => NeedsAutoTriggers() && WantsMatchingLoopRewrite();
 
   internal void TrimInvalidTriggers() {
     Contract.Requires(CandidateTerms != null);
@@ -78,7 +78,7 @@ class SplitPartTriggerWriter {
   }
 
   public bool RewriteMatchingLoop(ErrorReporter reporter, ModuleDefinition module) {
-    if (!NeedsAutoTriggers() || !WantsMatchingLoopRewrite()) {
+    if (!BreaksLoops) {
       return false;
     }
 
@@ -213,9 +213,6 @@ class SplitPartTriggerWriter {
     /// </summary>
     private void AddAskable(Expression expr, bool universalForall) {
       switch (expr) {
-        case QuantifierExpr { SplitQuantifier: not null } split:
-          AddAskable(split.SplitQuantifierExpression, universalForall);
-          break;
         case QuantifierExpr nested:
           if (nested is ForallExpr == universalForall && requests.ContainsKey(nested)) {
             askable.Add(nested);
@@ -258,7 +255,7 @@ class SplitPartTriggerWriter {
             otherHeap = outer;
             return result;
           }
-        case QuantifierExpr { SplitQuantifier: null } nested: {
+        case QuantifierExpr nested: {
             var outer = scope;
             scope = new HashSet<IVariable>(scope.Concat(nested.BoundVars));
             var result = askable.Contains(nested) ? Ask(nested) : base.Substitute(expr);

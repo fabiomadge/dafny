@@ -888,7 +888,7 @@ NoGhost - disable printing of functions, ghost methods, and proof
           } else {
             wr.Write(" ");
           }
-        } else if (!(a is UserSuppliedAtAttribute) && !atAttributes) {
+        } else if (!(a is UserSuppliedAtAttribute) && !atAttributes && !Triggers.QuantifierSplitter.IsPartAttribute(a)) {
           wr.Write(" ");
           // The trigger generator's triggers mean something only with the internal terms that it names for them
           PrintOneAttribute(a, isInternal: named && a.Name == "trigger" && a is not UserSuppliedAttributes);
