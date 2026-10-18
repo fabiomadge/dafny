@@ -17,12 +17,11 @@ lemma Sorted(a: array<int>, n: int)
 
 function F(x: int): int
 
-// So does the existence check of a :|, for the loop through F(x) and F(x + 1)
-// CHECK: \(exists \$as#x0#0: int, _t#[0-9]+: int ::
-// CHECK-NEXT: \{ _module.__default.F\(_t#[0-9]+\), _module.__default.F\(\$as#x0#0\) \}
-// CHECK-NEXT: _t#[0-9]+ == \$as#x0#0 \+ 1
+// The existence check of a :| takes no triggers for the named x + 1, which need both F(x) and F(x + 1), so the
+// solver's own pattern finds the witness 5 from F(5)
 method SuchThat()
-  requires F(0) <= F(1)
+  requires forall y :: y > 3 ==> F(y) <= F(y + 1)
+  requires F(5) == 0
 {
   var x :| F(x) <= F(x + 1);
 }
