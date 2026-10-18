@@ -22,8 +22,9 @@ public static class RewriterCollection {
     result.Add(new MatchFlattener(reporter));
 
     if (reporter.Options.AutoTriggers) {
-      result.Add(new QuantifierSplittingRewriter(reporter));
-      result.Add(new TriggerGeneratingRewriter(reporter, program.SystemModuleManager));
+      var splittable = new HashSet<QuantifierExpr>();
+      result.Add(new QuantifierSplittingRewriter(reporter, splittable));
+      result.Add(new TriggerGeneratingRewriter(reporter, program.SystemModuleManager, splittable));
     }
 
     if (reporter.Options.TestContracts != DafnyOptions.ContractTestingMode.None) {
