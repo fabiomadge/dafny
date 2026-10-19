@@ -74,4 +74,12 @@ public class ClonerTest {
     Assert.IsType<InferredTypeProxy>(clone.Type);
     Assert.NotSame(original.Type, clone.Type);
   }
+
+  [Fact]
+  public void ClonerGivesAnIdPatternItsOwnSyntacticType() {
+    var original = new IdPattern(Token.NoToken, "e", new UserDefinedType(Token.NoToken, "C", null), null);
+    var clone = new IdPattern(new Cloner(), original);
+    Assert.NotSame(original.SyntacticType, clone.SyntacticType);
+    Assert.Same(clone.SyntacticType, clone.Type);
+  }
 }

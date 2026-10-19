@@ -1,0 +1,1 @@
+No longer reject a typed `match` pattern such as `case e: E` with "pattern (of type E) cannot be used with source type E", either in the IDE after editing another file of the program or when a refining module inherits the enclosing method
