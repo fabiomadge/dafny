@@ -18,7 +18,6 @@ namespace Microsoft.Dafny.Triggers {
     // for a binding guard of an if statement or expression, an existential made for a :|, and one in a prefix declaration
     private readonly HashSet<Expression> unsplit = [];
     internal bool InPrefixDeclaration { get; set; }
-    private readonly Dictionary<Expression, List<Expression>> namingRequests = [];
     internal readonly Dictionary<Expression, HashSet<OldExpr>> exprsInOldContext = new Dictionary<Expression, HashSet<OldExpr>>();
     internal readonly List<ComprehensionTriggerGenerator> quantifierCollections = [];
 
@@ -38,7 +37,7 @@ namespace Microsoft.Dafny.Triggers {
     public void AddComprehension(ComprehensionExpr comprehensionExpr, [CanBeNull] List<QuantifierExpr> parts) {
       quantifiers.Add(comprehensionExpr);
       quantifierCollections.Add(new ComprehensionTriggerGenerator(comprehensionExpr,
-        parts ?? Enumerable.Repeat(comprehensionExpr, 1), reporter, namingRequests));
+        parts ?? Enumerable.Repeat(comprehensionExpr, 1), reporter));
     }
 
     protected override bool VisitOneExpr(Expression expr, ref OldExpr/*?*/ enclosingOldContext) {

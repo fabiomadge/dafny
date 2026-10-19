@@ -361,17 +361,16 @@ ghost predicate NestedFirst(s: seq<int>) {
   forall i | 0 < i < |s| :: (forall m | 0 <= m < i :: s[m] <= s[i - 1]) || s[i - 1] <= s[i]
 }
 
-// The term mentions the nested quantifier's variable, so the enclosing quantifier's rewrite asks the nested quantifier to
-// bind a variable to it, defined by i + j for its j
-// CHECK: forall j: int /\*\{:_trigger F\(i \+ j\), P\(j\)\}\*/ /\*\{:_named i \+ j\}\*/ ::
+// The term mentions the nested quantifier's variable, so the enclosing quantifier's rewrite cannot name it, and the warning
+// says how to break the loop
 method InnerVariable() {
   assume {:axiom} F(0) == 0 && F(1) == 1 && P(1);
   assume {:axiom} forall i :: F(i) <= 0 || (forall j :: P(j) ==> F(i + j) > 1);
   assert false;
 }
 
-// But not an exists, as the solver gives j a new value in each instance of the enclosing quantifier, and F(i + j) with it
-// continues the loop
+// Naming the term in an exists would not break the loop, as the solver gives j a new value in each instance of the
+// enclosing quantifier, so the warning does not suggest it
 ghost predicate InnerExists() {
   forall i :: F(i) <= 0 || (exists j :: P(j) && F(i + j) > 0)
 }
@@ -381,7 +380,7 @@ ghost predicate InnerNegatedExists() {
   forall i :: F(i) <= 0 || !(exists j :: P(j) && F(i + j) <= 0)
 }
 
-// Nor a quantifier with a trigger of its own
+// Nor for a forall in an exists
 method InnerBinder() {
   assume {:axiom} P(0) && P(1);
   assume {:axiom} exists i :: forall j {:trigger P(j)} :: P(j) ==> F(i) <= F(i + j);
