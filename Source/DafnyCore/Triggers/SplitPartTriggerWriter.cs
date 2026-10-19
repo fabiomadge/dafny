@@ -267,7 +267,8 @@ class SplitPartTriggerWriter {
   /// <summary>
   /// How to break a loop through a term that the rewrite could not name as it mentions the variables of a quantifier
   /// inside this one, if each instance of this one instantiates that quantifier, so that the solver gives these
-  /// variables no new values, or else null
+  /// variables no new values, or else null. If that quantifier also has conjuncts without the term, the advice moves
+  /// those with it to a quantifier of their own, as the triggers of all would need a term for the new variable.
   /// </summary>
   private string HowToBreakLoop(DafnyOptions options) {
     foreach (var (term, inner) in unnamed) {
@@ -283,8 +284,13 @@ class SplitPartTriggerWriter {
       var example = $"{(binder is ForallExpr ? "forall" : "exists")} " +
                     $"{string.Join(", ", binder.BoundVars.Select(variable => variable.Name))}, {name} | " +
                     $"{(binder.Range == null ? "" : "... && ")}{name} == {termText}";
-      return $"To break the loop, introduce a variable for '{termText}' in the quantifier over '{innerText}', as in " +
-             $"'{example}', and use it instead, or add {{:nowarn}} to silence this warning. " +
+      var conjuncts = QuantifierSplitter.Conjuncts(binder).ConvertAll(part => part.Term);
+      var how = conjuncts.TrueForAll(conjunct =>
+        conjunct.AllSubExpressions(false, false).Any(e => ExprExtensions.ExpressionEq(e, term)))
+        ? $"replace '{termText}' with a new variable bound alongside '{innerText}'"
+        : $"move the {(binder is ForallExpr ? "conjuncts" : "disjuncts")} with '{termText}' to a separate quantifier over " +
+          $"'{innerText}', and replace the term there with a new variable";
+      return $"To break the loop, {how}, as in '{example}', or add {{:nowarn}} to silence this warning. " +
              "For more information, see the section on quantifier instantiation rules in the reference manual.";
     }
     return null;
