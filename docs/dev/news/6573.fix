@@ -1,1 +1,1 @@
-Fix equal `real` values, such as `0.5` and `1.0 / 2.0`, being distinct in a `set`, `map` or `multiset` on C# and Java
+Fix C# and Java treating equal `real` values such as `0.5` and `1.0 / 2.0` as distinct in a `set`, `map` or `multiset`
