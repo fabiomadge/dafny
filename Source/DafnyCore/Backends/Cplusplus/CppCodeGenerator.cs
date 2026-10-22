@@ -2048,10 +2048,10 @@ namespace Microsoft.Dafny.Compilers {
     protected override ConcreteSyntaxTree CreateLambda(List<Type> inTypes, IOrigin tok, List<string> inNames,
         Type resultType, ConcreteSyntaxTree wr, ConcreteSyntaxTree wStmts, bool untyped = false) {
       Contract.Assert(inTypes.Count == inNames.Count);  // guaranteed by precondition
-      // `this` is a raw pointer, and the lambda can outlive every shared_ptr to the object. An instance
-      // const is left out: it is initialized before any shared_ptr owns the object.
+      // `this` is a raw pointer, and the lambda can outlive every shared_ptr to the object. Instance consts
+      // are initialized before any shared_ptr owns it, where shared_from_this() would throw and lock() is empty.
       var ownsThis = thisContext is ClassDecl && !(enclosingMethod?.IsStatic ?? enclosingFunction?.IsStatic ?? true);
-      wr.Write(ownsThis ? "[=, _owner = this->shared_from_this()](" : "[=](");
+      wr.Write(ownsThis ? "[=, _owner = this->weak_from_this().lock()](" : "[=](");
       for (var i = 0; i < inNames.Count; i++) {
         if (i != 0) {
           wr.Write(", ");
