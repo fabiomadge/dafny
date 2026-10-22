@@ -240,6 +240,11 @@ struct DafnyArray {
 
   static DafnyArray<T> Null() { return DafnyArray<T>(); }
   static DafnyArray<T> New(size_t len) { return DafnyArray<T>(len); }
+  static DafnyArray<T> New(size_t len, const T& init) {
+    DafnyArray<T> a(len);
+    for (size_t i = 0; i < len; i++) { a.at(i) = init; }
+    return a;
+  }
 
   size_t size() const { return len; }
   T& at(uint64 idx) const { return *(sptr.get() + idx); }
