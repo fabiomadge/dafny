@@ -252,7 +252,7 @@ namespace Microsoft.Dafny.Compilers {
         classDefWriter.WriteLine(DeclareTemplate(typeParameters));
       }
 
-      var methodDeclWriter = classDefWriter.NewBlock(string.Format("class {0}", className), ";");
+      var methodDeclWriter = classDefWriter.NewBlock(string.Format("class {0} : public std::enable_shared_from_this<{0}{1}>", className, InstantiateTemplate(typeParameters)), ";");
       var methodDefWriter = wr;
 
       classDeclWriter.WriteLine("class {0};", className);
@@ -2048,7 +2048,9 @@ namespace Microsoft.Dafny.Compilers {
     protected override ConcreteSyntaxTree CreateLambda(List<Type> inTypes, IOrigin tok, List<string> inNames,
         Type resultType, ConcreteSyntaxTree wr, ConcreteSyntaxTree wStmts, bool untyped = false) {
       Contract.Assert(inTypes.Count == inNames.Count);  // guaranteed by precondition
-      wr.Write("[=](");
+      // `this` is a raw pointer, and the lambda can outlive every shared_ptr to the object.
+      var ownsThis = thisContext is ClassDecl && !(enclosingMethod?.IsStatic ?? enclosingFunction?.IsStatic ?? true);
+      wr.Write(ownsThis ? "[=, _owner = shared_from_this()](" : "[=](");
       for (var i = 0; i < inNames.Count; i++) {
         if (i != 0) {
           wr.Write(", ");

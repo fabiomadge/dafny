@@ -38,9 +38,29 @@ method Main() {
   // A datatype with a function-typed field.
   var op := Op(inc, 1);
   print op.f(op.n), "\n";
+
+  // A lambda over `this` outlives every other reference to its object.
+  var add := MakeAdder();
+  var other := new Counter(50);
+  print add(4), "\n";
 }
 
 datatype Op = Op(f: i32 -> i32, n: i32)
+
+class Counter {
+  var k: i32
+  constructor(k: i32) ensures this.k == k { this.k := k; }
+  function Adder(): i32 ~> i32 reads this {
+    x reads this => if -100 < x < 100 && -100 < k < 100 then x + k else 0
+  }
+}
+
+method MakeAdder() returns (f: i32 ~> i32)
+  ensures f.requires(4)
+{
+  var c := new Counter(3);
+  f := c.Adder();
+}
 
 function ApplyTwice(f: i32 -> i32, x: i32): i32 {
   f(f(x))
