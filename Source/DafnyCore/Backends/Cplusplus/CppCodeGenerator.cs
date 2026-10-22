@@ -322,15 +322,10 @@ namespace Microsoft.Dafny.Compilers {
     protected override bool DatatypeDeclarationAndMemberCompilationAreSeparate => false;
     public override bool SupportsDatatypeWrapperErasure => false;
 
-    // std::function has no == or std::hash. Dafny compares a datatype with a function-typed field only
-    // against a nullary constructor, which never reaches the field, so operator== and std::hash skip it.
+    // std::function has no == or std::hash. Dafny compares a datatype with a field whose type lacks equality
+    // only against a nullary constructor, which never reaches the field, so operator== and std::hash skip it.
     private static bool IsComparable(Formal f) {
-      return !f.IsGhost && !ContainsFunctionType(f.Type);
-    }
-
-    private static bool ContainsFunctionType(Type type) {
-      var t = type.NormalizeExpand();
-      return t.IsArrowType || t.TypeArgs.Any(ContainsFunctionType);
+      return !f.IsGhost && f.Type.SupportsEquality;
     }
 
     protected override IClassWriter DeclareDatatype(DatatypeDecl dt, ConcreteSyntaxTree writer) {

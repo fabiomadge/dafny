@@ -39,6 +39,11 @@ method Main() {
   var op := Op(inc, 1);
   print op.f(op.n), "\n";
 
+  // Datatype values holding different arrays of functions differ.
+  var fs := new (i32 -> i32)[1];
+  var gs := new (i32 -> i32)[1];
+  print Fs(fs) == Fs(gs), " ", Fs(fs) == Fs(fs), "\n";
+
   // A lambda over `this` outlives every other reference to its object.
   var add := MakeAdder();
   var other := new Counter(50);
@@ -63,6 +68,8 @@ class Cell<T> {
 }
 
 datatype Op = Op(f: i32 -> i32, n: i32)
+
+datatype Fs = Fs(a: array<i32 -> i32>)
 
 class Counter {
   var k: i32
