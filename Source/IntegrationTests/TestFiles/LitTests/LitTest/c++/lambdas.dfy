@@ -43,12 +43,27 @@ method Main() {
   var add := MakeAdder();
   var other := new Counter(50);
   print add(4), "\n";
+
+  // An instance const holding a lambda over `this`.
+  print other.plus(4), "\n";
+
+  // A lambda over `this` in a generic class.
+  var cell := new Cell<i32>(9);
+  var get := cell.Get();
+  print get(), "\n";
+}
+
+class Cell<T> {
+  var v: T
+  constructor(v: T) ensures this.v == v { this.v := v; }
+  function Get(): () ~> T reads this { () reads this => v }
 }
 
 datatype Op = Op(f: i32 -> i32, n: i32)
 
 class Counter {
   var k: i32
+  const plus: i32 ~> i32 := x reads this => if -100 < x < 100 && -100 < k < 100 then x + k else 0
   constructor(k: i32) ensures this.k == k { this.k := k; }
   function Adder(): i32 ~> i32 reads this {
     x reads this => if -100 < x < 100 && -100 < k < 100 then x + k else 0
