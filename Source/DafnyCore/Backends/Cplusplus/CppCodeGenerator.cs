@@ -322,6 +322,17 @@ namespace Microsoft.Dafny.Compilers {
     protected override bool DatatypeDeclarationAndMemberCompilationAreSeparate => false;
     public override bool SupportsDatatypeWrapperErasure => false;
 
+    // std::function has no == or std::hash. Dafny compares a datatype with a function-typed field only
+    // against a nullary constructor, which never reaches the field, so operator== and std::hash skip it.
+    private static bool IsComparable(Formal f) {
+      return !f.IsGhost && !ContainsFunctionType(f.Type);
+    }
+
+    private static bool ContainsFunctionType(Type type) {
+      var t = type.NormalizeExpand();
+      return t.IsArrowType || t.TypeArgs.Any(ContainsFunctionType);
+    }
+
     protected override IClassWriter DeclareDatatype(DatatypeDecl dt, ConcreteSyntaxTree writer) {
       if (dt is TupleTypeDecl) {
         // Tuple types are declared once and for all in DafnyRuntime.h
@@ -352,10 +363,14 @@ namespace Microsoft.Dafny.Compilers {
         // Declare the struct members
         var i = 0;
         var argNames = new List<string>();
+        var comparedNames = new List<string>();
         foreach (Formal arg in ctor.Formals) {
           if (!arg.IsGhost) {
             ws.WriteLine("{0} {1};", TypeName(arg.Type, wdecl, arg.Origin), FormalName(arg, i));
             argNames.Add(FormalName(arg, i));
+            if (IsComparable(arg)) {
+              comparedNames.Add(FormalName(arg, i));
+            }
             i++;
           }
         }
@@ -385,8 +400,11 @@ namespace Microsoft.Dafny.Compilers {
 
         // Overload the comparison operator
         var wrCompOp = ws.NewNamedBlock("friend bool operator==(const {0} &left, const {0} &right)", DtT_protected);
+        if (comparedNames.Count == 0) {
+          wrCompOp.WriteLine("(void)left; (void)right;");
+        }
         wrCompOp.Write("\treturn true");
-        foreach (var arg in argNames) {
+        foreach (var arg in comparedNames) {
           wrCompOp.WriteLine("\t\t&& left.{0} == right.{0}", arg);
         }
         wrCompOp.WriteLine(";");
@@ -403,9 +421,12 @@ namespace Microsoft.Dafny.Compilers {
         var owr = hwr.NewBlock(string.Format("std::size_t operator()(const {0}& x) const", fullName));
         owr.WriteLine("size_t seed = 0;");
         foreach (var arg in ctor.Formals) {
-          if (!arg.IsGhost) {
+          if (IsComparable(arg)) {
             owr.WriteLine("hash_combine<{0}>(seed, x.{1});", TypeName(arg.Type, owr, dt.Origin), arg.CompileName);
           }
+        }
+        if (comparedNames.Count == 0) {
+          owr.WriteLine("(void)x;");
         }
         owr.WriteLine("return seed;");
       } else {
@@ -433,18 +454,22 @@ namespace Microsoft.Dafny.Compilers {
           var preReturn = wstruct.Fork();
           wstruct.Write("\treturn true ");
           i = 0;
+          var compared = 0;
           foreach (Formal arg in ctor.Formals) {
             if (!arg.IsGhost) {
-              if (arg.Type is UserDefinedType udt && udt.ResolvedClass == dt) {  // Recursive destructor needs to use a pointer
-                wstruct.WriteLine("\t\t&& *(left.{0}) == *(right.{0})", FormalName(arg, i));
-              } else {
-                wstruct.WriteLine("\t\t&& left.{0} == right.{0}", FormalName(arg, i));
+              if (IsComparable(arg)) {
+                if (arg.Type is UserDefinedType udt && udt.ResolvedClass == dt) {  // Recursive destructor needs to use a pointer
+                  wstruct.WriteLine("\t\t&& *(left.{0}) == *(right.{0})", FormalName(arg, i));
+                } else {
+                  wstruct.WriteLine("\t\t&& left.{0} == right.{0}", FormalName(arg, i));
+                }
+                compared++;
               }
               i++;
             }
           }
 
-          if (i == 0) { // Avoid a warning from the C++ compiler
+          if (compared == 0) { // Avoid a warning from the C++ compiler
             preReturn.WriteLine("(void)left; (void) right;");
           }
 
@@ -461,7 +486,7 @@ namespace Microsoft.Dafny.Compilers {
           owr.WriteLine("size_t seed = 0;");
           int argCount = 0;
           foreach (var arg in ctor.Formals) {
-            if (!arg.IsGhost) {
+            if (IsComparable(arg)) {
               if (arg.Type is UserDefinedType udt && udt.ResolvedClass == dt) {
                 // Recursive destructor needs to use a pointer
                 owr.WriteLine("hash_combine<std::shared_ptr<{0}>>(seed, x.{1});", TypeName(arg.Type, owr, dt.Origin), arg.CompileName);
@@ -1071,12 +1096,9 @@ namespace Microsoft.Dafny.Compilers {
           if (ArrowType.IsPartialArrowTypeName(td.Name)) {
             return "nullptr";
           } else if (ArrowType.IsTotalArrowTypeName(td.Name)) {
-            // Default total function value: a lambda returning the range default
-            // (matches the other backends, which return a callable, not an empty one).
             var rangeType = udt.TypeArgs.Last();
             var rangeDefaultValue = TypeInitializationValue(rangeType, wr, tok, usePlaceboValue, constructTypeParameterDefaultsFromTypeDescriptors);
-            // Unnamed params: the default stub ignores its arguments (avoids
-            // -Wunused-parameter without suppressing the warning globally).
+            // Unnamed parameters, to avoid -Wunused-parameter.
             var argDecls = new List<string>();
             for (var i = 0; i < udt.TypeArgs.Count - 1; i++) {
               argDecls.Add(TypeName(udt.TypeArgs[i], wr, tok));
@@ -1662,7 +1684,6 @@ namespace Microsoft.Dafny.Compilers {
       }
     }
 
-    // std::function<R(A0, A1, ...)> for a Dafny arrow type A0,A1,... -> R.
     private string ArrowTypeName(ArrowType at, ConcreteSyntaxTree wr, IOrigin tok) {
       var result = TypeName(at.Result, wr, tok, null, false);
       var args = new List<string>();
@@ -1981,7 +2002,6 @@ namespace Microsoft.Dafny.Compilers {
     protected override ConcreteSyntaxTree EmitBetaRedex(List<string> boundVars, List<Expression> arguments,
       List<Type> boundTypes, Type resultType, IOrigin tok, bool inLetExprBody, ConcreteSyntaxTree wr,
       ref ConcreteSyntaxTree wStmts) {
-      // An immediately-applied lambda: [=](T0 v0, ...) -> R { return <body>; }(args)
       wr.Write("[=](");
       for (var i = 0; i < boundVars.Count; i++) {
         if (i != 0) {
@@ -2033,9 +2053,10 @@ namespace Microsoft.Dafny.Compilers {
         if (i != 0) {
           wr.Write(", ");
         }
-        wr.Write($"{TypeName(inTypes[i], wr, tok, null, false)} {inNames[i]}");
+        wr.Write($"[[maybe_unused]] {TypeName(inTypes[i], wr, tok, null, false)} {inNames[i]}");
       }
-      var w = wr.NewBigExprBlock($") -> {TypeName(resultType, wr, tok, null, false)} ");
+      // mutable: captured copies are const otherwise, and the runtime's collection methods are not all const.
+      var w = wr.NewBigExprBlock($") mutable -> {TypeName(resultType, wr, tok, null, false)} ");
       return w;
     }
 
