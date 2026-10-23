@@ -64,6 +64,12 @@ namespace Microsoft.Dafny.Compilers {
     private List<DatatypeDecl> datatypeDecls = [];
     private List<string> classDefaults = [];
 
+    // An instance const with an initializer is computed on first use, so its initializer runs on an object
+    // that a shared_ptr owns and whose constructor has assigned the consts it reads.
+    private static bool IsLazyConst(MemberDecl member) => member is ConstantField { Rhs: not null, IsStatic: false };
+    // Set while the initializer of a lazy const is emitted, where enclosingMethod and enclosingFunction are null.
+    private bool inInstanceConstInit;
+
     /*
      * Unlike other Dafny and Dafny's other backends, C++ cares about
      * the order in which types are declared.  To make this more likely
@@ -757,6 +763,7 @@ namespace Microsoft.Dafny.Compilers {
       }
 
       public ConcreteSyntaxTree/*?*/ CreateMethod(MethodOrConstructor m, List<TypeArgumentInstantiation> typeArgs, bool createBody, bool forBodyInheritance, bool lookasideBody) {
+        CodeGenerator.inInstanceConstInit = false;
         return CodeGenerator.CreateMethod(m, typeArgs, createBody, MethodDeclWriter, MethodWriter, lookasideBody);
       }
 
@@ -766,17 +773,19 @@ namespace Microsoft.Dafny.Compilers {
 
       public ConcreteSyntaxTree/*?*/ CreateFunction(string name, List<TypeArgumentInstantiation>/*?*/ typeArgs,
         List<Formal> formals, Type resultType, IOrigin tok, bool isStatic, bool createBody, MemberDecl member, bool forBodyInheritance, bool lookasideBody) {
+        CodeGenerator.inInstanceConstInit = false;
         return CodeGenerator.CreateFunction(member.EnclosingClass.GetCompileName(CodeGenerator.Options),
           member.EnclosingClass.TypeArgs, name, typeArgs, formals, resultType, tok, isStatic, createBody, member,
           MethodDeclWriter, MethodWriter, lookasideBody);
       }
       public ConcreteSyntaxTree/*?*/ CreateGetter(string name, TopLevelDecl enclosingDecl, Type resultType, IOrigin tok, bool isStatic, bool isConst, bool createBody, MemberDecl/*?*/ member, bool forBodyInheritance) {
-        return CodeGenerator.CreateGetter(name, enclosingDecl, resultType, tok, isStatic, isConst, createBody, MethodDeclWriter, MethodWriter);
+        return CodeGenerator.CreateGetter(name, enclosingDecl, resultType, tok, isStatic, isConst, createBody, member, MethodDeclWriter, MethodWriter);
       }
       public ConcreteSyntaxTree/*?*/ CreateGetterSetter(string name, Type resultType, IOrigin tok, bool createBody, MemberDecl/*?*/ member, out ConcreteSyntaxTree setterWriter, bool forBodyInheritance) {
         return CodeGenerator.CreateGetterSetter(name, resultType, tok, createBody, out setterWriter, MethodWriter);
       }
       public void DeclareField(string name, TopLevelDecl enclosingDecl, bool isStatic, bool isConst, Type type, IOrigin tok, string rhs, Field field) {
+        CodeGenerator.inInstanceConstInit = false;
         CodeGenerator.DeclareField(ClassName, enclosingDecl.TypeArgs, name, isStatic, isConst, type, tok, rhs, FieldWriter, Finisher);
       }
       public void InitializeField(Field field, Type instantiatedFieldType, TopLevelDeclWithMembers enclosingClass) {
@@ -895,7 +904,7 @@ namespace Microsoft.Dafny.Compilers {
       throw new UnsupportedFeatureException(tok, Feature.RuntimeTypeDescriptors, string.Format("RuntimeTypeDescriptor {0} not yet supported", type));
     }
 
-    protected ConcreteSyntaxTree/*?*/ CreateGetter(string name, TopLevelDecl cls, Type resultType, IOrigin tok, bool isStatic, bool isConst, bool createBody, ConcreteSyntaxTree wdr, ConcreteSyntaxTree wr) {
+    protected ConcreteSyntaxTree/*?*/ CreateGetter(string name, TopLevelDecl cls, Type resultType, IOrigin tok, bool isStatic, bool isConst, bool createBody, MemberDecl member, ConcreteSyntaxTree wdr, ConcreteSyntaxTree wr) {
       // Compiler insists on using Getter for constants, but we just use the raw variable name to hold the value,
       // because o/w Compiler tries to use the Getter function as an Lvalue in assignments
       // Unfortunately, Compiler doesn't tell us what the initial value is, so we hack around it
@@ -907,7 +916,14 @@ namespace Microsoft.Dafny.Compilers {
         w = wdr.NewNamedBlock("{0}{1} init__{2}()", isStatic ? "static " : "", TypeName(resultType, wr, tok), name);
         postfix = String.Format(" init__{0}()", name);
       }
-      DeclareField(cls.GetCompileName(Options), cls.TypeArgs, name, isStatic, isConst, resultType, tok, postfix, wdr, wr);
+      inInstanceConstInit = createBody && IsLazyConst(member);
+      if (inInstanceConstInit) {
+        var t = TypeName(resultType, wr, tok);
+        wdr.WriteLine($"std::optional<{t}> lazy__{name};");
+        wdr.WriteLine($"{t} {name}() {{ if (!lazy__{name}) {{ lazy__{name} = init__{name}(); }} return *lazy__{name}; }}");
+      } else {
+        DeclareField(cls.GetCompileName(Options), cls.TypeArgs, name, isStatic, isConst, resultType, tok, postfix, wdr, wr);
+      }
       //wdr.Write("{0}{1} {2}{3};", isStatic ? "static " : "", TypeName(resultType, wr, tok), name, postfix);
       return w;
     }
@@ -1868,6 +1884,8 @@ namespace Microsoft.Dafny.Compilers {
           IdName(member.EnclosingClass),
           IdName(member)
         ));
+      } else if (IsLazyConst(member)) {
+        return SuffixLvalue(obj, "->{0}()", IdName(member));
       } else {
         return SuffixLvalue(obj, "->{0}", IdName(member));
       }
@@ -2046,10 +2064,9 @@ namespace Microsoft.Dafny.Compilers {
     protected override ConcreteSyntaxTree CreateLambda(List<Type> inTypes, IOrigin tok, List<string> inNames,
         Type resultType, ConcreteSyntaxTree wr, ConcreteSyntaxTree wStmts, bool untyped = false) {
       Contract.Assert(inTypes.Count == inNames.Count);  // guaranteed by precondition
-      // `this` is a raw pointer, and the lambda can outlive every shared_ptr to the object. Instance consts
-      // are initialized before any shared_ptr owns it, where shared_from_this() would throw and lock() is empty.
-      var ownsThis = thisContext is ClassDecl && !(enclosingMethod?.IsStatic ?? enclosingFunction?.IsStatic ?? true);
-      wr.Write(ownsThis ? "[=, _owner = this->weak_from_this().lock()](" : "[=](");
+      // `this` is a raw pointer, and the lambda can outlive every shared_ptr to the object.
+      var ownsThis = thisContext is ClassDecl && !(enclosingMethod?.IsStatic ?? enclosingFunction?.IsStatic ?? !inInstanceConstInit);
+      wr.Write(ownsThis ? "[=, _owner = this->shared_from_this()](" : "[=](");
       for (var i = 0; i < inNames.Count; i++) {
         if (i != 0) {
           wr.Write(", ");

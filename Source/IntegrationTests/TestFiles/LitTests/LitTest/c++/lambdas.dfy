@@ -49,10 +49,15 @@ method Main() {
   var other := new Counter(50);
   print add(4), "\n";
 
+  // So does an instance const holding one.
+  var plus := MakePlus();
+  var another := new Counter(60);
+  print plus(4), "\n";
+
   // An instance const holding a lambda over `this`.
   print other.plus(4), "\n";
 
-  // An instance const that a function builds while the object is constructed.
+  // An instance const that a function builds.
   print other.minus(4), "\n";
 
   // A lambda over `this` in a generic class.
@@ -89,6 +94,13 @@ method MakeAdder() returns (f: i32 ~> i32)
 {
   var c := new Counter(3);
   f := c.Adder();
+}
+
+method MakePlus() returns (f: i32 ~> i32)
+  ensures f.requires(4)
+{
+  var c := new Counter(3);
+  f := c.plus;
 }
 
 function ApplyTwice(f: i32 -> i32, x: i32): i32 {
