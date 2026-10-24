@@ -617,14 +617,15 @@ inline std::ostream& operator<<(std::ostream& out, const DafnySet<U>& val){
     return out;
 }
 
+// A sum, since equal sets can list their elements in different orders.
 template <typename U>
 struct std::hash<DafnySet<U>> {
     size_t operator()(const DafnySet<U>& s) const {
-        size_t seed = 0;
+        size_t sum = 0;
         for (auto const& elt:s.set) {
-            hash_combine<U>(seed, elt);
+            sum += std::hash<U>()(elt);
         }
-        return seed;
+        return sum;
     }
 };
 
@@ -753,15 +754,18 @@ inline std::ostream& operator<<(std::ostream& out, const DafnyMap<T,U>& val){
     return out;
 }
 
+// A sum, like the set hash.
 template <typename T, typename U>
 struct std::hash<DafnyMap<T,U>> {
     size_t operator()(const DafnyMap<T,U>& s) const {
-        size_t seed = 0;
+        size_t sum = 0;
         for (auto const& kv:s.map) {
+            size_t seed = 0;
             hash_combine<T>(seed, kv.first);
             hash_combine<U>(seed, kv.second);
+            sum += seed;
         }
-        return seed;
+        return sum;
     }
 };
 
