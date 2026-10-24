@@ -1128,9 +1128,12 @@ namespace Microsoft.Dafny.Compilers {
         } else {
           return "nullptr";
         }
+      } else if (cl is TupleTypeDecl) {
+        // Not Tuple(): it takes each element's default from get_default, which knows no witnesses or functions.
+        var elements = udt.TypeArgs.ConvertAll(ta => TypeInitializationValue(ta, wr, tok, usePlaceboValue, constructTypeParameterDefaultsFromTypeDescriptors));
+        return $"Tuple{InstantiateTemplate(udt.TypeArgs)}({string.Join(", ", elements)})";
       } else if (cl is DatatypeDecl) {
-        var dt = (DatatypeDecl)cl;
-        var s = dt is TupleTypeDecl ? "Tuple" : FullTypeName(udt);
+        var s = FullTypeName(udt);
         var w = new ConcreteSyntaxTree();
         w.Write("{0}{1}()", s, InstantiateTemplate(udt.TypeArgs));
         return w.ToString();
