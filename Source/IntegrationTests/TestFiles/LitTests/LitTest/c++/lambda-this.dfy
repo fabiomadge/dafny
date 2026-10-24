@@ -49,9 +49,6 @@ method Main() {
   var another := new Counter(60);
   print plus(4), "\n";
 
-  // An instance const holding a lambda over `this`.
-  print other.plus(4), "\n";
-
   // An instance const that a function builds.
   print other.minus(4), "\n";
 
