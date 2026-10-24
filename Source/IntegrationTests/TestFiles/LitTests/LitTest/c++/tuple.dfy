@@ -2,6 +2,12 @@
 // RUN: %diff "%s.expect" "%t"
 
 newtype uint32 = i:int | 0 <= i < 0x100000000
+type Pos = x: uint32 | x > 0 witness 1
+
+class Holder {
+  var t: (Pos, uint32 -> uint32)
+  constructor() {}
+}
 
 method ReturnTuple() returns (x:(uint32,uint32))
 {
@@ -44,4 +50,8 @@ method Main() {
   var x := ReturnTuple();
   var y := x.0;
   print y, "\n";
+
+  // A tuple's default holds each element type's default: the witness and the default function.
+  var h := new Holder();
+  print h.t.0, " ", h.t.1(5), "\n";
 }
