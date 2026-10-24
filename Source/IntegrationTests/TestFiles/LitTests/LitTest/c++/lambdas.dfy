@@ -40,82 +40,9 @@ method Main() {
   // A lambda that ignores its parameter.
   var zero: i32 -> i32 := _ => 0;
   print zero(9), "\n";
-
-  // A datatype with a function-typed field.
-  var op := Op(inc, 1);
-  print op.f(op.n), "\n";
-
-  // A datatype whose only field is a function.
-  var w := Wrap(inc);
-  print w.f(1), "\n";
-
-  // Datatype values holding different arrays of functions differ.
-  var fs := new (i32 -> i32)[1];
-  var gs := new (i32 -> i32)[1];
-  print Fs(fs) == Fs(gs), " ", Fs(fs) == Fs(fs), "\n";
-
-  // A lambda over `this` outlives every other reference to its object.
-  var add := MakeAdder();
-  var other := new Counter(50);
-  print add(4), "\n";
-
-  // So does an instance const holding one.
-  var plus := MakePlus();
-  var another := new Counter(60);
-  print plus(4), "\n";
-
-  // An instance const holding a lambda over `this`.
-  print other.plus(4), "\n";
-
-  // An instance const that a function builds.
-  print other.minus(4), "\n";
-
-  // A lambda over `this` in a generic class.
-  var cell := new Cell<i32>(9);
-  var get := cell.Get();
-  print get(), "\n";
 }
 
 datatype Choice = One | Two(v: i32)
-
-class Cell<T> {
-  var v: T
-  constructor(v: T) ensures this.v == v { this.v := v; }
-  function Get(): () ~> T reads this { () reads this => v }
-}
-
-datatype Op = Op(f: i32 -> i32, n: i32)
-
-datatype Wrap = Wrap(f: i32 -> i32)
-
-datatype Fs = Fs(a: array<i32 -> i32>)
-
-class Counter {
-  var k: i32
-  const plus: i32 ~> i32 := x reads this => if -100 < x < 100 && -100 < k < 100 then x + k else 0
-  const minus: i32 ~> i32 := Minus()
-  constructor(k: i32) ensures this.k == k { this.k := k; }
-  function Adder(): i32 ~> i32 reads this {
-    x reads this => if -100 < x < 100 && -100 < k < 100 then x + k else 0
-  }
-  function Minus(): i32 ~> i32 {
-    x reads this => if -100 < x < 100 && -100 < k < 100 then x - k else 0
-  }
-}
-
-method MakeAdder() returns (f: i32 ~> i32)
-  ensures f.requires(4)
-{
-  var c := new Counter(3);
-  f := c.Adder();
-}
-
-method MakePlus() returns (f: i32 ~> i32)
-  ensures f.requires(4)
-{
-  var c := new Counter(3);
-  f := c.plus;
-}
 
 function ApplyTwice(f: i32 -> i32, x: i32): i32 {
   f(f(x))

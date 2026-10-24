@@ -1093,11 +1093,8 @@ namespace Microsoft.Dafny.Compilers {
             var rangeType = udt.TypeArgs.Last();
             var rangeDefaultValue = TypeInitializationValue(rangeType, wr, tok, usePlaceboValue, constructTypeParameterDefaultsFromTypeDescriptors);
             // Unnamed parameters, to avoid -Wunused-parameter.
-            var argDecls = new List<string>();
-            for (var i = 0; i < udt.TypeArgs.Count - 1; i++) {
-              argDecls.Add(TypeName(udt.TypeArgs[i], wr, tok));
-            }
-            return $"{TypeName(udt, wr, tok)}([=]({string.Join(", ", argDecls)}) -> {TypeName(rangeType, wr, tok)} {{ return {rangeDefaultValue}; }})";
+            var parameters = udt.TypeArgs.SkipLast(1).Comma(ta => TypeName(ta, wr, tok));
+            return $"{TypeName(udt, wr, tok)}([]({parameters}) -> {TypeName(rangeType, wr, tok)} {{ return {rangeDefaultValue}; }})";
           } else if (((NonNullTypeDecl)td).Class is ArrayClassDecl) {
             // non-null array type; we know how to initialize them
             var arrayClass = (ArrayClassDecl)((NonNullTypeDecl)td).Class;
@@ -1682,12 +1679,7 @@ namespace Microsoft.Dafny.Compilers {
     }
 
     private string ArrowTypeName(ArrowType at, ConcreteSyntaxTree wr, IOrigin tok) {
-      var result = TypeName(at.Result, wr, tok, null, false);
-      var args = new List<string>();
-      foreach (var a in at.Args) {
-        args.Add(TypeName(a, wr, tok, null, false));
-      }
-      return $"std::function<{result}({string.Join(", ", args)})>";
+      return $"std::function<{TypeName(at.Result, wr, tok)}({at.Args.Comma(a => TypeName(a, wr, tok))})>";
     }
 
     protected override string FullTypeName(UserDefinedType udt, MemberDecl/*?*/ member = null) {
@@ -2001,14 +1993,8 @@ namespace Microsoft.Dafny.Compilers {
     protected override ConcreteSyntaxTree EmitBetaRedex(List<string> boundVars, List<Expression> arguments,
       List<Type> boundTypes, Type resultType, IOrigin tok, bool inLetExprBody, ConcreteSyntaxTree wr,
       ref ConcreteSyntaxTree wStmts) {
-      wr.Write("[=](");
-      for (var i = 0; i < boundVars.Count; i++) {
-        if (i != 0) {
-          wr.Write(", ");
-        }
-        wr.Write($"{TypeName(boundTypes[i], wr, tok, null, false)} {boundVars[i]}");
-      }
-      wr.Write($") -> {TypeName(resultType, wr, tok, null, false)} {{ return ");
+      var parameters = boundVars.Comma((name, i) => $"{TypeName(boundTypes[i], wr, tok)} {name}");
+      wr.Write($"[=]({parameters}) -> {TypeName(resultType, wr, tok)} {{ return ");
       var w = wr.Fork();
       wr.Write("; }");
       var wArgs = wr.ForkInParens();
@@ -2059,15 +2045,9 @@ namespace Microsoft.Dafny.Compilers {
     protected override ConcreteSyntaxTree CreateLambda(List<Type> inTypes, IOrigin tok, List<string> inNames,
         Type resultType, ConcreteSyntaxTree wr, ConcreteSyntaxTree wStmts, bool untyped = false) {
       Contract.Assert(inTypes.Count == inNames.Count);  // guaranteed by precondition
-      wr.Write("[=](");
-      for (var i = 0; i < inNames.Count; i++) {
-        if (i != 0) {
-          wr.Write(", ");
-        }
-        wr.Write($"[[maybe_unused]] {TypeName(inTypes[i], wr, tok, null, false)} {inNames[i]}");
-      }
-      var w = wr.NewBigExprBlock($") -> {TypeName(resultType, wr, tok, null, false)} ");
-      return w;
+      var parameters = inNames.Comma((name, i) => $"[[maybe_unused]] {TypeName(inTypes[i], wr, tok)} {name}");
+      wr.Write($"[=]({parameters}");
+      return wr.NewBigExprBlock($") -> {TypeName(resultType, wr, tok)} ");
     }
 
     protected override void CreateIIFE(string bvName, Type bvType, IOrigin bvTok, Type bodyType, IOrigin bodyTok,
