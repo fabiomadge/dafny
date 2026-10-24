@@ -558,7 +558,7 @@ namespace Microsoft.Dafny.Compilers {
 
             IVariable receiver = null;
             if (thisContext != null && (enclosingMethod is { IsTailRecursive: true } || enclosingFunction is { IsTailRecursive: true } ||
-                                        (TargetLambdaBindsReceiver && FreeVariablesUtil.ContainsFreeVariable(e, true, null)))) {
+                                        (TargetLambdaBindsReceiver && FreeVariablesUtil.ContainsFreeVariable(e, lookForReceiver: true, null)))) {
               var name = ProtectedFreshId("_this");
               var ty = ModuleResolver.GetThisType(e.Origin, thisContext);
               receiver = new LocalVariable(SourceOrigin.NoToken, name, ty, false) {

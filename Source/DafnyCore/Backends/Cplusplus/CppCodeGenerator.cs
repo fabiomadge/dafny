@@ -332,9 +332,7 @@ namespace Microsoft.Dafny.Compilers {
 
     // std::function has no == or std::hash. Dafny compares a datatype with a field whose type lacks equality
     // only against a nullary constructor, which never reaches the field, so operator== and std::hash skip it.
-    private static bool IsComparable(Formal f) {
-      return !f.IsGhost && f.Type.SupportsEquality;
-    }
+    private static bool IsComparable(Formal f) => !f.IsGhost && f.Type.SupportsEquality;
 
     protected override IClassWriter DeclareDatatype(DatatypeDecl dt, ConcreteSyntaxTree writer) {
       if (dt is TupleTypeDecl) {
@@ -1127,8 +1125,8 @@ namespace Microsoft.Dafny.Compilers {
         }
       } else if (cl is TupleTypeDecl) {
         // Not Tuple(): it takes each element's default from get_default, which knows no witnesses or functions.
-        var elements = udt.TypeArgs.ConvertAll(ta => TypeInitializationValue(ta, wr, tok, usePlaceboValue, constructTypeParameterDefaultsFromTypeDescriptors));
-        return $"Tuple{InstantiateTemplate(udt.TypeArgs)}({string.Join(", ", elements)})";
+        var elements = udt.TypeArgs.Comma(ta => TypeInitializationValue(ta, wr, tok, usePlaceboValue, constructTypeParameterDefaultsFromTypeDescriptors));
+        return $"Tuple{InstantiateTemplate(udt.TypeArgs)}({elements})";
       } else if (cl is DatatypeDecl) {
         var s = FullTypeName(udt);
         var w = new ConcreteSyntaxTree();
@@ -2046,8 +2044,7 @@ namespace Microsoft.Dafny.Compilers {
         Type resultType, ConcreteSyntaxTree wr, ConcreteSyntaxTree wStmts, bool untyped = false) {
       Contract.Assert(inTypes.Count == inNames.Count);  // guaranteed by precondition
       var parameters = inNames.Comma((name, i) => $"[[maybe_unused]] {TypeName(inTypes[i], wr, tok)} {name}");
-      wr.Write($"[=]({parameters}");
-      return wr.NewBigExprBlock($") -> {TypeName(resultType, wr, tok)} ");
+      return wr.NewBigExprBlock($"[=]({parameters}) -> {TypeName(resultType, wr, tok)} ");
     }
 
     protected override void CreateIIFE(string bvName, Type bvType, IOrigin bvTok, Type bodyType, IOrigin bodyTok,

@@ -28,8 +28,10 @@ method Main() {
   var t: (i32, i32) := (3, 4);
   var c := Two(5);
   var ops := (n: i32) =>
-    n in s + {2} && n in s * {1} && n !in s - {1} && s < {1, 2} && q + [n] == [1, n] && n in m.Keys &&
-    2 in m.Values && m[n := 3][n] == 3 && n in m + map[4 := 5] && n !in m - {n} && t.1 == 4 && c.v == 5;
+    n in s + {2} && n in s * {1} && n !in s - {1} && s < {1, 2} &&
+    q + [n] == [1, n] &&
+    n in m.Keys && 2 in m.Values && m[n := 3][n] == 3 && n in m + map[4 := 5] && n !in m - {n} &&
+    t.1 == 4 && c.v == 5;
   s, q, m := {}, [], map[];
   print ops(1), " ", ops(2), "\n";
 
