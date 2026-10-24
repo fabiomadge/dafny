@@ -1071,12 +1071,9 @@ namespace Microsoft.Dafny.Compilers {
           if (ArrowType.IsPartialArrowTypeName(td.Name)) {
             return "nullptr";
           } else if (ArrowType.IsTotalArrowTypeName(td.Name)) {
-            // Default total function value: a lambda returning the range default
-            // (matches the other backends, which return a callable, not an empty one).
             var rangeType = udt.TypeArgs.Last();
             var rangeDefaultValue = TypeInitializationValue(rangeType, wr, tok, usePlaceboValue, constructTypeParameterDefaultsFromTypeDescriptors);
-            // Unnamed params: the default stub ignores its arguments (avoids
-            // -Wunused-parameter without suppressing the warning globally).
+            // Unnamed parameters, to avoid -Wunused-parameter.
             var argDecls = new List<string>();
             for (var i = 0; i < udt.TypeArgs.Count - 1; i++) {
               argDecls.Add(TypeName(udt.TypeArgs[i], wr, tok));
@@ -1662,7 +1659,6 @@ namespace Microsoft.Dafny.Compilers {
       }
     }
 
-    // std::function<R(A0, A1, ...)> for a Dafny arrow type A0,A1,... -> R.
     private string ArrowTypeName(ArrowType at, ConcreteSyntaxTree wr, IOrigin tok) {
       var result = TypeName(at.Result, wr, tok, null, false);
       var args = new List<string>();
@@ -1981,7 +1977,6 @@ namespace Microsoft.Dafny.Compilers {
     protected override ConcreteSyntaxTree EmitBetaRedex(List<string> boundVars, List<Expression> arguments,
       List<Type> boundTypes, Type resultType, IOrigin tok, bool inLetExprBody, ConcreteSyntaxTree wr,
       ref ConcreteSyntaxTree wStmts) {
-      // An immediately-applied lambda: [=](T0 v0, ...) -> R { return <body>; }(args)
       wr.Write("[=](");
       for (var i = 0; i < boundVars.Count; i++) {
         if (i != 0) {
