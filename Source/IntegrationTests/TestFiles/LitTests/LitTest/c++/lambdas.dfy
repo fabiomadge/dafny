@@ -40,9 +40,28 @@ method Main() {
   // A lambda that ignores its parameter.
   var zero: i32 -> i32 := _ => 0;
   print zero(9), "\n";
+
+  // A datatype with a function-typed field.
+  var op := Op(inc, 1);
+  print op.f(op.n), "\n";
+
+  // A datatype whose only field is a function.
+  var w := Wrap(inc);
+  print w.f(1), "\n";
+
+  // Datatype values holding different arrays of functions differ.
+  var fs := new (i32 -> i32)[1];
+  var gs := new (i32 -> i32)[1];
+  print Fs(fs) == Fs(gs), " ", Fs(fs) == Fs(fs), "\n";
 }
 
 datatype Choice = One | Two(v: i32)
+
+datatype Op = Op(f: i32 -> i32, n: i32)
+
+datatype Wrap = Wrap(f: i32 -> i32)
+
+datatype Fs = Fs(a: array<i32 -> i32>)
 
 function ApplyTwice(f: i32 -> i32, x: i32): i32 {
   f(f(x))
