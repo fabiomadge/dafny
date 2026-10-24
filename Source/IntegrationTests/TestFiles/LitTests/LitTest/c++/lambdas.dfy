@@ -20,6 +20,20 @@ method Main() {
   // A function value passed to another function.
   var twice := ApplyTwice(inc, 40);
   print twice, "\n";
+
+  // A lambda captures `s` when it is created, and applies a set operation to it.
+  var s: set<i32> := {1};
+  var inS := (n: i32) => n in s + {2};
+  s := {};
+  print inS(1), " ", inS(2), " ", inS(3), "\n";
+
+  // The default function value returns the default result.
+  var d: i32 -> i32;
+  print d(5), "\n";
+
+  // A lambda that ignores its parameter.
+  var zero: i32 -> i32 := _ => 0;
+  print zero(9), "\n";
 }
 
 function ApplyTwice(f: i32 -> i32, x: i32): i32 {

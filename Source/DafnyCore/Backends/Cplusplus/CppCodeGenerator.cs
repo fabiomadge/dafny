@@ -560,7 +560,7 @@ namespace Microsoft.Dafny.Compilers {
                   returnType = String.Format("std::shared_ptr<{0}>", returnType);
                 }
 
-                var wDtor = ws.NewNamedBlock("{0} dtor_{1}()", returnType,
+                var wDtor = ws.NewNamedBlock("{0} dtor_{1}() const", returnType,
                   arg.CompileName);
                 if (dt.IsRecordType) {
                   wDtor.WriteLine("return this.{0};", IdName(arg));
@@ -2028,7 +2028,7 @@ namespace Microsoft.Dafny.Compilers {
         if (i != 0) {
           wr.Write(", ");
         }
-        wr.Write($"{TypeName(inTypes[i], wr, tok, null, false)} {inNames[i]}");
+        wr.Write($"[[maybe_unused]] {TypeName(inTypes[i], wr, tok, null, false)} {inNames[i]}");
       }
       var w = wr.NewBigExprBlock($") -> {TypeName(resultType, wr, tok, null, false)} ");
       return w;
