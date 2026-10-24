@@ -21,11 +21,17 @@ method Main() {
   var twice := ApplyTwice(inc, 40);
   print twice, "\n";
 
-  // A lambda captures `s` when it is created, and applies a set operation to it.
+  // A lambda captures collections when it is created, and applies their operations.
   var s: set<i32> := {1};
-  var inS := (n: i32) => n in s + {2};
-  s := {};
-  print inS(1), " ", inS(2), " ", inS(3), "\n";
+  var q: seq<i32> := [1];
+  var m: map<i32, i32> := map[1 := 2];
+  var t: (i32, i32) := (3, 4);
+  var c := Two(5);
+  var ops := (n: i32) =>
+    n in s + {2} && n in s * {1} && n !in s - {1} && s < {1, 2} && q + [n] == [1, n] && n in m.Keys &&
+    2 in m.Values && m[n := 3][n] == 3 && n in m + map[4 := 5] && n !in m - {n} && t.1 == 4 && c.v == 5;
+  s, q, m := {}, [], map[];
+  print ops(1), " ", ops(2), "\n";
 
   // The default function value returns the default result.
   var d: i32 -> i32;
@@ -38,6 +44,10 @@ method Main() {
   // A datatype with a function-typed field.
   var op := Op(inc, 1);
   print op.f(op.n), "\n";
+
+  // A datatype whose only field is a function.
+  var w := Wrap(inc);
+  print w.f(1), "\n";
 
   // Datatype values holding different arrays of functions differ.
   var fs := new (i32 -> i32)[1];
@@ -66,6 +76,8 @@ method Main() {
   print get(), "\n";
 }
 
+datatype Choice = One | Two(v: i32)
+
 class Cell<T> {
   var v: T
   constructor(v: T) ensures this.v == v { this.v := v; }
@@ -73,6 +85,8 @@ class Cell<T> {
 }
 
 datatype Op = Op(f: i32 -> i32, n: i32)
+
+datatype Wrap = Wrap(f: i32 -> i32)
 
 datatype Fs = Fs(a: array<i32 -> i32>)
 

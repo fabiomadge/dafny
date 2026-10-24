@@ -285,6 +285,10 @@ namespace Microsoft.Dafny.Compilers {
 
     protected override bool SupportsProperties { get => false; }
 
+    // The base declares a backing field for a const that the constructor assigns; without a prefix, that field is
+    // the const itself.
+    protected override string InternalFieldPrefix => "";
+
     protected override IClassWriter CreateTrait(string name, bool isExtern, List<TypeParameter> typeParameters /*?*/,
       TraitDecl trait, List<Type> superClasses /*?*/, IOrigin tok, ConcreteSyntaxTree wr) {
       throw new UnsupportedFeatureException(tok, Feature.Traits);
@@ -398,10 +402,7 @@ namespace Microsoft.Dafny.Compilers {
         }
 
         // Overload the comparison operator
-        var wrCompOp = ws.NewNamedBlock("friend bool operator==(const {0} &left, const {0} &right)", DtT_protected);
-        if (comparedNames.Count == 0) {
-          wrCompOp.WriteLine("(void)left; (void)right;");
-        }
+        var wrCompOp = ws.NewNamedBlock("friend bool operator==([[maybe_unused]] const {0} &left, [[maybe_unused]] const {0} &right)", DtT_protected);
         wrCompOp.Write("\treturn true");
         foreach (var arg in comparedNames) {
           wrCompOp.WriteLine("\t\t&& left.{0} == right.{0}", arg);
@@ -417,15 +418,12 @@ namespace Microsoft.Dafny.Compilers {
         hashWr.WriteLine("template <{0}>", TypeParameters(dt.TypeArgs));
         var fullName = dt.EnclosingModuleDefinition.GetCompileName(Options) + "::" + DtT_protected + InstantiateTemplate(dt.TypeArgs);
         var hwr = hashWr.NewBlock(string.Format("struct std::hash<{0}>", fullName), ";");
-        var owr = hwr.NewBlock(string.Format("std::size_t operator()(const {0}& x) const", fullName));
+        var owr = hwr.NewBlock(string.Format("std::size_t operator()([[maybe_unused]] const {0}& x) const", fullName));
         owr.WriteLine("size_t seed = 0;");
         foreach (var arg in ctor.Formals) {
           if (IsComparable(arg)) {
             owr.WriteLine("hash_combine<{0}>(seed, x.{1});", TypeName(arg.Type, owr, dt.Origin), arg.CompileName);
           }
-        }
-        if (comparedNames.Count == 0) {
-          owr.WriteLine("(void)x;");
         }
         owr.WriteLine("return seed;");
       } else {
@@ -448,12 +446,10 @@ namespace Microsoft.Dafny.Compilers {
           }
 
           // Overload the comparison operator
-          wstruct.WriteLine("friend bool operator==(const {0} &left, const {0} &right) {{ ", structName);
+          wstruct.WriteLine("friend bool operator==([[maybe_unused]] const {0} &left, [[maybe_unused]] const {0} &right) {{ ", structName);
 
-          var preReturn = wstruct.Fork();
           wstruct.Write("\treturn true ");
           i = 0;
-          var compared = 0;
           foreach (Formal arg in ctor.Formals) {
             if (!arg.IsGhost) {
               if (IsComparable(arg)) {
@@ -462,14 +458,9 @@ namespace Microsoft.Dafny.Compilers {
                 } else {
                   wstruct.WriteLine("\t\t&& left.{0} == right.{0}", FormalName(arg, i));
                 }
-                compared++;
               }
               i++;
             }
-          }
-
-          if (compared == 0) { // Avoid a warning from the C++ compiler
-            preReturn.WriteLine("(void)left; (void) right;");
           }
 
           wstruct.WriteLine(";\n}");
@@ -481,9 +472,8 @@ namespace Microsoft.Dafny.Compilers {
           hashWr.WriteLine("template <{0}>", TypeParameters(dt.TypeArgs));
           var fullName = dt.EnclosingModuleDefinition.GetCompileName(Options) + "::" + structName + InstantiateTemplate(dt.TypeArgs);
           var hwr = hashWr.NewBlock(string.Format("struct std::hash<{0}>", fullName), ";");
-          var owr = hwr.NewBlock(string.Format("std::size_t operator()(const {0}& x) const", fullName));
+          var owr = hwr.NewBlock(string.Format("std::size_t operator()([[maybe_unused]] const {0}& x) const", fullName));
           owr.WriteLine("size_t seed = 0;");
-          int argCount = 0;
           foreach (var arg in ctor.Formals) {
             if (IsComparable(arg)) {
               if (arg.Type is UserDefinedType udt && udt.ResolvedClass == dt) {
@@ -492,11 +482,7 @@ namespace Microsoft.Dafny.Compilers {
               } else {
                 owr.WriteLine("hash_combine<{0}>(seed, x.{1});", TypeName(arg.Type, owr, dt.Origin), arg.CompileName);
               }
-              argCount++;
             }
-          }
-          if (argCount == 0) {
-            owr.WriteLine("(void)x;");
           }
           owr.WriteLine("return seed;");
         }
@@ -904,8 +890,8 @@ namespace Microsoft.Dafny.Compilers {
         return createBody ? wdr.NewNamedBlock("{0} {1}()", TypeName(resultType, wr, tok), name) : null;
       }
       if (member is ConstantField { IsStatic: false }) {
-        // A const that the constructor assigns is a plain field. The getter body would only read it back.
-        DeclareField(cls.GetCompileName(Options), cls.TypeArgs, name, false, isConst, resultType, tok, null, wdr, wr);
+        // A const that the constructor assigns is its own backing field (see InternalFieldPrefix), so the getter,
+        // which would read that field, is dropped.
         return createBody ? new ConcreteSyntaxTree() : null;
       }
 

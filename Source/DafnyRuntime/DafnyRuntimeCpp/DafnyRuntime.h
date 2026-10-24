@@ -242,7 +242,7 @@ struct DafnyArray {
   static DafnyArray<T> New(size_t len) { return DafnyArray<T>(len); }
   static DafnyArray<T> New(size_t len, const T& init) {
     DafnyArray<T> a(len);
-    for (size_t i = 0; i < len; i++) { a.at(i) = init; }
+    std::fill(a.begin(), a.end(), init);
     return a;
   }
 
@@ -626,9 +626,7 @@ struct std::hash<DafnySet<U>> {
     size_t operator()(const DafnySet<U>& s) const {
         size_t sum = 0;
         for (auto const& elt:s.set) {
-            size_t seed = 0;
-            hash_combine<U>(seed, elt);
-            sum += seed;
+            sum += std::hash<U>()(elt);
         }
         return sum;
     }
