@@ -1,0 +1,30 @@
+name: scratch - publish-release on macos-15 at the fix
+
+on:
+  push:
+    branches: [ 'scratch/publish-release-macos15' ]
+
+permissions:
+  contents: read
+
+jobs:
+  nightly-path:
+    uses: ./.github/workflows/scratch-publish-release.yml
+    with:
+      name: 4.11.1-nightly-2026-11-10-2dd0a31
+      ref: 2dd0a31b9f7945200c0deee3e37e26cb5fea1ae0
+      tag_name: nightly
+      release_nuget: false
+      draft: false
+      release_notes: ""
+      prerelease: true
+  release-path:
+    uses: ./.github/workflows/scratch-publish-release.yml
+    with:
+      name: 4.11.1
+      ref: 2dd0a31b9f7945200c0deee3e37e26cb5fea1ae0
+      tag_name: v4.11.1
+      release_nuget: false
+      draft: true
+      release_notes: ""
+      prerelease: false
