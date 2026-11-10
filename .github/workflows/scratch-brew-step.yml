@@ -1,0 +1,40 @@
+name: scratch - Install pandoc - MacOS on macos-15
+
+on:
+  push:
+    branches: [ 'scratch/brew-untap-macos15' ]
+  workflow_dispatch:
+
+jobs:
+  as-on-master:
+    runs-on: macos-15
+    steps:
+    - name: Image
+      run: |
+        echo "$ImageOS $ImageVersion"
+        brew --version
+        echo "taps:"; brew tap
+        env | grep '^HOMEBREW' || echo "no HOMEBREW_* variables"
+    - name: Install pandoc - MacOS
+      run: |
+        unset HOMEBREW_NO_INSTALL_FROM_API
+        brew untap Homebrew/core
+        brew update-reset && brew update
+        brew install pandoc
+        pandoc -v
+        sudo gem install rouge -v 3.30.0
+  as-in-pr:
+    runs-on: macos-15
+    steps:
+    - name: Image
+      run: |
+        echo "$ImageOS $ImageVersion"
+        brew --version
+        echo "taps:"; brew tap
+        env | grep '^HOMEBREW' || echo "no HOMEBREW_* variables"
+    - name: Install pandoc - MacOS
+      run: |
+        brew update-reset && brew update
+        brew install pandoc
+        pandoc -v
+        sudo gem install rouge -v 3.30.0
