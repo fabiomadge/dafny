@@ -2955,8 +2955,11 @@ module {:extern "DCOMP"} DafnyToRustCompiler {
           return;
         }
         assert !IsNewtype(fromTpe);
-        if fromTpe.IsPrimitiveInt() {
-          if exprOwnership == OwnershipBorrowed {
+        if fromTpe.IsPrimitiveInt() || fromTpe == Primitive(Real) {
+          if fromTpe == Primitive(Real) {
+            r, resultingOwnership := FromOwnership(r, exprOwnership, OwnershipBorrowed);
+            r := R.dafny_runtime.AsExpr().FSel("dafny_rational_to_int").Apply1(r);
+          } else if exprOwnership == OwnershipBorrowed {
             r := r.Clone();
           }
           r := R.dafny_runtime.MSel("truncate!").AsExpr().Apply([r, R.ExprFromType(boundedToType)]);
@@ -2966,14 +2969,6 @@ module {:extern "DCOMP"} DafnyToRustCompiler {
         }
         if fromTpe == Primitive(Char) {
           r := R.TypeAscription(r.Sel("0"), boundedToType);
-          r := WrapWithNewtype(r, OwnershipOwned, toTpe);
-          r, resultingOwnership := FromOwned(r, expectedOwnership);
-          return;
-        }
-        if fromTpe == Primitive(Real) {
-          var borrowed, borrowedOwnership := FromOwnership(r, exprOwnership, OwnershipBorrowed);
-          r := R.dafny_runtime.AsExpr().FSel("dafny_rational_to_int").Apply1(borrowed);
-          r := R.dafny_runtime.MSel("truncate!").AsExpr().Apply([r, R.ExprFromType(boundedToType)]);
           r := WrapWithNewtype(r, OwnershipOwned, toTpe);
           r, resultingOwnership := FromOwned(r, expectedOwnership);
           return;
@@ -2996,16 +2991,12 @@ module {:extern "DCOMP"} DafnyToRustCompiler {
             ), exprOwnership, expectedOwnership);
           return;
         }
-        if toTpe.IsPrimitiveInt() {
+        if toTpe.IsPrimitiveInt() || toTpe == Primitive(Real) {
           r, resultingOwnership := FromOwnership(r, exprOwnership, OwnershipOwned);
           r := R.dafny_runtime.MSel("int!").AsExpr().Apply1(r);
-          r, resultingOwnership := FromOwned(r, expectedOwnership);
-          return;
-        }
-        if toTpe == Primitive(Real) {
-          r, resultingOwnership := FromOwnership(r, exprOwnership, OwnershipOwned);
-          r := R.dafny_runtime.MSel("int!").AsExpr().Apply1(r);
-          r := R.dafny_runtime.AsExpr().FSel("dafny_int_to_rational").Apply1(R.Borrow(r));
+          if toTpe == Primitive(Real) {
+            r := R.dafny_runtime.AsExpr().FSel("dafny_int_to_rational").Apply1(R.Borrow(r));
+          }
           r, resultingOwnership := FromOwned(r, expectedOwnership);
           return;
         }
@@ -3017,13 +3008,13 @@ module {:extern "DCOMP"} DafnyToRustCompiler {
       assert !IsNewtype(fromTpe);
       match (fromTpe, toTpe) {
         case (Primitive(Int), Primitive(Real)) => {
-          var borrowed, borrowedOwnership := FromOwnership(r, exprOwnership, OwnershipBorrowed);
-          r := R.dafny_runtime.AsExpr().FSel("dafny_int_to_rational").Apply1(borrowed);
+          r, resultingOwnership := FromOwnership(r, exprOwnership, OwnershipBorrowed);
+          r := R.dafny_runtime.AsExpr().FSel("dafny_int_to_rational").Apply1(r);
           r, resultingOwnership := FromOwned(r, expectedOwnership);
         }
         case (Primitive(Real), Primitive(Int)) => {
-          var borrowed, borrowedOwnership := FromOwnership(r, exprOwnership, OwnershipBorrowed);
-          r := R.dafny_runtime.AsExpr().FSel("dafny_rational_to_int").Apply1(borrowed);
+          r, resultingOwnership := FromOwnership(r, exprOwnership, OwnershipBorrowed);
+          r := R.dafny_runtime.AsExpr().FSel("dafny_rational_to_int").Apply1(r);
           r, resultingOwnership := FromOwned(r, expectedOwnership);
         }
         case (Primitive(Int), Primitive(Char)) => {
