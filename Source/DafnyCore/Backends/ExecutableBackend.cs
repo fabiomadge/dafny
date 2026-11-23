@@ -169,7 +169,8 @@ public abstract class ExecutableBackend : IExecutableBackend {
       psi.StandardOutputEncoding = OutputWriterEncoding;
     }
 
-    if (StartProcess(psi, outputWriter) is { } process) {
+    using var process = StartProcess(psi, outputWriter);
+    if (process != null) {
       return await WaitForExit(process, outputWriter, errorWriter, errorMessage);
     }
 
@@ -180,8 +181,10 @@ public abstract class ExecutableBackend : IExecutableBackend {
 
   public async Task<int> WaitForExit(Process process, TextWriter outputWriter, TextWriter errorWriter, string errorMessage = null) {
 
-    var errorTask = PassthroughBuffer(process.StandardError, errorWriter);
-    var outputTask = PassthroughBuffer(process.StandardOutput, outputWriter);
+    using var standardError = process.StandardError;
+    using var standardOutput = process.StandardOutput;
+    var errorTask = PassthroughBuffer(standardError, errorWriter);
+    var outputTask = PassthroughBuffer(standardOutput, outputWriter);
     await process.WaitForExitAsync();
     await errorTask;
     await outputTask;
