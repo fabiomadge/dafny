@@ -3998,14 +3998,12 @@ namespace DCOMP {
           return ;
         }
         if (object.Equals(fromTpe, DAST.Type.create_Primitive(DAST.Primitive.create_Real()))) {
-          RAST._IExpr _7_borrowed;
-          Defs._IOwnership _8_borrowedOwnership;
           RAST._IExpr _out20;
           Defs._IOwnership _out21;
           (this).FromOwnership(r, exprOwnership, Defs.Ownership.create_OwnershipBorrowed(), out _out20, out _out21);
-          _7_borrowed = _out20;
-          _8_borrowedOwnership = _out21;
-          r = (((RAST.__default.dafny__runtime).AsExpr()).FSel(Dafny.Sequence<Dafny.Rune>.UnicodeFromString("dafny_rational_to_int"))).Apply1(_7_borrowed);
+          r = _out20;
+          resultingOwnership = _out21;
+          r = (((RAST.__default.dafny__runtime).AsExpr()).FSel(Dafny.Sequence<Dafny.Rune>.UnicodeFromString("dafny_rational_to_int"))).Apply1(r);
           r = (((RAST.__default.dafny__runtime).MSel(Dafny.Sequence<Dafny.Rune>.UnicodeFromString("truncate!"))).AsExpr()).Apply(Dafny.Sequence<RAST._IExpr>.FromElements(r, RAST.Expr.create_ExprFromType(_3_boundedToType)));
           RAST._IExpr _out22;
           _out22 = (this).WrapWithNewtype(r, Defs.Ownership.create_OwnershipOwned(), toTpe);
@@ -4017,12 +4015,12 @@ namespace DCOMP {
           resultingOwnership = _out24;
           return ;
         }
-        RAST._IType _9_fromTpeRust;
+        RAST._IType _7_fromTpeRust;
         RAST._IType _out25;
         _out25 = (this).GenType(fromTpe, Defs.GenTypeContext.@default());
-        _9_fromTpeRust = _out25;
+        _7_fromTpeRust = _out25;
         RAST._IExpr _out26;
-        _out26 = (this).Error(Dafny.Sequence<Dafny.Rune>.Concat(Dafny.Sequence<Dafny.Rune>.Concat(Dafny.Sequence<Dafny.Rune>.Concat(Dafny.Sequence<Dafny.Rune>.UnicodeFromString("No conversion available from "), (_9_fromTpeRust)._ToString(Dafny.Sequence<Dafny.Rune>.UnicodeFromString(""))), Dafny.Sequence<Dafny.Rune>.UnicodeFromString(" to ")), (_3_boundedToType)._ToString(Dafny.Sequence<Dafny.Rune>.UnicodeFromString(""))), (this).InitEmptyExpr());
+        _out26 = (this).Error(Dafny.Sequence<Dafny.Rune>.Concat(Dafny.Sequence<Dafny.Rune>.Concat(Dafny.Sequence<Dafny.Rune>.Concat(Dafny.Sequence<Dafny.Rune>.UnicodeFromString("No conversion available from "), (_7_fromTpeRust)._ToString(Dafny.Sequence<Dafny.Rune>.UnicodeFromString(""))), Dafny.Sequence<Dafny.Rune>.UnicodeFromString(" to ")), (_3_boundedToType)._ToString(Dafny.Sequence<Dafny.Rune>.UnicodeFromString(""))), (this).InitEmptyExpr());
         r = _out26;
         RAST._IExpr _out27;
         Defs._IOwnership _out28;
@@ -4072,12 +4070,12 @@ namespace DCOMP {
           resultingOwnership = _out38;
           return ;
         }
-        RAST._IType _10_toTpeRust;
+        RAST._IType _8_toTpeRust;
         RAST._IType _out39;
         _out39 = (this).GenType(toTpe, Defs.GenTypeContext.@default());
-        _10_toTpeRust = _out39;
+        _8_toTpeRust = _out39;
         RAST._IExpr _out40;
-        _out40 = (this).Error(Dafny.Sequence<Dafny.Rune>.Concat(Dafny.Sequence<Dafny.Rune>.Concat(Dafny.Sequence<Dafny.Rune>.Concat(Dafny.Sequence<Dafny.Rune>.UnicodeFromString("No conversion available from "), ((_1_unwrappedFromType).dtor_value)._ToString(Dafny.Sequence<Dafny.Rune>.UnicodeFromString(""))), Dafny.Sequence<Dafny.Rune>.UnicodeFromString(" to ")), (_10_toTpeRust)._ToString(Dafny.Sequence<Dafny.Rune>.UnicodeFromString(""))), (this).InitEmptyExpr());
+        _out40 = (this).Error(Dafny.Sequence<Dafny.Rune>.Concat(Dafny.Sequence<Dafny.Rune>.Concat(Dafny.Sequence<Dafny.Rune>.Concat(Dafny.Sequence<Dafny.Rune>.UnicodeFromString("No conversion available from "), ((_1_unwrappedFromType).dtor_value)._ToString(Dafny.Sequence<Dafny.Rune>.UnicodeFromString(""))), Dafny.Sequence<Dafny.Rune>.UnicodeFromString(" to ")), (_8_toTpeRust)._ToString(Dafny.Sequence<Dafny.Rune>.UnicodeFromString(""))), (this).InitEmptyExpr());
         r = _out40;
         RAST._IExpr _out41;
         Defs._IOwnership _out42;
@@ -4097,14 +4095,12 @@ namespace DCOMP {
               DAST._IPrimitive _h71 = _10.dtor_Primitive_a0;
               if (_h71.is_Real) {
                 {
-                  RAST._IExpr _11_borrowed;
-                  Defs._IOwnership _12_borrowedOwnership;
                   RAST._IExpr _out43;
                   Defs._IOwnership _out44;
                   (this).FromOwnership(r, exprOwnership, Defs.Ownership.create_OwnershipBorrowed(), out _out43, out _out44);
-                  _11_borrowed = _out43;
-                  _12_borrowedOwnership = _out44;
-                  r = (((RAST.__default.dafny__runtime).AsExpr()).FSel(Dafny.Sequence<Dafny.Rune>.UnicodeFromString("dafny_int_to_rational"))).Apply1(_11_borrowed);
+                  r = _out43;
+                  resultingOwnership = _out44;
+                  r = (((RAST.__default.dafny__runtime).AsExpr()).FSel(Dafny.Sequence<Dafny.Rune>.UnicodeFromString("dafny_int_to_rational"))).Apply1(r);
                   RAST._IExpr _out45;
                   Defs._IOwnership _out46;
                   (this).FromOwned(r, expectedOwnership, out _out45, out _out46);
@@ -4127,14 +4123,12 @@ namespace DCOMP {
               DAST._IPrimitive _h73 = _11.dtor_Primitive_a0;
               if (_h73.is_Int) {
                 {
-                  RAST._IExpr _13_borrowed;
-                  Defs._IOwnership _14_borrowedOwnership;
                   RAST._IExpr _out47;
                   Defs._IOwnership _out48;
                   (this).FromOwnership(r, exprOwnership, Defs.Ownership.create_OwnershipBorrowed(), out _out47, out _out48);
-                  _13_borrowed = _out47;
-                  _14_borrowedOwnership = _out48;
-                  r = (((RAST.__default.dafny__runtime).AsExpr()).FSel(Dafny.Sequence<Dafny.Rune>.UnicodeFromString("dafny_rational_to_int"))).Apply1(_13_borrowed);
+                  r = _out47;
+                  resultingOwnership = _out48;
+                  r = (((RAST.__default.dafny__runtime).AsExpr()).FSel(Dafny.Sequence<Dafny.Rune>.UnicodeFromString("dafny_rational_to_int"))).Apply1(r);
                   RAST._IExpr _out49;
                   Defs._IOwnership _out50;
                   (this).FromOwned(r, expectedOwnership, out _out49, out _out50);
@@ -4157,20 +4151,20 @@ namespace DCOMP {
               DAST._IPrimitive _h75 = _12.dtor_Primitive_a0;
               if (_h75.is_Char) {
                 {
-                  RAST._IType _15_rhsType;
+                  RAST._IType _9_rhsType;
                   RAST._IType _out51;
                   _out51 = (this).GenType(toTpe, Defs.GenTypeContext.@default());
-                  _15_rhsType = _out51;
-                  RAST._IType _16_uType;
+                  _9_rhsType = _out51;
+                  RAST._IType _10_uType;
                   if (((this).charType).is_UTF32) {
-                    _16_uType = RAST.Type.create_U32();
+                    _10_uType = RAST.Type.create_U32();
                   } else {
-                    _16_uType = RAST.Type.create_U16();
+                    _10_uType = RAST.Type.create_U16();
                   }
                   if (!object.Equals(exprOwnership, Defs.Ownership.create_OwnershipOwned())) {
                     r = (r).Clone();
                   }
-                  r = ((((RAST.Expr.create_TraitCast(_16_uType, ((RAST.__default.dafny__runtime).MSel(Dafny.Sequence<Dafny.Rune>.UnicodeFromString("NumCast"))).AsType())).FSel(Dafny.Sequence<Dafny.Rune>.UnicodeFromString("from"))).Apply1(r)).Sel(Dafny.Sequence<Dafny.Rune>.UnicodeFromString("unwrap"))).Apply0();
+                  r = ((((RAST.Expr.create_TraitCast(_10_uType, ((RAST.__default.dafny__runtime).MSel(Dafny.Sequence<Dafny.Rune>.UnicodeFromString("NumCast"))).AsType())).FSel(Dafny.Sequence<Dafny.Rune>.UnicodeFromString("from"))).Apply1(r)).Sel(Dafny.Sequence<Dafny.Rune>.UnicodeFromString("unwrap"))).Apply0();
                   if (((this).charType).is_UTF32) {
                     r = ((((RAST.Expr.create_Identifier(Dafny.Sequence<Dafny.Rune>.UnicodeFromString("char"))).FSel(Dafny.Sequence<Dafny.Rune>.UnicodeFromString("from_u32"))).Apply1(r)).Sel(Dafny.Sequence<Dafny.Rune>.UnicodeFromString("unwrap"))).Apply0();
                   }
@@ -4197,10 +4191,10 @@ namespace DCOMP {
               DAST._IPrimitive _h77 = _13.dtor_Primitive_a0;
               if (_h77.is_Int) {
                 {
-                  RAST._IType _17_rhsType;
+                  RAST._IType _11_rhsType;
                   RAST._IType _out54;
                   _out54 = (this).GenType(fromTpe, Defs.GenTypeContext.@default());
-                  _17_rhsType = _out54;
+                  _11_rhsType = _out54;
                   r = (((RAST.__default.dafny__runtime).MSel(Dafny.Sequence<Dafny.Rune>.UnicodeFromString("int!"))).AsExpr()).Apply1((r).Sel(Dafny.Sequence<Dafny.Rune>.UnicodeFromString("0")));
                   RAST._IExpr _out55;
                   Defs._IOwnership _out56;
