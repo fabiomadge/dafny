@@ -209,3 +209,29 @@ func TestCardinalityOverflow(t *testing.T) {
 
 	SeqOfBytes(a).Cardinality()
 }
+
+func TestEuclideanInt8(t *testing.T) {
+	for x := -128; x <= 127; x++ {
+		for y := -128; y <= 127; y++ {
+			if y == 0 {
+				continue
+			}
+			a := y
+			if a < 0 {
+				a = -a
+			}
+			r := x % a
+			if r < 0 {
+				r += a
+			}
+			if got := ModInt8(int8(x), int8(y)); int(got) != r {
+				t.Errorf("ModInt8(%d, %d) = %d, want %d", x, y, got, r)
+			}
+			if q := (x - r) / y; q <= 127 {
+				if got := DivInt8(int8(x), int8(y)); int(got) != q {
+					t.Errorf("DivInt8(%d, %d) = %d, want %d", x, y, got, q)
+				}
+			}
+		}
+	}
+}
