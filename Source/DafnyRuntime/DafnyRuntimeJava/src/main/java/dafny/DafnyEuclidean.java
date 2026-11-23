@@ -10,9 +10,6 @@ public class DafnyEuclidean {
     // quotient >= 0 if sign(a) = sign(b) else quotient <= 0
     // remainder is always positive
     // a = quotient*b + remainder
-    // there are no max values for these operations, but casting to unsigned is required if b is the MIN_VALUE of a
-    // given type because there will be overflow. Since this is division, the return value for all methods will be
-    // at a maximum the input value a, which is required to be well defined
 
     // pre: b != 0
     // post: quotient == a/b, as defined by Euclidean Division (http://en.wikipedia.org/wiki/Modulo_operation)
@@ -117,56 +114,20 @@ public class DafnyEuclidean {
 
     public static int EuclideanModulus(int a, int b) {
         assert b != 0 : "Precondition Failure";
-        if (0 <= a) {
-            // +a: a % b'
-            if (b == Integer.MIN_VALUE) return Integer.remainderUnsigned(a, b);
-            else if (b < 0) return a % -b;
-            else return a % b;
-        } else {
-            // c = ((-a) % b')
-            // -a: b' - c if c > 0
-            // -a: 0 if c == 0
-            if (a == Integer.MIN_VALUE || b == Integer.MIN_VALUE) {
-                if (a == b) return 0;
-                else if (b == Integer.MIN_VALUE) {
-                    return b - Integer.remainderUnsigned(-a, b);
-                } else {
-                    int bp = b < 0 ? -b : b;
-                    return bp - Integer.remainderUnsigned(a, bp);
-                }
-            } else {
-                int bp = b < 0 ? -b : b;
-                int c = ((-a) % bp);
-                return c == 0 ? c : bp - c;
-            }
+        int c = a % b;
+        if (c < 0) {
+            c = b < 0 ? c - b : c + b;
         }
+        return c;
     }
 
     public static long EuclideanModulus(long a, long b) {
         assert b != 0 : "Precondition Failure";
-        if (0 <= a) {
-            // +a: a % b'
-            if (b == Long.MIN_VALUE) return Long.remainderUnsigned(a, b);
-            else if (b < 0) return a % -b;
-            else return a % b;
-        } else {
-            // c = ((-a) % b')
-            // -a: b' - c if c > 0
-            // -a: 0 if c == 0
-            if (a == Long.MIN_VALUE || b == Long.MIN_VALUE) {
-                if (a == b) return 0;
-                else if (b == Long.MIN_VALUE) {
-                    return b - Long.remainderUnsigned(-a, b);
-                } else {
-                    long bp = b < 0 ? -b : b;
-                    return bp - Long.remainderUnsigned(a, bp);
-                }
-            } else {
-                long bp = b < 0 ? -b : b;
-                long c = ((-a) % bp);
-                return c == 0 ? c : bp - c;
-            }
+        long c = a % b;
+        if (c < 0) {
+            c = b < 0 ? c - b : c + b;
         }
+        return c;
     }
 
     public static BigInteger EuclideanModulus(BigInteger a, BigInteger b) {

@@ -3365,87 +3365,67 @@ func LrotUint64(x uint64, n Int, w uint) uint64 {
 
 // ModInt finds Euclidean remainder of the given ints
 func ModInt(x int, y int) int {
-	if y < 0 {
-		y = -y
-	}
-	if x >= 0 {
-		return x % y
-	} else {
-		z := (-x) % y
-		if z == 0 {
-			return 0
+	z := x % y
+	if z < 0 {
+		if y < 0 {
+			z -= y
 		} else {
-			return y - z
+			z += y
 		}
 	}
+	return z
 }
 
 // ModInt8 finds Euclidean remainder of the given int8s
 func ModInt8(x int8, y int8) int8 {
-	if y < 0 {
-		y = -y
-	}
-	if x >= 0 {
-		return x % y
-	} else {
-		z := (-x) % y
-		if z == 0 {
-			return 0
+	z := x % y
+	if z < 0 {
+		if y < 0 {
+			z -= y
 		} else {
-			return y - z
+			z += y
 		}
 	}
+	return z
 }
 
 // ModInt16 finds Euclidean remainder of the given int16s
 func ModInt16(x int16, y int16) int16 {
-	if y < 0 {
-		y = -y
-	}
-	if x >= 0 {
-		return x % y
-	} else {
-		z := (-x) % y
-		if z == 0 {
-			return 0
+	z := x % y
+	if z < 0 {
+		if y < 0 {
+			z -= y
 		} else {
-			return y - z
+			z += y
 		}
 	}
+	return z
 }
 
 // ModInt32 finds Euclidean remainder of the given int32s
 func ModInt32(x int32, y int32) int32 {
-	if y < 0 {
-		y = -y
-	}
-	if x >= 0 {
-		return x % y
-	} else {
-		z := (-x) % y
-		if z == 0 {
-			return 0
+	z := x % y
+	if z < 0 {
+		if y < 0 {
+			z -= y
 		} else {
-			return y - z
+			z += y
 		}
 	}
+	return z
 }
 
 // ModInt64 finds Euclidean remainder of the given int64s
 func ModInt64(x int64, y int64) int64 {
-	if y < 0 {
-		y = -y
-	}
-	if x >= 0 {
-		return x % y
-	} else {
-		z := (-x) % y
-		if z == 0 {
-			return 0
+	z := x % y
+	if z < 0 {
+		if y < 0 {
+			z -= y
 		} else {
-			return y - z
+			z += y
 		}
 	}
+	return z
 }
 
 // RrotUint performs right rotation on the low w bits of an int

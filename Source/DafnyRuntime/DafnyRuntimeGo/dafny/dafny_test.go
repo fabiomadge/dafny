@@ -1,6 +1,9 @@
 package dafny
 
-import "testing"
+import (
+	"math/big"
+	"testing"
+)
 
 func TestArraySequence(t *testing.T) {
 	arrSeq := MakeArraySequence()
@@ -208,4 +211,23 @@ func TestCardinalityOverflow(t *testing.T) {
 	}()
 
 	SeqOfBytes(a).Cardinality()
+}
+
+func TestEuclideanInt8(t *testing.T) {
+	for x := int64(-128); x <= 127; x++ {
+		for y := int64(-128); y <= 127; y++ {
+			if y == 0 {
+				continue
+			}
+			q, r := new(big.Int).DivMod(big.NewInt(x), big.NewInt(y), new(big.Int))
+			if got := ModInt8(int8(x), int8(y)); int64(got) != r.Int64() {
+				t.Errorf("ModInt8(%d, %d) = %d, want %d", x, y, got, r)
+			}
+			if q.Int64() <= 127 {
+				if got := DivInt8(int8(x), int8(y)); int64(got) != q.Int64() {
+					t.Errorf("DivInt8(%d, %d) = %d, want %d", x, y, got, q)
+				}
+			}
+		}
+	}
 }
