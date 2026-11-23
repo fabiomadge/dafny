@@ -1,1 +1,1 @@
-Fix compiled `while` loops whose guard contains a `let` or `match` expression reading local variables: the guard no longer reads copies of those variables taken once before the loop. The same applies to the guards of `while`-`case` loops.
+Fix compiled `while` and `while`-`case` loops whose guard contains a `let` expression (or, in Java, a `match` expression): the guard no longer reads the values that variables had before the loop.

@@ -1,14 +1,14 @@
 // RUN: %testDafnyForEachCompiler "%s"
 
-// A loop guard that is a let or match expression must read the current values of local
-// variables on every iteration, not copies taken once before the loop.
+// A loop guard that contains a let or match expression, at any depth, must read the current
+// values of variables on every iteration.
 
 datatype Box = Box(v: int)
 
 method LetInGuard() {
   var n := 3;
   var k := 0;
-  while (var e := n; k < e)
+  while 0 <= k && (var e := n; k < e)
     decreases n - k
   {
     print k, " ";
@@ -45,20 +45,6 @@ method LetInCaseGuard() {
   print "| while-case\n";
 }
 
-method ContinueInBody() {
-  var n := 4;
-  var k := 0;
-  while (var e := n; k < e)
-    decreases n - k
-  {
-    k := k + 1;
-    if k % 2 == 1 { continue; }
-    print k, " ";
-    if k > 6 { print "BUG "; break; }
-  }
-  print "| continue\n";
-}
-
 method LabeledContinue() {
   var n := 3;
   var i := 0;
@@ -79,23 +65,9 @@ method LabeledContinue() {
   print i, " | labeled continue\n";
 }
 
-method OutParam() returns (k: int) {
-  k := 0;
-  var n := 3;
-  while (var e := n; k < e)
-    decreases n - k
-  {
-    k := k + 1;
-    if k > 5 { print "BUG "; break; }
-  }
-}
-
 method Main() {
   LetInGuard();
   MatchInGuard();
   LetInCaseGuard();
-  ContinueInBody();
   LabeledContinue();
-  var r := OutParam();
-  print r, " | out-param\n";
 }

@@ -35,4 +35,16 @@ method Main() {
     acc := acc + values[i];
   }
   print acc, "\n";
+
+  // A loop with a let expression in its guard and a `continue` in its body must still terminate.
+  var k := 0;
+  while (var e := 3; k < e)
+    decreases 3 - k
+  {
+    k := k + 1;
+    if k == 1 {
+      continue;
+    }
+  }
+  print k, "\n";
 }
