@@ -64,7 +64,7 @@ public class JavaScriptBackend : ExecutableBackend {
     };
 
     try {
-      Process nodeProcess = Process.Start(psi);
+      using Process nodeProcess = Process.Start(psi);
       foreach (var filename in otherFileNames) {
         WriteFromFile(filename, nodeProcess.StandardInput);
       }
@@ -77,9 +77,11 @@ public class JavaScriptBackend : ExecutableBackend {
       await nodeProcess.StandardInput.FlushAsync();
       nodeProcess.StandardInput.Close();
       // Fixes a problem of Node on Windows, where Node does not prints to the parent console its standard outputs.
-      await PassthroughBuffer(nodeProcess.StandardError, Options.ErrorWriter);
+      using var standardError = nodeProcess.StandardError;
+      using var standardOutput = nodeProcess.StandardOutput;
+      await PassthroughBuffer(standardError, Options.ErrorWriter);
       await using var tempOutputWriter = Options.OutputWriter.StatusWriter();
-      await PassthroughBuffer(nodeProcess.StandardOutput, tempOutputWriter);
+      await PassthroughBuffer(standardOutput, tempOutputWriter);
       await nodeProcess.WaitForExitAsync();
 #pragma warning disable VSTHRD00
       return nodeProcess.ExitCode == 0;
