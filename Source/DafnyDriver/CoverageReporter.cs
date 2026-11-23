@@ -96,7 +96,7 @@ public class CoverageReporter {
           continue;
         }
         var suffix = indexFileMatch.Groups[1].Value;
-        var index = await new StreamReader(pathToIndexFile).ReadToEndAsync();
+        var index = await File.ReadAllTextAsync(pathToIndexFile);
         var name = TitleRegexInverse.Match(index)?.Groups?[1]?.Value ?? "";
         var units = UnitsRegexInverse.Match(index)?.Groups?[1]?.Value ?? "";
         reports.Add(ParseCoverageReport(reportDir, $"{name} ({Path.GetFileName(reportDir)})", units, suffix));
@@ -127,7 +127,7 @@ public class CoverageReporter {
   private static CoverageReport ParseCoverageReport(string reportDir, string name, string units, string suffix) {
     var report = new CoverageReport(name: name, units: units, suffix: suffix, null);
     foreach (string fileName in Directory.EnumerateFiles(reportDir, $"*{suffix}.html", SearchOption.AllDirectories)) {
-      var source = new StreamReader(fileName).ReadToEnd();
+      var source = File.ReadAllText(fileName);
       var uriMatch = UriRegexInversed.Match(source);
       if (!uriMatch.Success) {
         continue;
@@ -228,7 +228,7 @@ public class CoverageReporter {
   /// </summary>
   private void CreateIndexFile(CoverageReport report, Dictionary<Uri, string> sourceFileToCoverageReportFile, string baseDirectory, string linksToOtherReports) {
     var assembly = System.Reflection.Assembly.GetCallingAssembly();
-    var templateStream = assembly.GetManifestResourceStream(CoverageReportIndexTemplatePath);
+    using var templateStream = assembly.GetManifestResourceStream(CoverageReportIndexTemplatePath);
     if (templateStream is null) {
       reporter.Warning(MessageSource.Documentation, ErrorRegistry.NoneId, Token.NoToken,
         "Embedded HTML template for coverage report index file not found. Index file will not be created.");
@@ -325,7 +325,7 @@ public class CoverageReporter {
       return;
     }
     foreach (var styleFile in styleFiles) {
-      var styleFileStream = assembly.GetManifestResourceStream(styleFile);
+      using var styleFileStream = assembly.GetManifestResourceStream(styleFile);
       if (styleFileStream == null) {
         reporter.Warning(MessageSource.Documentation, ErrorRegistry.NoneId, Token.NoToken,
           $"Embedded coverage report style file {styleFile} not found.");
@@ -340,7 +340,8 @@ public class CoverageReporter {
     var files = await DafnyFile.CreateAndValidate(OnDiskFileSystem.Instance,
         new ConsoleErrorReporter(options), options, uri, Token.Cli).ToListAsync();
     var dafnyFile = files[0];
-    var source = await dafnyFile.GetContent().Reader.ReadToEndAsync();
+    using var sourceReader = dafnyFile.GetContent().Reader;
+    var source = await sourceReader.ReadToEndAsync();
     var lines = source.Split([Environment.NewLine], StringSplitOptions.None);
     var characterLabels = new CoverageLabel[lines.Length][];
     for (int i = 0; i < lines.Length; i++) {
@@ -389,7 +390,7 @@ public class CoverageReporter {
     labeledCodeBuilder.Append(CloseHtmlTag());
 
     var assembly = System.Reflection.Assembly.GetAssembly(typeof(CoverageReporter))!;
-    var templateStream = assembly.GetManifestResourceStream(CoverageReportTemplatePath);
+    using var templateStream = assembly.GetManifestResourceStream(CoverageReportTemplatePath);
     var labeledCode = labeledCodeBuilder.ToString();
     if (templateStream is null) {
       reporter.Warning(MessageSource.Documentation, ErrorRegistry.NoneId, Token.NoToken,
