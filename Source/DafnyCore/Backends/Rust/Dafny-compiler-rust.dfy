@@ -3912,6 +3912,14 @@ module {:extern "DCOMP"} DafnyToRustCompiler {
           readIdents := recIdents;
           return;
         }
+        case UnOp(Floor, e, format) => {
+          var recursiveGen, _, recIdents := GenExpr(e, selfIdent, env, OwnershipBorrowed);
+
+          r := R.dafny_runtime.AsExpr().FSel("dafny_rational_to_int").Apply1(recursiveGen);
+          r, resultingOwnership := FromOwned(r, expectedOwnership);
+          readIdents := recIdents;
+          return;
+        }
         case BinOp(_, _, _, _) =>
           r, resultingOwnership, readIdents :=
             GenExprBinary(e, selfIdent, env, expectedOwnership);

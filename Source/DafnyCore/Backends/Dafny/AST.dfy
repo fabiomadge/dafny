@@ -548,7 +548,7 @@ module {:extern "DAST"} DAST {
     | ConstantField // Access a class constant field after initialization, or a datatype constant field
     | InternalClassConstantFieldOrDatatypeDestructor // Access a class internal field before initialization, or a datatype destructor
     | ClassMutableField
-  datatype UnaryOp = Not | BitwiseNot | Cardinality
+  datatype UnaryOp = Not | BitwiseNot | Cardinality | Floor
 
   datatype Literal =
     | BoolLiteral(bool)
