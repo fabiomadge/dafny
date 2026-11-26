@@ -1,0 +1,1 @@
+Resource-count totals above `int.MaxValue` no longer make `--log-format text`, `--log-format json` and the IDE throw an `OverflowException`, or make `--performance-stats` and `measure-complexity` report a wrong total.
