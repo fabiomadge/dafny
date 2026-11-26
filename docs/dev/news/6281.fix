@@ -1,0 +1,1 @@
+Verification resource-count totals above `int.MaxValue` no longer throw an `OverflowException` (`--log-format text` and `json`, the IDE) or wrap to a wrong value (`--performance-stats`, `measure-complexity`).
