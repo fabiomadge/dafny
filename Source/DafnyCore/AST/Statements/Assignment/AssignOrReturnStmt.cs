@@ -285,7 +285,7 @@ public class AssignOrReturnStmt : ConcreteAssignStatement, ICloneable<AssignOrRe
     // " temp, ... := MethodOrExpression, ...;"
     var up = new AssignStatement(Origin, lhss2, rhss2);
     if (expectExtract) {
-      up.OriginalInitialLhs = Lhss.Count == 0 ? null : Lhss[0];
+      up.OriginalInitialLhs = Lhss.Count == 0 ? null : Lhss[0].Resolved;
     }
     ResolvedStatements.Add(up);
 

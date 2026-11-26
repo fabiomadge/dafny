@@ -147,7 +147,6 @@ public partial class BoogieGenerator {
       var lhs = lhss[i];
       Contract.Assume(!(lhs is ConcreteSyntaxExpression));
       if (originalInitialLhs != null) {
-        // TODO - check RHS values?
         AssertDistinctness(lhs, originalInitialLhs, builder, etran);
       }
       for (int j = 0; j < i; j++) {
@@ -220,7 +219,7 @@ public partial class BoogieGenerator {
       Contract.Assume(!(lhs is ConcreteSyntaxExpression));
       if (checkDistinctness) {
         if (originalInitialLhs != null) {
-          AssertDistinctness(lhs, originalInitialLhs.Resolved, builder, etran);
+          AssertDistinctness(lhs, originalInitialLhs, builder, etran);
         }
         for (int j = 0; j < i; j++) {
           AssertDistinctness(lhs, lhss[j], builder, etran);
