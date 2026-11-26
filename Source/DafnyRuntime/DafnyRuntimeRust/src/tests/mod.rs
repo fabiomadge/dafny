@@ -4,7 +4,6 @@
 #[cfg(test)]
 mod tests {
     use crate::*;
-    #[cfg(feature = "sync")]
     use std::thread;
 
     #[test]
@@ -73,7 +72,6 @@ mod tests {
         }
     }
 
-    // This one is still the bad kind of recursive
     #[test]
     fn test_sequence_right() {
         let a: Sequence<i32> = seq![1, 2];
@@ -98,7 +96,6 @@ mod tests {
         );
     }
 
-    // This one is successfully tail recursive
     #[test]
     fn test_sequence_left() {
         let a = seq![1, 2];
@@ -1320,5 +1317,79 @@ mod tests {
         // Wait for thread to finish
         assert_eq!(handle.join().unwrap(), result as i32);
         assert_eq!(result as i32, obj.as_ref() as *const ClassWrapper<i32> as i32);
+    }
+
+    fn left_deep(n: i32) -> Sequence<i32> {
+        (1..n).fold(seq![0], |s, i| s.concat(&seq![i]))
+    }
+
+    fn right_deep(n: i32) -> Sequence<i32> {
+        (0..n - 1)
+            .rev()
+            .fold(seq![n - 1], |s, i| seq![i].concat(&s))
+    }
+
+    #[test]
+    fn test_sequence_deep_to_array_and_drop() {
+        // Far less stack than recursing over a 100,000-deep tree needs.
+        thread::Builder::new()
+            .stack_size(64 * 1024)
+            .spawn(|| {
+                for build in [left_deep as fn(i32) -> Sequence<i32>, right_deep] {
+                    drop(build(100_000));
+                    assert!(build(100_000).to_array().iter().copied().eq(0..100_000));
+                }
+            })
+            .unwrap()
+            .join()
+            .unwrap();
+    }
+
+    #[test]
+    fn test_sequence_released_after_to_array() {
+        let s = seq![1].concat(&seq![2]);
+        let clone = s.clone();
+        s.to_array();
+        let Sequence::ConcatSequence { left, .. } = &clone else {
+            unreachable!()
+        };
+        #[cfg(not(feature = "sync"))]
+        assert_eq!(left.as_ref().borrow().cardinality_usize(), 0);
+        #[cfg(feature = "sync")]
+        assert_eq!(left.lock().unwrap().cardinality_usize(), 0);
+        // Unlike to_array, dafny_sequence_to_vec leaves checking the root's cache to the traversal.
+        assert_eq!(
+            dafny_runtime_conversions::dafny_sequence_to_vec(&clone, |x| *x),
+            vec![1, 2]
+        );
+        assert_eq!(*clone.concat(&seq![3]).to_array(), vec![1, 2, 3]);
+    }
+
+    #[test]
+    fn test_sequence_drop_keeps_shared_subtrees() {
+        let shared = left_deep(1_000);
+        drop(shared.concat(&seq![1_000]));
+        assert!(shared.to_array().iter().copied().eq(0..1_000));
+    }
+
+    #[cfg(feature = "sync")]
+    #[test]
+    fn test_sequence_concurrent_to_array() {
+        // All threads materialize the same sequences in the same order, so that they often
+        // reach one while another thread is publishing it.
+        let sequences: Rc<Vec<_>> = Rc::new((0..1_000).map(|_| left_deep(20)).collect());
+        let threads: Vec<_> = (0..4)
+            .map(|_| {
+                let sequences = Rc::clone(&sequences);
+                thread::spawn(move || {
+                    sequences
+                        .iter()
+                        .all(|s| s.to_array().iter().copied().eq(0..20))
+                })
+            })
+            .collect();
+        for thread in threads {
+            assert!(thread.join().unwrap());
+        }
     }
 }
