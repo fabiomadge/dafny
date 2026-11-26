@@ -232,7 +232,7 @@ pub mod dafny_runtime_conversions {
         T: DafnyType,
     {
         let mut array: Vec<T> = Vec::with_capacity(s.cardinality_usize());
-        DafnySequence::<T>::append_recursive(&mut array, s);
+        DafnySequence::<T>::append_to_vec(&mut array, s);
         array.iter().map(elem_converter).collect()
     }
 
@@ -565,11 +565,17 @@ where
                         return Rc::clone(cache);
                     }
                 }
-                // Let's create an array of size length and fill it up recursively
                 // We don't materialize nested arrays because most of the time they are forgotten
                 let mut array: Vec<T> = Vec::with_capacity(*length);
-                Sequence::<T>::append_recursive(&mut array, self);
+                Sequence::<T>::append_to_vec(&mut array, self);
                 let result = Rc::new(array);
+                #[cfg(not(feature = "sync"))]
+                let mut guard = cache.borrow_mut();
+                #[cfg(feature = "sync")]
+                let mut guard = cache.as_ref().lock().unwrap();
+                *guard = Some(result.clone());
+                // Cleared after publishing and under the cache lock, which append_to_vec holds
+                // while reading the children.
                 #[cfg(not(feature = "sync"))]
                 {
                     *left.borrow_mut() = seq!();
@@ -582,108 +588,62 @@ where
                     *left_guard = seq!();
                     *right_guard = seq!();
                 }
-                #[cfg(not(feature = "sync"))]
-                let mut guard = cache.borrow_mut();
-                #[cfg(feature = "sync")]
-                let mut guard = cache.as_ref().lock().unwrap();
-                *guard = Some(result.clone());
                 result
             }
         }
     }
 
-    pub fn append_simple(array: &mut Vec<T>, this: &Sequence<T>) -> bool {
-        match this {
-            Sequence::ArraySequence { values, .. } => {
-                for value in values.iter() {
-                    array.push(value.clone());
-                }
-                true
-            }
-            _ => false,
-        }
-    }
-
-    pub fn append_recursive(array: &mut Vec<T>, this: &Sequence<T>) {
-        let mut this_ptr: *const Sequence<T> = this;
-        loop {
-            // SAFETY: The invariant is that this_ptr is always a pointer to a sub-sequence of the original `this`parameter when following the field name 'right', which are allocated in this scope
-            match unsafe { &*this_ptr } {
-                Sequence::ArraySequence { values, .. } => {
-                    for value in values.iter() {
-                        array.push(value.clone());
-                    }
-                    return;
-                }
+    fn append_to_vec(array: &mut Vec<T>, this: &Sequence<T>) {
+        let mut pending = vec![this.clone()];
+        while let Some(next) = pending.pop() {
+            match &next {
+                Sequence::ArraySequence { values } => array.extend_from_slice(values),
                 Sequence::ConcatSequence {
-                    cache: boxed,
-                    left,
-                    right,
-                    ..
-                } =>
-                // Let's create an array of size length and fill it up recursively
-                {
-                    #[cfg(feature = "sync")]
-                    let into_boxed = boxed.as_ref();
-                    #[cfg(feature = "sync")]
-                    let into_boxed_borrowed = into_boxed;
-                    #[cfg(feature = "sync")]
-                    let guard = into_boxed_borrowed.lock().unwrap();
-                    #[cfg(feature = "sync")]
-                    let borrowed: Option<&Rc<Vec<T>>> = guard.as_ref();
-
+                    cache, left, right, ..
+                } => {
+                    // Locked together because to_array clears the children under the cache lock.
                     #[cfg(not(feature = "sync"))]
-                    let into_boxed = boxed.as_ref().clone();
-                    #[cfg(not(feature = "sync"))]
-                    let into_boxed_borrowed = into_boxed.borrow();
-                    #[cfg(not(feature = "sync"))]
-                    let borrowed: Option<&Rc<Vec<T>>> = into_boxed_borrowed.as_ref();
-                    if let Some(values) = borrowed.as_ref() {
-                        for value in values.iter() {
-                            array.push(value.clone());
-                        }
-                        return;
-                    }
-                    #[cfg(not(feature = "sync"))]
-                    {
-                        let left_empty = left.as_ref().borrow().cardinality_usize() == 0;
-                        let right_empty = right.as_ref().borrow().cardinality_usize() == 0;
-                        if left_empty && right_empty {
-                            return;
-                        } else if left_empty {
-                            this_ptr = right.as_ref().as_ptr();
-                        } else if right_empty {
-                            this_ptr = left.as_ref().as_ptr();
-                        } else {
-                            if !Sequence::<T>::append_simple(array, &left.as_ref().borrow()) {
-                                Sequence::<T>::append_recursive(array, &left.as_ref().borrow());
-                            }
-                            this_ptr = right.as_ref().as_ptr();
-                        }
-                    }
+                    let (cache, left, right) = (
+                        cache.as_ref().borrow(),
+                        left.as_ref().borrow(),
+                        right.as_ref().borrow(),
+                    );
                     #[cfg(feature = "sync")]
-                    {
-                        let left_guard = left.as_ref().lock().unwrap();
-                        let right_guard = right.as_ref().lock().unwrap();
-                        let left_empty: bool = left_guard.cardinality_usize() == 0;
-                        let right_empty: bool = right_guard.cardinality_usize() == 0;
-                        if left_empty && right_empty {
-                            return;
-                        } else if left_empty {
-                            this_ptr = right_guard.deref();
-                        } else if right_empty {
-                            this_ptr = left_guard.deref();
-                        } else {
-                            if !Sequence::<T>::append_simple(array, &left_guard) {
-                                Sequence::<T>::append_recursive(array, &left_guard);
-                            }
-                            this_ptr = right_guard.deref();
+                    let (cache, left, right) = (
+                        cache.lock().unwrap(),
+                        left.lock().unwrap(),
+                        right.lock().unwrap(),
+                    );
+                    match cache.as_ref() {
+                        Some(values) => array.extend_from_slice(values),
+                        None => {
+                            pending.push((*right).clone());
+                            pending.push((*left).clone());
                         }
                     }
                 }
             }
         }
     }
+
+    fn take_unshared_children(&mut self, pending: &mut Vec<Sequence<T>>) {
+        if let Sequence::ConcatSequence { left, right, .. } = self {
+            for child in [left, right] {
+                if let Some(child) = Rc::get_mut(child) {
+                    #[cfg(not(feature = "sync"))]
+                    let child = child.get_mut();
+                    #[cfg(feature = "sync")]
+                    let child = child
+                        .get_mut()
+                        .unwrap_or_else(|poisoned| poisoned.into_inner());
+                    if matches!(child, Sequence::ConcatSequence { .. }) {
+                        pending.push(mem::take(child));
+                    }
+                }
+            }
+        }
+    }
+
     /// Returns the cardinality or length of this [`Sequence<T>`].
     pub fn cardinality_usize(&self) -> SizeT {
         match self {
@@ -734,6 +694,17 @@ where
         SequenceIter {
             array: self.to_array(),
             index: 0,
+        }
+    }
+}
+
+// The derived drop glue would recurse once per level of a concatenation tree.
+impl<T: DafnyType> Drop for Sequence<T> {
+    fn drop(&mut self) {
+        let mut pending = Vec::new();
+        self.take_unshared_children(&mut pending);
+        while let Some(mut next) = pending.pop() {
+            next.take_unshared_children(&mut pending);
         }
     }
 }
