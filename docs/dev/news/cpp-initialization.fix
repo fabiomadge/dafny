@@ -1,0 +1,1 @@
+In the C++ backend, a new array holds its element type's default value, such as a subset type's witness, and an instance const's initializer sees the consts that the constructor assigns.
