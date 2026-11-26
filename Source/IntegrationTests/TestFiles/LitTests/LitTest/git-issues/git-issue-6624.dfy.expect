@@ -1,0 +1,5 @@
+git-issue-6624.dfy(21,5): Error: left-hand sides x and x could not be proved to refer to different locations
+git-issue-6624.dfy(32,11): Error: left-hand sides e.f and c.f could not be proved to refer to different locations
+git-issue-6624.dfy(36,11): Error: left-hand sides e.f and c.f could not be proved to refer to different locations
+
+Dafny program verifier finished with 1 verified, 3 errors
