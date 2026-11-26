@@ -1011,7 +1011,7 @@ namespace Microsoft.Dafny {
       // " temp, ... := MethodOrExpression, ...;"
       var up = new AssignStatement(s.Origin, lhss2, rhss2);
       if (expectExtract) {
-        up.OriginalInitialLhs = s.Lhss.Count == 0 ? null : s.Lhss[0];
+        up.OriginalInitialLhs = s.Lhss.Count == 0 ? null : s.Lhss[0].Resolved;
       }
       s.ResolvedStatements.Add(up);
 
