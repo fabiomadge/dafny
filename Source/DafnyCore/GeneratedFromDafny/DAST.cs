@@ -9673,6 +9673,7 @@ namespace DAST {
     bool is_Not { get; }
     bool is_BitwiseNot { get; }
     bool is_Cardinality { get; }
+    bool is_Floor { get; }
     _IUnaryOp DowncastClone();
   }
   public abstract class UnaryOp : _IUnaryOp {
@@ -9695,14 +9696,19 @@ namespace DAST {
     public static _IUnaryOp create_Cardinality() {
       return new UnaryOp_Cardinality();
     }
+    public static _IUnaryOp create_Floor() {
+      return new UnaryOp_Floor();
+    }
     public bool is_Not { get { return this is UnaryOp_Not; } }
     public bool is_BitwiseNot { get { return this is UnaryOp_BitwiseNot; } }
     public bool is_Cardinality { get { return this is UnaryOp_Cardinality; } }
+    public bool is_Floor { get { return this is UnaryOp_Floor; } }
     public static System.Collections.Generic.IEnumerable<_IUnaryOp> AllSingletonConstructors {
       get {
         yield return UnaryOp.create_Not();
         yield return UnaryOp.create_BitwiseNot();
         yield return UnaryOp.create_Cardinality();
+        yield return UnaryOp.create_Floor();
       }
     }
     public abstract _IUnaryOp DowncastClone();
@@ -9767,6 +9773,27 @@ namespace DAST {
     }
     public override string ToString() {
       string s = "DAST.UnaryOp.Cardinality";
+      return s;
+    }
+  }
+  public class UnaryOp_Floor : UnaryOp {
+    public UnaryOp_Floor() : base() {
+    }
+    public override _IUnaryOp DowncastClone() {
+      if (this is _IUnaryOp dt) { return dt; }
+      return new UnaryOp_Floor();
+    }
+    public override bool Equals(object other) {
+      var oth = other as DAST.UnaryOp_Floor;
+      return oth != null;
+    }
+    public override int GetHashCode() {
+      ulong hash = 5381;
+      hash = ((hash << 5) + hash) + 3;
+      return (int) hash;
+    }
+    public override string ToString() {
+      string s = "DAST.UnaryOp.Floor";
       return s;
     }
   }
