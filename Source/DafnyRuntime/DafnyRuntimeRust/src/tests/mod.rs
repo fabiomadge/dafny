@@ -4,7 +4,6 @@
 #[cfg(test)]
 mod tests {
     use crate::*;
-    #[cfg(feature = "sync")]
     use std::thread;
 
     #[test]
@@ -73,7 +72,6 @@ mod tests {
         }
     }
 
-    // This one is still the bad kind of recursive
     #[test]
     fn test_sequence_right() {
         let a: Sequence<i32> = seq![1, 2];
@@ -98,7 +96,6 @@ mod tests {
         );
     }
 
-    // This one is successfully tail recursive
     #[test]
     fn test_sequence_left() {
         let a = seq![1, 2];
@@ -1320,5 +1317,85 @@ mod tests {
         // Wait for thread to finish
         assert_eq!(handle.join().unwrap(), result as i32);
         assert_eq!(result as i32, obj.as_ref() as *const ClassWrapper<i32> as i32);
+    }
+
+    fn left_deep(n: i32) -> Sequence<i32> {
+        (1..n).fold(seq![0], |s, i| s.concat(&seq![i]))
+    }
+
+    fn right_deep(n: i32) -> Sequence<i32> {
+        (0..n - 1)
+            .rev()
+            .fold(seq![n - 1], |s, i| seq![i].concat(&s))
+    }
+
+    #[test]
+    fn test_sequence_deep_to_array_and_drop() {
+        // Far less stack than recursing over a 100,000-deep tree needs.
+        thread::Builder::new()
+            .stack_size(64 * 1024)
+            .spawn(|| {
+                for build in [left_deep as fn(i32) -> Sequence<i32>, right_deep] {
+                    assert!(build(100_000).to_array().iter().copied().eq(0..100_000));
+                    assert_eq!(build(100_000).cardinality_usize(), 100_000);
+                }
+            })
+            .unwrap()
+            .join()
+            .unwrap();
+    }
+
+    #[test]
+    fn test_sequence_clone_after_to_array() {
+        let s = seq![1].concat(&seq![2]);
+        let clone = s.clone();
+        s.to_array();
+        let Sequence::ConcatSequence { left, .. } = &clone else {
+            unreachable!()
+        };
+        #[cfg(not(feature = "sync"))]
+        assert_eq!(left.as_ref().borrow().cardinality_usize(), 0);
+        #[cfg(feature = "sync")]
+        assert_eq!(left.lock().unwrap().cardinality_usize(), 0);
+        assert_eq!(
+            dafny_runtime_conversions::dafny_sequence_to_vec(&clone, |x| *x),
+            vec![1, 2]
+        );
+    }
+
+    #[test]
+    fn test_sequence_drop_keeps_shared_subtrees() {
+        let shared = left_deep(1_000);
+        let clone = shared.clone();
+        let extended = shared.concat(&seq![1_000]);
+        drop(shared);
+        drop(extended);
+        assert!(clone.to_array().iter().copied().eq(0..1_000));
+    }
+
+    #[cfg(feature = "sync")]
+    #[test]
+    fn test_sequence_concurrent_to_array() {
+        for _ in 0..20 {
+            let s = Rc::new(left_deep(1_000));
+            // Threads use the sequence itself or a clone, and some start while another is
+            // publishing its result.
+            let threads: Vec<_> = (0..8)
+                .map(|i| {
+                    let s = Rc::clone(&s);
+                    thread::spawn(move || {
+                        thread::sleep(std::time::Duration::from_micros(i * 100));
+                        if i % 2 == 0 {
+                            s.to_array()
+                        } else {
+                            (*s).clone().to_array()
+                        }
+                    })
+                })
+                .collect();
+            for thread in threads {
+                assert!(thread.join().unwrap().iter().copied().eq(0..1_000));
+            }
+        }
     }
 }
