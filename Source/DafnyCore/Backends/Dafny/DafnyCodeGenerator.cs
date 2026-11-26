@@ -2193,7 +2193,7 @@ namespace Microsoft.Dafny.Compilers {
       } else if (member is SpecialField { SpecialId: SpecialField.ID.Floor }) {
         obj(new BuilderSyntaxTree<ExprContainer>(objReceiver, this));
         var objExpr = objReceiver.Finish();
-        // real-to-int conversion is a floor
+        // Relies on the Rust runtime flooring real-to-int Convert; `as int` itself requires an integral real
         return new ExprLvalue((DAST.Expression)DAST.Expression.create_Convert(
           objExpr, GenType(objType), GenType(expectedType)), null, this);
       } else if (member is SpecialField sf && sf.SpecialId != SpecialField.ID.UseIdParam) {
