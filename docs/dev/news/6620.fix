@@ -1,0 +1,1 @@
+Rust backend: a sequence built by many concatenations, such as `s := s + [x]` in a long loop, no longer overflows the stack when it is read or dropped. With `--rust-sync`, a sequence that several threads first read at the same time no longer loses elements or crashes.
