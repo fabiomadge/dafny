@@ -1,0 +1,1 @@
+`--log-format text` and `--log-format json` no longer crash with an `OverflowException` when a verification scope's resource counts add up to more than 2,147,483,647.
