@@ -133,7 +133,7 @@ public partial class BoogieGenerator {
 
   private void CheckLhssDistinctness(List<Bpl.Expr> rhs, List<AssignmentRhs> rhsOriginal, List<Expression> lhss,
     BoogieStmtListBuilder builder, ExpressionTranslator etran,
-    Bpl.Expr[] objs, Bpl.Expr[] fields, string[] names, Expression originalInitialLhs = null) {
+    Bpl.Expr[] objs, Bpl.Expr[] fields, string[] names, InitialLhs initialLhs = null) {
     Contract.Requires(rhs != null);
     Contract.Requires(rhsOriginal != null);
     Contract.Requires(lhss != null);
@@ -146,8 +146,8 @@ public partial class BoogieGenerator {
     for (int i = 0; i < lhss.Count; i++) {
       var lhs = lhss[i];
       Contract.Assume(!(lhs is ConcreteSyntaxExpression));
-      if (originalInitialLhs != null) {
-        AssertDistinctness(lhs, originalInitialLhs.Resolved, builder, etran);
+      if (initialLhs != null) {
+        AssertDistinctness(lhs, initialLhs.Lhs, builder, etran, initialLhs.Shown);
       }
       for (int j = 0; j < i; j++) {
         if (rhsOriginal[i] is HavocRhs || rhsOriginal[j] is HavocRhs) {
@@ -165,11 +165,18 @@ public partial class BoogieGenerator {
   /// </summary>
   delegate void AssignToLhs(Bpl.Expr/*?*/ rhs, bool origRhsIsHavoc, BoogieStmtListBuilder builder, ExpressionTranslator etran);
 
-  void AssertDistinctness(Expression lhsa, Expression lhsb, BoogieStmtListBuilder builder, ExpressionTranslator etran) {
-    CheckDistinctness(lhsa, lhsb, etran, out var dExpr, out var bExpr);
+  /// <summary>
+  /// The LHS of a ":-" statement that receives Extract(): the location the desugaring assigns, and the LHS as written,
+  /// which is only shown to the user.
+  /// </summary>
+  public record InitialLhs(Expression Lhs, Expression Shown);
+
+  void AssertDistinctness(Expression lhsa, Expression lhsb, BoogieStmtListBuilder builder, ExpressionTranslator etran,
+    Expression lhsbShown = null) {
+    CheckDistinctness(lhsa, lhsb, etran, out var dExpr, out var bExpr, lhsbShown);
     if (bExpr != null) {
       builder.Add(Assert(GetToken(lhsa), bExpr, new DistinctLHS(Printer.ExprToString(options, lhsa),
-        Printer.ExprToString(options, lhsb), bExpr != Bpl.Expr.False, false, dExpr), builder.Context));
+        Printer.ExprToString(options, lhsbShown ?? lhsb), bExpr != Bpl.Expr.False, false, dExpr), builder.Context));
     }
   }
 
@@ -191,7 +198,7 @@ public partial class BoogieGenerator {
   void ProcessLhss(List<Expression> lhss, bool rhsCanAffectPreviouslyKnownExpressions, bool checkDistinctness,
     BoogieStmtListBuilder builder, Variables locals, ExpressionTranslator etran, Statement stmt,
     out List<AssignToLhs> lhsBuilders, out List<Bpl.IdentifierExpr/*may be null*/> bLhss,
-    out Bpl.Expr[] prevObj, out Bpl.Expr[] prevIndex, out string[] prevNames, Expression originalInitialLhs = null) {
+    out Bpl.Expr[] prevObj, out Bpl.Expr[] prevIndex, out string[] prevNames, InitialLhs initialLhs = null) {
 
     Contract.Requires(Cce.NonNullElements(lhss));
     Contract.Requires(builder != null);
@@ -218,8 +225,8 @@ public partial class BoogieGenerator {
     foreach (var lhs in lhss) {
       Contract.Assume(!(lhs is ConcreteSyntaxExpression));
       if (checkDistinctness) {
-        if (originalInitialLhs != null) {
-          AssertDistinctness(lhs, originalInitialLhs.Resolved, builder, etran);
+        if (initialLhs != null) {
+          AssertDistinctness(lhs, initialLhs.Lhs, builder, etran, initialLhs.Shown);
         }
         for (int j = 0; j < i; j++) {
           AssertDistinctness(lhs, lhss[j], builder, etran);

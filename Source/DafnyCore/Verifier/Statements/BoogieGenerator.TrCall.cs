@@ -14,7 +14,8 @@ namespace Microsoft.Dafny;
 
 public partial class BoogieGenerator {
 
-  void TrCallStmt(CallStmt s, BoogieStmtListBuilder builder, Variables locals, ExpressionTranslator etran, Bpl.IdentifierExpr actualReceiver) {
+  void TrCallStmt(CallStmt s, BoogieStmtListBuilder builder, Variables locals, ExpressionTranslator etran, Bpl.IdentifierExpr actualReceiver,
+    InitialLhs initialLhs = null) {
     Contract.Requires(s != null);
     Contract.Requires(builder != null);
     Contract.Requires(locals != null);
@@ -23,7 +24,7 @@ public partial class BoogieGenerator {
 
     var tySubst = s.MethodSelect.TypeArgumentSubstitutionsWithParents();
     ProcessLhss(s.Lhs, true, true, builder, locals, etran, s, out var lhsBuilders, out var bLhss,
-      out _, out _, out _, s.OriginalInitialLhs);
+      out _, out _, out _, initialLhs);
     Contract.Assert(s.Lhs.Count == lhsBuilders.Count);
     Contract.Assert(s.Lhs.Count == bLhss.Count);
     var lhsTypes = new List<Type>();

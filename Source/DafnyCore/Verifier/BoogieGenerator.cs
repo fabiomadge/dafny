@@ -4257,8 +4257,10 @@ namespace Microsoft.Dafny {
     }
 
     // Returns expressions, which, if false, means that the two LHS expressions are
-    // not distinct; if null then the LHSs are trivially distinct
-    void CheckDistinctness(Expression lhsa, Expression lhsb, ExpressionTranslator etran, out Expression dExpr, out Bpl.Expr bExpr) {
+    // not distinct; if null then the LHSs are trivially distinct. The Dafny expression takes the operands
+    // of lhsb from lhsbShown, if given, which must have the same form as lhsb.
+    void CheckDistinctness(Expression lhsa, Expression lhsb, ExpressionTranslator etran, out Expression dExpr, out Bpl.Expr bExpr,
+      Expression lhsbShown = null) {
       // Helper functions to make the following more concise
       Expression DfyBin(BinaryExpr.Opcode op, Expression e0, Expression e1) =>
         new BinaryExpr(Token.NoToken, op, e0, e1);
@@ -4287,7 +4289,7 @@ namespace Microsoft.Dafny {
               return;
             }
 
-            dExpr = DfyNeq(iea.Obj, ieb.Obj);
+            dExpr = DfyNeq(iea.Obj, (lhsbShown as MemberSelectExpr ?? ieb).Obj);
             bExpr = Bpl.Expr.Neq(etran.TrExpr(iea.Obj), etran.TrExpr(ieb.Obj));
             return;
           }
@@ -4295,25 +4297,26 @@ namespace Microsoft.Dafny {
       }
       {
         if (lhsa is SeqSelectExpr iea && lhsb is SeqSelectExpr ieb) {
-          dExpr = DfyNeq(iea.Seq, ieb.Seq);
+          var shown = lhsbShown as SeqSelectExpr ?? ieb;
+          dExpr = DfyNeq(iea.Seq, shown.Seq);
           bExpr = Bpl.Expr.Neq(etran.TrExpr(iea.Seq), etran.TrExpr(ieb.Seq));
 
           if (iea.E1 == null && ieb.E1 == null) {
-            dExpr = DfyOr(dExpr, DfyNeq(iea.E0, ieb.E0));
+            dExpr = DfyOr(dExpr, DfyNeq(iea.E0, shown.E0));
             bExpr = BplOr(bExpr, Bpl.Expr.Neq(etran.TrExpr(iea.E0), etran.TrExpr(ieb.E0)));
           } else if (iea.E1 == null && ieb.E1 != null) {
-            dExpr = DfyOr(dExpr, DfyLe(ieb.E1, iea.E0));
-            dExpr = DfyOr(dExpr, DfyLt(iea.E0, ieb.E0));
+            dExpr = DfyOr(dExpr, DfyLe(shown.E1, iea.E0));
+            dExpr = DfyOr(dExpr, DfyLt(iea.E0, shown.E0));
             bExpr = BplOr(bExpr, Bpl.Expr.Le(etran.TrExpr(ieb.E1), etran.TrExpr(iea.E0)));
             bExpr = BplOr(bExpr, Bpl.Expr.Lt(etran.TrExpr(iea.E0), etran.TrExpr(ieb.E0)));
           } else if (iea.E1 != null && ieb.E1 == null) {
-            dExpr = DfyOr(dExpr, DfyLe(iea.E1, ieb.E0));
-            dExpr = DfyOr(dExpr, DfyLt(ieb.E0, iea.E0));
+            dExpr = DfyOr(dExpr, DfyLe(iea.E1, shown.E0));
+            dExpr = DfyOr(dExpr, DfyLt(shown.E0, iea.E0));
             bExpr = BplOr(bExpr, Bpl.Expr.Le(etran.TrExpr(iea.E1), etran.TrExpr(ieb.E0)));
             bExpr = BplOr(bExpr, Bpl.Expr.Lt(etran.TrExpr(ieb.E0), etran.TrExpr(iea.E0)));
           } else {
-            dExpr = DfyOr(dExpr, DfyLe(iea.E1, ieb.E0));
-            dExpr = DfyOr(dExpr, DfyLe(ieb.E1, iea.E0));
+            dExpr = DfyOr(dExpr, DfyLe(iea.E1, shown.E0));
+            dExpr = DfyOr(dExpr, DfyLe(shown.E1, iea.E0));
             bExpr = BplOr(bExpr, Bpl.Expr.Le(etran.TrExpr(iea.E1), etran.TrExpr(ieb.E0)));
             bExpr = BplOr(bExpr, Bpl.Expr.Le(etran.TrExpr(ieb.E1), etran.TrExpr(iea.E0)));
           }
@@ -4323,10 +4326,11 @@ namespace Microsoft.Dafny {
       }
       {
         if (lhsa is MultiSelectExpr iea && lhsb is MultiSelectExpr ieb && iea.Indices.Count == ieb.Indices.Count) {
-          dExpr = DfyNeq(iea.Array, ieb.Array);
+          var shown = lhsbShown as MultiSelectExpr ?? ieb;
+          dExpr = DfyNeq(iea.Array, shown.Array);
           bExpr = Bpl.Expr.Neq(etran.TrExpr(iea.Array), etran.TrExpr(ieb.Array));
           for (int i = 0; i < iea.Indices.Count; i++) {
-            dExpr = DfyOr(dExpr, DfyNeq(iea.Indices[i], ieb.Indices[i]));
+            dExpr = DfyOr(dExpr, DfyNeq(iea.Indices[i], shown.Indices[i]));
             bExpr = BplOr(bExpr, Bpl.Expr.Neq(etran.TrExpr(iea.Indices[i]), etran.TrExpr(ieb.Indices[i])));
           }
         }

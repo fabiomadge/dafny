@@ -722,7 +722,6 @@ namespace Microsoft.Dafny {
           // a call statement
           var resolvedLhss = update.Lhss.ConvertAll(ll => ll.Resolved);
           var a = new CallStmt(update.Origin, resolvedLhss, methodCallInfo.Callee, methodCallInfo.ActualParameters, methodCallInfo.Tok.ReportingRange);
-          a.OriginalInitialLhs = update.OriginalInitialLhs;
           update.ResolvedStatements.Add(a);
         }
       }
@@ -1010,9 +1009,6 @@ namespace Microsoft.Dafny {
       }
       // " temp, ... := MethodOrExpression, ...;"
       var up = new AssignStatement(s.Origin, lhss2, rhss2);
-      if (expectExtract) {
-        up.OriginalInitialLhs = s.Lhss.Count == 0 ? null : s.Lhss[0];
-      }
       s.ResolvedStatements.Add(up);
 
       if (s.KeywordToken != null) {

@@ -11,7 +11,6 @@ namespace Microsoft.Dafny;
 public class AssignStatement : ConcreteAssignStatement, ICloneable<AssignStatement>, ICanResolve {
   public List<AssignmentRhs> Rhss;
   public bool CanMutateKnownState;
-  public Expression? OriginalInitialLhs = null;
 
   [FilledInDuringResolution] public List<Statement>? ResolvedStatements;
   public override IEnumerable<Statement> SubStatements => Children.OfType<Statement>();
@@ -178,7 +177,6 @@ public class AssignStatement : ConcreteAssignStatement, ICloneable<AssignStateme
           resolvedLhss.Add(ll.Resolved);
         }
         CallStmt a = new CallStmt(Origin, resolvedLhss, methodCallInfo.Callee, methodCallInfo.ActualParameters, methodCallInfo.Tok.ReportingRange);
-        a.OriginalInitialLhs = OriginalInitialLhs;
         ResolvedStatements.Add(a);
       }
     }

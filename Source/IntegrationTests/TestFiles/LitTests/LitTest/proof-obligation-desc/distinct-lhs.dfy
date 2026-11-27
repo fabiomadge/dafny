@@ -25,3 +25,21 @@ method AssignField(c: C, x: int)
 {
     c.f, c.f := x, x + 1;
 }
+
+datatype Res<T> = Ok(v: T) | Fail {
+  predicate IsFailure() { Fail? }
+  function PropagateFailure<U>(): Res<U> requires IsFailure() { Fail }
+  function Extract(): T requires !IsFailure() { v }
+}
+method Pair() returns (r: Res<int>, y: int)
+method AssignOrReturn(b: bool, c: C, e: C) returns (r: Res<int>)
+    modifies c, e
+{
+  match b
+  case true =>
+    c.f, e.f :- Pair();
+    r := Ok(0);
+  case false =>
+    c.f, e.f :- Ok(1), 2;
+    r := Ok(0);
+}

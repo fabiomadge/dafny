@@ -4,5 +4,9 @@ distinct-lhs.dfy(19,17): Error: when left-hand sides a[j0, j1] and a[i0, i1] cou
  Asserted expression: a != a || j0 != i0 || j1 != i1
 distinct-lhs.dfy(26,11): Error: when left-hand sides c.f and c.f could not be proved to refer to different locations, they must be assigned the same value
  Asserted expression: c != c
+distinct-lhs.dfy(40,11): Error: left-hand sides e.f and c.f could not be proved to refer to different locations
+ Asserted expression: e != c
+distinct-lhs.dfy(43,11): Error: left-hand sides e.f and c.f could not be proved to refer to different locations
+ Asserted expression: e != c
 
-Dafny program verifier finished with 2 verified, 3 errors
+Dafny program verifier finished with 3 verified, 5 errors
