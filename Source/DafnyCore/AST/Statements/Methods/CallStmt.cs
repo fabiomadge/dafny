@@ -25,7 +25,6 @@ public class CallStmt : Statement, ICloneable<CallStmt> {
   public MemberSelectExpr MethodSelect;
   public ActualBindings Bindings;
   public List<Expression> Args => Bindings.Arguments;
-  public Expression OriginalInitialLhs = null;
 
   public Expression Receiver => MethodSelect.Obj;
   public MethodOrConstructor Method => (MethodOrConstructor)MethodSelect.Member;
