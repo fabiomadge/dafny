@@ -15,7 +15,7 @@ public partial class BoogieGenerator {
   public const string FrameVariablePrefix = "$Frame$";
 
   public void TrStmt(Statement stmt, BoogieStmtListBuilder builder,
-    Variables locals, ExpressionTranslator etran) {
+    Variables locals, ExpressionTranslator etran, InitialLhs initialLhs = null) {
 
     stmt.ScopeDepth = builder.Context.ScopeDepth;
 
@@ -253,14 +253,12 @@ public partial class BoogieGenerator {
           break;
         }
       case AssignStatement statement:
-        TrUpdateStmt(builder, locals, etran, statement);
+        TrUpdateStmt(builder, locals, etran, statement, initialLhs);
         break;
-      case AssignOrReturnStmt returnStmt2: {
-          AddComment(builder, returnStmt2, "assign-or-return statement (:-)");
-          AssignOrReturnStmt s = returnStmt2;
-          TrStmtList(s.ResolvedStatements, builder, locals, etran);
-          break;
-        }
+      case AssignOrReturnStmt assignOrReturnStmt:
+        AddComment(builder, assignOrReturnStmt, "assign-or-return statement (:-)");
+        TrAssignOrReturnStmt(assignOrReturnStmt, builder, locals, etran);
+        break;
       case SingleAssignStmt assignStmt: {
           AddComment(builder, assignStmt, "assignment statement");
           SingleAssignStmt s = assignStmt;
@@ -269,7 +267,7 @@ public partial class BoogieGenerator {
         }
       case CallStmt callStmt:
         AddComment(builder, callStmt, "call statement");
-        TrCallStmt(callStmt, builder, locals, etran, null);
+        TrCallStmt(callStmt, builder, locals, etran, null, initialLhs);
         break;
       case DividedBlockStmt blockStmt1: {
           var s = blockStmt1;
@@ -471,12 +469,31 @@ public partial class BoogieGenerator {
     });
   }
 
-  private void TrUpdateStmt(BoogieStmtListBuilder builder, Variables locals, ExpressionTranslator etran, AssignStatement statement) {
+  private void TrAssignOrReturnStmt(AssignOrReturnStmt stmt, BoogieStmtListBuilder builder, Variables locals,
+    ExpressionTranslator etran) {
+    var statements = stmt.ResolvedStatements;
+    // The desugaring ends with "y := temp.Extract()" if there is an Extract. Its LHS reads the receiver and
+    // indices of y from temporaries assigned before the update, which must not assign that location too.
+    if (statements is not [.., AssignStatement { ResolvedStatements: [var extract] }]) {
+      TrStmtList(statements, builder, locals, etran);
+      return;
+    }
+    var initialLhs = new InitialLhs(extract is CallStmt call ? call.Lhs[0] : ((SingleAssignStmt)extract).Lhs,
+      Printer.ExprToString(options, stmt.Lhss[0]));
+    var updateIndex = statements.FindIndex(statement => statement is AssignStatement);
+    var notLast = builder.WithContext(builder.Context with { ReturnPosition = false });
+    TrStmtList(statements.GetRange(0, updateIndex), notLast, locals, etran);
+    TrStmt(statements[updateIndex], notLast, locals, etran, initialLhs);
+    TrStmtList(statements.GetRange(updateIndex + 1, statements.Count - updateIndex - 1), builder, locals, etran);
+  }
+
+  private void TrUpdateStmt(BoogieStmtListBuilder builder, Variables locals, ExpressionTranslator etran, AssignStatement statement,
+    InitialLhs initialLhs) {
     // This UpdateStmt can be single-target assignment, a multi-assignment, a call statement, or
     // an array-range update.  Handle the multi-assignment here and handle the others as for .ResolvedStatements.
     var resolved = statement.ResolvedStatements;
     if (resolved.Count == 1) {
-      TrStmt(resolved[0], builder, locals, etran);
+      TrStmt(resolved[0], builder, locals, etran, initialLhs);
     } else {
       AddComment(builder, statement, "update statement");
       var assignStmts = resolved.Cast<SingleAssignStmt>().ToList();
@@ -495,7 +512,7 @@ public partial class BoogieGenerator {
       // ProcessLhss has laid down framing conditions and the ProcessUpdateAssignRhss will check subranges (nats),
       // but we need to generate the distinctness condition (two LHS are equal only when the RHS is also
       // equal). We need both the LHS and the RHS to do this, which is why we need to do it here.
-      CheckLhssDistinctness(finalRhss, statement.Rhss, lhss, builder, etran, lhsObjs, lhsFields, lhsNames, statement.OriginalInitialLhs);
+      CheckLhssDistinctness(finalRhss, statement.Rhss, lhss, builder, etran, lhsObjs, lhsFields, lhsNames, initialLhs);
       // Now actually perform the assignments to the LHS.
       for (int i = 0; i < lhss.Count; i++) {
         lhsBuilder[i](finalRhss[i], statement.Rhss[i] is HavocRhs, builder, etran);
