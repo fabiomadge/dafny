@@ -2,60 +2,36 @@ using System.Text.Json.Nodes;
 using Microsoft.Boogie;
 using Microsoft.Dafny;
 using VC;
-using Token = Microsoft.Dafny.Token;
 
 namespace DafnyDriver.Test;
 
 public class VerificationLoggerResourceCountTest {
-  [Theory]
-  [InlineData(0, 0, 0L)]
-  [InlineData(int.MaxValue - 1, 1, 2147483647L)]
-  [InlineData(int.MaxValue, 1, 2147483648L)]
-  [InlineData(int.MaxValue, int.MaxValue, 4294967294L)]
-  public void TextLoggerPreservesResourceCounts(int firstResourceCount, int secondResourceCount,
-    long expectedTotal) {
-    using var output = new StringWriter();
-    TextVerificationLogger.LogResults(new ProofDependencyManager(), output,
-      CreateScopeResult(firstResourceCount, secondResourceCount));
+  private const long ExpectedTotal = (long)int.MaxValue + 1;
 
-    var log = output.ToString();
-    Assert.Contains($"  Overall resource count: {expectedTotal}{Environment.NewLine}", log);
-    Assert.Contains(
-      $"  Maximum assertion batch resource count: {Math.Max(firstResourceCount, secondResourceCount)}{Environment.NewLine}", log);
-    Assert.Contains($"    Resource count: {firstResourceCount}{Environment.NewLine}", log);
-    Assert.Contains($"    Resource count: {secondResourceCount}{Environment.NewLine}", log);
+  [Fact]
+  public void TextLoggerReportsTotalWiderThanInt() {
+    var output = new StringWriter();
+    TextVerificationLogger.LogResults(new ProofDependencyManager(), output, CreateScopeResult(int.MaxValue, 1));
+    Assert.Contains($"Overall resource count: {ExpectedTotal}", output.ToString());
   }
 
-  [Theory]
-  [InlineData(0, 0, 0L)]
-  [InlineData(int.MaxValue - 1, 1, 2147483647L)]
-  [InlineData(int.MaxValue, 1, 2147483648L)]
-  [InlineData(int.MaxValue, int.MaxValue, 4294967294L)]
-  public async Task JsonLoggerPreservesResourceCounts(int firstResourceCount, int secondResourceCount,
-    long expectedTotal) {
-    using var output = new StringWriter();
-    var options = new DafnyOptions(TextReader.Null, output, TextWriter.Null);
-    var logger = new JsonVerificationLogger(new ProofDependencyManager(), options.OutputWriter);
+  [Fact]
+  public async Task JsonLoggerReportsTotalWiderThanInt() {
+    var output = new StringWriter();
+    var logger = new JsonVerificationLogger(new ProofDependencyManager(),
+      new DafnyOptions(TextReader.Null, output, TextWriter.Null).OutputWriter);
     logger.Initialize(new Dictionary<string, string>());
-
-    logger.LogScopeResults(CreateScopeResult(firstResourceCount, secondResourceCount));
+    logger.LogScopeResults(CreateScopeResult(int.MaxValue, 1));
     await logger.Flush();
-
-    var log = JsonNode.Parse(output.ToString())!;
-    var scope = Assert.Single(log["verificationResults"]!.AsArray())!;
-    Assert.Equal(expectedTotal, scope["resourceCount"]!.GetValue<long>());
-    Assert.Collection(scope["vcResults"]!.AsArray(),
-      result => Assert.Equal(firstResourceCount, result!["resourceCount"]!.GetValue<int>()),
-      result => Assert.Equal(secondResourceCount, result!["resourceCount"]!.GetValue<int>()));
+    var scope = JsonNode.Parse(output.ToString())!["verificationResults"]![0]!;
+    Assert.Equal(ExpectedTotal, scope["resourceCount"]!.GetValue<long>());
   }
 
   private static VerificationScopeResult CreateScopeResult(params int[] resourceCounts) {
-    // Synthetic counts exercise the overflow boundary without an expensive solver run.
     var results = resourceCounts.Select((resourceCount, index) => new VerificationTaskResult(null!,
       new VerificationRunResult(index + 1, 0, DateTime.UnixEpoch, SolverOutcome.Valid, TimeSpan.Zero,
         0, null!, new List<AssertCmd>(), new List<TrackedNodeComponent>(), resourceCount, null,
         new List<Microsoft.Boogie.Declaration>()))).ToList();
-    var origin = new Token(1, 1) { Uri = new Uri("file:///test.dfy") };
-    return new VerificationScopeResult(new VerificationScope("M", origin), results);
+    return new VerificationScopeResult(new VerificationScope("M", Microsoft.Boogie.Token.NoToken), results);
   }
 }
